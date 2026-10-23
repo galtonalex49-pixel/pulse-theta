@@ -219,12 +219,8 @@ body {
 
 /* Keeps the dense mobile layout readable without oversized typography. */
 .app-scale {
-  zoom: var(--app-content-scale, 0.7);
-}
-
-@supports not (zoom: 1) {
-  .app-scale {
-    transform: scale(var(--app-content-scale, 0.7));
-    transform-origin: top left;
-  }
+  /* CSS zoom changes internal text and component dimensions while preserving layout flow. */
+  zoom: var(--app-content-scale, 0.25);
+  min-width: 0;
+  min-height: 0;
 }

@@ -320,7 +320,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
       <section className="mt-8 space-y-4 px-4" aria-label="App display settings">
         <div>
           <h2 className="text-xl font-extrabold">App Display Size</h2>
-          <p className="mt-1 text-sm text-white/60">Control the app content scale from compact to full size.</p>
+          <p className="mt-1 text-sm text-white/60">Adjust internal text and component sizes without changing the full-screen layout.</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-[#141414] p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
