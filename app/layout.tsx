@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   description:
     'Mobile ticketing experience: discover live events, manage your tickets, view SafeTix barcodes, and transfer seats.',
   generator: 'v0.app',
+  icons: {
+    icon: '/app-icon.jpeg',
+    apple: '/app-icon.jpeg',
+  },
+  appleWebApp: {
+    capable: true,
+    title: 'Ticketmaster',
+    statusBarStyle: 'black-translucent',
+  },
 }
 
 export const viewport: Viewport = {
