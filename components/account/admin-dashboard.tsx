@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowLeft, Plus, Search, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Plus, Search, Trash2 } from 'lucide-react'
 import { resizeSeats, useApp } from '@/lib/store'
 import { dateBadge } from '@/lib/format'
 import type { Seat, TMEvent, Ticket } from '@/lib/types'
@@ -308,7 +308,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
 }
 
 export function AdminDashboard({ onBack }: { onBack: () => void }) {
-  const { tickets, addTicket, profile, setProfile } = useApp()
+  const { tickets, addTicket, moveTicket, profile, setProfile } = useApp()
   const [newestId, setNewestId] = useState<string | null>(null)
 
   return (
@@ -348,8 +348,17 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
           </p>
         ) : (
           <ul className="flex flex-col gap-6">
-            {tickets.map((t) => (
-              <TicketEditor key={t.id} ticket={t} defaultOpen={t.id === newestId} />
+            {tickets.map((t, index) => (
+              <li key={t.id} className="relative">
+                <div className="mb-2 flex items-center justify-between rounded-lg border border-white/10 bg-[#1b1b1b] px-3 py-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white/60">Display position {index + 1}</span>
+                  <div className="flex gap-2">
+                    <button type="button" aria-label={`Move ${t.artist} up`} disabled={index === 0} onClick={() => moveTicket(t.id, 'up')} className="rounded-md border border-white/15 p-2 disabled:opacity-30"><ArrowUp size={16} /></button>
+                    <button type="button" aria-label={`Move ${t.artist} down`} disabled={index === tickets.length - 1} onClick={() => moveTicket(t.id, 'down')} className="rounded-md border border-white/15 p-2 disabled:opacity-30"><ArrowDown size={16} /></button>
+                  </div>
+                </div>
+                <TicketEditor ticket={t} defaultOpen={t.id === newestId} />
+              </li>
             ))}
           </ul>
         )}

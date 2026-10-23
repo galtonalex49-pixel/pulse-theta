@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { EllipsisVertical, Heart, MapPin, MicVocal } from 'lucide-react'
+import { DualTicketIcon } from '../icons'
 import { useApp } from '@/lib/store'
 import { monthDay, weekdayTime, yearOf } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
@@ -99,6 +100,7 @@ export function ForYouRail({ events }: { events: TMEvent[] }) {
                   <span className="truncate">{locationLine(event)}</span>
                 </p>
               </div>
+              <DualTicketIcon size={16} className="shrink-0 text-white" />
               <EventMenu event={event} />
             </div>
           </article>

@@ -85,6 +85,7 @@ interface AppState {
   tickets: Ticket[]
   addTicket: () => string
   updateTicket: (id: string, patch: Partial<Ticket>) => void
+  moveTicket: (id: string, direction: 'up' | 'down') => void
   deleteTicket: (id: string) => void
 
   ticketView: { view: TicketView; id: string | null }
@@ -183,6 +184,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)))
   }, [])
 
+  const moveTicket = useCallback((id: string, direction: 'up' | 'down') => {
+    setTickets((prev) => {
+      const index = prev.findIndex((ticket) => ticket.id === id)
+      const target = direction === 'up' ? index - 1 : index + 1
+      if (index < 0 || target < 0 || target >= prev.length) return prev
+      const next = [...prev]
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
+  }, [])
+
   const deleteTicket = useCallback((id: string) => {
     setTickets((prev) => prev.filter((t) => t.id !== id))
     setTicketView((prev) => (prev.id === id ? { view: 'landing', id: null } : prev))
@@ -220,6 +232,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     tickets,
     addTicket,
     updateTicket,
+    moveTicket,
     deleteTicket,
     ticketView,
     openDetails,

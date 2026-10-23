@@ -1,10 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import { MapPin, Navigation, Search } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { POPULAR_CITIES, nearestCity } from '@/lib/locations'
-import type { City } from '@/lib/types'
+import type { City, TMEvent } from '@/lib/types'
+
+const fetchCityEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return { events: [] }
+    const payload = await response.json()
+    return { events: Array.isArray(payload?.events) ? payload.events : [] }
+  } catch {
+    return { events: [] }
+  }
+}
 import { FlagBadge } from '../icons'
 
 function CityRow({ city, onSelect }: { city: City; onSelect: (c: City) => void }) {
@@ -26,11 +38,31 @@ function CityRow({ city, onSelect }: { city: City; onSelect: (c: City) => void }
 export function LocationSheet() {
   const { locationSheetOpen, setLocationSheetOpen, selectLocation, recentLocations } = useApp()
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 350)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  const { data: cityData, isLoading: cityLoading } = useSWR(
+    debouncedQuery.length >= 2 ? `/api/ticketmaster?city=${encodeURIComponent(debouncedQuery)}&size=30` : null,
+    fetchCityEvents,
+    { revalidateOnFocus: false },
+  )
 
   const q = query.trim().toLowerCase()
-  const results = q
-    ? POPULAR_CITIES.filter((c) => `${c.name} ${c.label}`.toLowerCase().includes(q))
-    : []
+  const liveCities: City[] = Array.from(new Map((cityData?.events ?? []).map((event) => [event.city.toLowerCase(), {
+    name: event.city,
+    label: [event.state, event.countryCode].filter(Boolean).join(', '),
+    flag: event.countryCode.toLowerCase() || 'us',
+    tmCountry: event.countryCode,
+    tmCity: event.city,
+    trendingLabel: event.city,
+    lat: event.lat ?? 0,
+    lng: event.lng ?? 0,
+  }])).values())
+  const results = q ? (liveCities.length ? liveCities : POPULAR_CITIES.filter((c) => `${c.name} ${c.label}`.toLowerCase().includes(q))) : []
 
   const close = () => {
     setLocationSheetOpen(false)
@@ -101,14 +133,14 @@ export function LocationSheet() {
 
         <div className="mt-4 min-h-0 flex-1 overflow-y-auto pb-10">
           {q ? (
-            results.length > 0 ? (
+            cityLoading ? <p className="px-5 py-8 text-center text-white/60">Searching Ticketmaster…</p> : results.length > 0 ? (
               <ul>
                 {results.map((c) => (
                   <CityRow key={c.name} city={c} onSelect={select} />
                 ))}
               </ul>
             ) : (
-              <p className="px-5 py-8 text-center text-white/60">No cities match “{query}”.</p>
+              <p className="px-5 py-8 text-center text-white/60">No results for “{query}”.</p>
             )
           ) : (
             <>
