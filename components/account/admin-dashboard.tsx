@@ -347,9 +347,9 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
             No tickets. Use Add Ticket to create one.
           </p>
         ) : (
-          <ul className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
             {tickets.map((t, index) => (
-              <li key={t.id} className="relative">
+              <div key={t.id} className="relative">
                 <div className="mb-2 flex items-center justify-between rounded-lg border border-white/10 bg-[#1b1b1b] px-3 py-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-white/60">Display position {index + 1}</span>
                   <div className="flex gap-2">
@@ -358,9 +358,9 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
                   </div>
                 </div>
                 <TicketEditor ticket={t} defaultOpen={t.id === newestId} />
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </section>
     </div>
