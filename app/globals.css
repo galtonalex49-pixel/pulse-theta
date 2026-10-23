@@ -219,14 +219,12 @@ body {
 
 /* Keeps the dense mobile layout readable without oversized typography. */
 .app-scale {
-  zoom: 0.82;
+  zoom: var(--app-content-scale, 0.7);
 }
 
 @supports not (zoom: 1) {
   .app-scale {
-    transform: scale(0.82);
-    transform-origin: top center;
-    width: 121.95%;
-    height: 121.95%;
+    transform: scale(var(--app-content-scale, 0.7));
+    transform-origin: top left;
   }
 }

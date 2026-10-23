@@ -27,16 +27,10 @@ function ScaledApp() {
   const scale = 0.7 + appZoom * 0.3
 
   return (
-    <div className="flex h-dvh w-full justify-center overflow-hidden bg-black">
+    <div className="flex h-dvh w-full overflow-hidden bg-tm-surface">
       <div
-        className="app-scale relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-tm-surface"
-        style={{
-          width: `calc(100% / ${scale})`,
-          height: `calc(100% / ${scale})`,
-          maxWidth: `calc(480px / ${scale})`,
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center',
-        }}
+        className="app-scale relative flex h-full w-full flex-col overflow-hidden bg-tm-surface"
+        style={{ '--app-content-scale': scale } as React.CSSProperties}
       >
         <main className="relative min-h-0 flex-1">
           <ActiveTab />
