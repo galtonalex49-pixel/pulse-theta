@@ -29,9 +29,9 @@ export function TicketsLanding() {
   return (
     <div className="relative h-full overflow-y-auto pb-6">
       <header className="sticky top-0 z-20 bg-[#111] pt-[max(env(safe-area-inset-top),16px)]">
-        <div className="relative flex h-14 items-center justify-center gap-3">
-          <h1 className="text-[30px] font-extrabold leading-none">My Events</h1>
-          <FlagBadge code={location.flag} size={22} />
+        <div className="relative flex h-14 items-center justify-center gap-3 px-24">
+          <h1 className="min-w-0 truncate text-[30px] font-extrabold leading-none">My Events</h1>
+          <FlagBadge code={location.flag} size={30} />
           <a
             href="https://help.ticketmaster.com"
             target="_blank"

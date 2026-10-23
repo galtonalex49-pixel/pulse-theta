@@ -12,7 +12,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const [refreshes, setRefreshes] = useState(0)
 
   return (
-    <li className="w-[82%] shrink-0 snap-center">
+    <li className="w-[82%] min-w-0 shrink-0 snap-center">
       <div className="overflow-hidden rounded-t-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[30px] font-extrabold italic tracking-tight">ticketmaster</span>
@@ -107,7 +107,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         >
           <ArrowLeft size={36} strokeWidth={2.4} />
         </button>
-        <div className="min-w-0 text-center">
+        <div className="min-w-0 flex-1 text-center">
           <h1 className="truncate text-[24px] font-extrabold">{ticket.artist}</h1>
           <p className="mt-1 truncate text-lg">
             {dateLong(ticket.dateTime)} - {ticket.venue}

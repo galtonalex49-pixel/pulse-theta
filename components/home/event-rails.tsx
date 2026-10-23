@@ -122,10 +122,10 @@ export function TrendingRail({ events, expanded }: { events: TMEvent[]; expanded
       {events.map((event, i) => {
         const liked = favorites.some((e) => e.id === event.id)
         return (
-          <li key={event.id} className="flex min-w-0 snap-start items-center">
+          <li key={event.id} className="flex min-w-0 snap-start items-center gap-2">
             <span
               aria-label={`Rank ${i + 1}`}
-              className="w-[60px] shrink-0 text-[50px] font-extrabold leading-none text-transparent"
+              className="w-[72px] shrink-0 text-center text-[50px] font-extrabold leading-none text-transparent"
               style={{ WebkitTextStroke: '2px #f2ea1c' }}
             >
               {String(i + 1).padStart(2, '0')}
