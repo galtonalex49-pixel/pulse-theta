@@ -12,7 +12,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const [refreshes, setRefreshes] = useState(0)
 
   return (
-    <li className="w-[82%] min-w-0 shrink-0 snap-center">
+    <li className="h-[380px] w-[280px] min-w-0 shrink-0 snap-center">
       <div className="overflow-hidden rounded-t-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[30px] font-extrabold italic tracking-tight">ticketmaster</span>
@@ -22,9 +22,9 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
           <img
             src={ticket.posterUrl}
             alt=""
-            className="h-[400px] w-full object-cover object-top"
+            className="h-[150px] w-full object-cover object-top"
           />
-          <div className="absolute inset-x-5 top-5 rounded-xl bg-[#1c1c1c]/95 px-5 pb-6 pt-5 shadow-xl">
+          <div className="absolute inset-x-3 top-3 rounded-xl bg-[#1c1c1c]/95 p-3 shadow-xl">
             <div className="flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 text-center text-lg">Screenshots won&apos;t get you in</p>
               <button
@@ -97,7 +97,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
   }
 
   return (
-    <div className="flex h-full flex-col bg-[#111]">
+    <div className="compact-screen mx-auto flex h-full w-full max-w-[430px] flex-col overflow-x-hidden bg-[#111]">
       <header className="relative flex shrink-0 items-center justify-center px-16 pb-4 pt-[max(env(safe-area-inset-top),20px)]">
         <button
           type="button"
@@ -151,7 +151,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         </button>
         <button
           type="button"
-          className="flex h-[68px] flex-1 items-center justify-center gap-4 rounded-full border-2 border-white text-2xl font-extrabold"
+          className="flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-white text-[13px] font-extrabold"
         >
           <span className="flex size-10 items-center justify-center rounded-full bg-white text-black">
             <Info size={24} strokeWidth={3} aria-hidden="true" />

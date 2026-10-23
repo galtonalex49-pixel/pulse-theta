@@ -96,9 +96,9 @@ export function WatchlistTab() {
   const accent = isEvents ? 'var(--color-tm-purple)' : 'var(--color-tm-pink)'
 
   return (
-    <div className="relative flex h-full flex-col overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),20px)]">
+    <div className="compact-screen relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
       <header className="shrink-0 text-center">
-        <h1 className="text-[34px] font-extrabold uppercase leading-none">Watchlist</h1>
+        <h1 className="text-[18px] font-extrabold uppercase leading-[22px] tracking-[-0.01em]">Watchlist</h1>
         <p className="mt-2 text-xl text-white/80">Keep track of what&apos;s important</p>
       </header>
 

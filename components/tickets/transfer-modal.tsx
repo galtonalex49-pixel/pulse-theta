@@ -40,7 +40,7 @@ function SheetFrame({
   tall?: boolean
 }) {
   return (
-    <div className="absolute inset-0 z-50" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="absolute inset-0 z-50 mx-auto w-full max-w-[430px]" role="dialog" aria-modal="true" aria-label={title}>
       <button
         type="button"
         aria-label="Close transfer"
@@ -95,7 +95,7 @@ function TextField({
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-[56px] w-full rounded-[4px] border-2 border-[#d4d4d4] bg-white px-4 text-[18px] text-[#222] outline-none placeholder:text-[#9a9a9a] focus:border-tm-blue"
+        className="h-10 w-full rounded-[4px] border-2 border-[#d4d4d4] bg-white px-3 text-[13px] text-[#222] outline-none placeholder:text-[#9a9a9a] focus:border-tm-blue"
       />
     </div>
   )
@@ -351,7 +351,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
             type="button"
             disabled={!formValid}
             onClick={complete}
-            className="h-[58px] min-w-[200px] rounded-[4px] bg-tm-blue px-6 text-[21px] font-medium text-white disabled:bg-[#b4c3ee]"
+            className="h-[42px] min-w-[150px] rounded-[4px] bg-tm-blue px-4 text-[13px] font-medium text-white disabled:bg-[#b4c3ee]"
           >
             Transfer {n} {n === 1 ? 'Ticket' : 'Tickets'}
           </button>

@@ -81,19 +81,19 @@ function StickyHeader({ ticket, scrolled }: { ticket: Ticket; scrolled: boolean 
 function SeatCard({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][number] }) {
   return (
     <li className="mb-6">
-      <div className="bg-[#232323] px-6 py-6 text-xl font-extrabold">{ticket.purchaseType}</div>
-      <div className="mt-0.5 grid grid-cols-3 bg-[#1a1a1a] px-6 py-6">
+      <div className="bg-[#232323] px-3 py-2.5 text-[14px] font-bold leading-[18px]">{ticket.purchaseType}</div>
+      <div className="mt-0.5 grid grid-cols-3 bg-[#1a1a1a] px-3 py-2.5">
         <div className="min-w-0">
           <p className="text-lg font-bold uppercase tracking-wide text-white/60">Section</p>
-          <p className="mt-1 truncate text-[32px] font-extrabold leading-none">{seat.section}</p>
+          <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.section}</p>
         </div>
         <div className="min-w-0 text-center">
           <p className="text-lg font-bold uppercase tracking-wide text-white/60">Row</p>
-          <p className="mt-1 truncate text-[32px] font-extrabold leading-none">{seat.row}</p>
+          <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.row}</p>
         </div>
         <div className="min-w-0 text-right">
           <p className="text-lg font-bold uppercase tracking-wide text-white/60">Seat</p>
-          <p className="mt-1 truncate text-[32px] font-extrabold leading-none">{seat.seat}</p>
+          <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.seat}</p>
         </div>
       </div>
       {seat.transferStatus && (
@@ -166,7 +166,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
   }
 
   return (
-    <div className="relative h-full bg-[#111]">
+    <div className="compact-screen relative mx-auto h-full w-full max-w-[430px] overflow-x-hidden bg-[#111]">
       <div
         className="no-scrollbar h-full overflow-y-auto"
         onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 210)}
@@ -251,7 +251,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </ul>
 
             <h2 className="mb-5 mt-14 text-[30px] font-extrabold uppercase">More Options</h2>
-            <div className="isolate relative h-[260px] w-full overflow-hidden bg-[#1a1a1a]">
+            <div className="isolate relative h-[160px] w-full overflow-hidden bg-[#1a1a1a]">
               <TicketMap lat={ticket.lat} lng={ticket.lng} name={ticket.venue} />
               <p className="pointer-events-none absolute left-4 top-3 z-[500] max-w-[85%] truncate text-[34px] font-extrabold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">
                 {ticket.venue}

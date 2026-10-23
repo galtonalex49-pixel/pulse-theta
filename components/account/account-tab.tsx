@@ -45,7 +45,7 @@ function Row({
     </>
   )
   const cls =
-    'flex min-h-[72px] w-full items-center gap-5 border-b border-black/60 bg-[#232323] px-5 text-left'
+    'flex min-h-[52px] w-full items-center gap-3 border-b border-black/60 bg-[#232323] px-3 text-left'
   if (href) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
@@ -105,7 +105,7 @@ export function AccountTab() {
   if (accountPage === 'edit') return <AdminDashboard onBack={() => setAccountPage('main')} />
 
   return (
-    <div className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),24px)]">
+    <div className="compact-screen mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
       <header className="flex items-center gap-5 px-4">
         <span
           aria-hidden="true"

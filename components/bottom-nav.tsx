@@ -39,7 +39,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="z-30 flex h-14 shrink-0 items-stretch border-t border-white/5 bg-tm-surface pb-[max(env(safe-area-inset-bottom),2px)] pt-0.5"
+      className="fixed bottom-0 left-1/2 z-[9999] flex h-14 w-full max-w-[430px] -translate-x-1/2 items-center justify-around border-t border-[#222] bg-[#0A0A0A] pb-[max(env(safe-area-inset-bottom),2px)] pt-0.5"
     >
       {TABS.map((t) => {
         const active = tab === t.id

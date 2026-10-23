@@ -218,3 +218,22 @@ body {
 }
 
 /* Keeps the dense mobile layout readable without oversized typography. */
+.compact-screen {
+  box-sizing: border-box;
+  max-width: 430px;
+  width: 100%;
+  margin-inline: auto;
+  overflow-x: hidden;
+}
+
+.compact-screen *,
+.compact-screen *::before,
+.compact-screen *::after {
+  box-sizing: border-box;
+}
+
+.compact-screen h1,
+.compact-screen h2,
+.compact-screen h3 {
+  line-height: 22px;
+}
