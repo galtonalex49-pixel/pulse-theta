@@ -22,23 +22,14 @@ function ActiveTab() {
   }
 }
 
-function ScaledApp() {
-  const { appZoom } = useApp()
-  // Scale the app's internal CSS units; keep the outer device viewport full-bleed.
-  const scale = 0.15 + appZoom * 0.85
-
+function AppContent() {
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-tm-surface">
-      <div
-        className="app-scale relative flex h-full w-full flex-col overflow-hidden bg-tm-surface"
-        style={{ '--app-content-scale': scale } as React.CSSProperties}
-      >
-        <main className="relative min-h-0 flex-1">
-          <ActiveTab />
-        </main>
-        <BottomNav />
-        <LocationSheet />
-      </div>
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-tm-surface">
+      <main className="relative min-h-0 flex-1">
+        <ActiveTab />
+      </main>
+      <BottomNav />
+      <LocationSheet />
     </div>
   )
 }
@@ -46,7 +37,7 @@ function ScaledApp() {
 export function AppShell() {
   return (
     <AppProvider>
-      <ScaledApp />
+      <AppContent />
     </AppProvider>
   )
 }

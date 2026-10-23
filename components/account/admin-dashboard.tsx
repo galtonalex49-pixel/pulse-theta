@@ -299,7 +299,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
 }
 
 export function AdminDashboard({ onBack }: { onBack: () => void }) {
-  const { tickets, addTicket, profile, setProfile, appZoom, setAppZoom } = useApp()
+  const { tickets, addTicket, profile, setProfile } = useApp()
   const [newestId, setNewestId] = useState<string | null>(null)
 
   return (
@@ -315,30 +315,6 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
         <h2 className="text-xl font-extrabold">Profile</h2>
         <Field label="Full name" value={profile.name} onChange={(v) => setProfile({ name: v })} />
         <Field label="Email" type="email" value={profile.email} onChange={(v) => setProfile({ email: v })} />
-      </section>
-
-      <section className="mt-8 space-y-4 px-4" aria-label="App display settings">
-        <div>
-          <h2 className="text-xl font-extrabold">App Display Size</h2>
-          <p className="mt-1 text-sm text-white/60">Adjust internal text and component sizes without changing the full-screen layout.</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-[#141414] p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <label htmlFor="app-zoom" className="text-sm font-bold text-white/80">Zoom level</label>
-            <output htmlFor="app-zoom" className="rounded-full bg-tm-blue px-3 py-1 text-sm font-extrabold">{Math.round(appZoom * 100)}%</output>
-          </div>
-          <input
-            id="app-zoom"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={appZoom}
-            onChange={(event) => setAppZoom(Number(event.target.value))}
-            className="w-full accent-tm-blue-light"
-          />
-          <div className="mt-2 flex justify-between text-xs text-white/45"><span>0% Tiny text/components</span><span>100% Full size</span></div>
-        </div>
       </section>
 
       <section className="mt-10 px-4" aria-label="Master admin dashboard">

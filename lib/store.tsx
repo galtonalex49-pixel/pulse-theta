@@ -103,8 +103,6 @@ interface AppState {
   setProfile: (patch: Partial<Profile>) => void
   accountPage: 'main' | 'edit'
   setAccountPage: (page: 'main' | 'edit') => void
-  appZoom: number
-  setAppZoom: (zoom: number) => void
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -147,7 +145,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     email: 'galtonalex88@gmail.com',
   })
   const [accountPage, setAccountPage] = useState<'main' | 'edit'>('main')
-  const [appZoom, setAppZoom] = useState(0)
 
   const setTab = useCallback((next: TabId) => {
     setTabState(next)
@@ -238,8 +235,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setProfile,
     accountPage,
     setAccountPage,
-    appZoom,
-    setAppZoom,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
