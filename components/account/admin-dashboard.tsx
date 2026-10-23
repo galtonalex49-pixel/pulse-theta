@@ -337,7 +337,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
             onChange={(event) => setAppZoom(Number(event.target.value))}
             className="w-full accent-tm-blue-light"
           />
-          <div className="mt-2 flex justify-between text-xs text-white/45"><span>0% Compact</span><span>100% Full</span></div>
+          <div className="mt-2 flex justify-between text-xs text-white/45"><span>0% Tiny text/components</span><span>100% Full size</span></div>
         </div>
       </section>
 

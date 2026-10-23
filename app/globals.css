@@ -219,8 +219,15 @@ body {
 
 /* Keeps the dense mobile layout readable without oversized typography. */
 .app-scale {
-  /* CSS zoom changes internal text and component dimensions while preserving layout flow. */
-  zoom: var(--app-content-scale, 0.25);
+  /* CSS zoom reduces text and components without applying a compressed transform. */
+  zoom: var(--app-content-scale, 0.15);
   min-width: 0;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  line-height: normal;
+}
+
+.app-scale * {
+  box-sizing: border-box;
 }
