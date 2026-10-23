@@ -47,6 +47,7 @@ export function LocationSheet() {
     navigator.geolocation.getCurrentPosition(
       (pos) => select(nearestCity(pos.coords.latitude, pos.coords.longitude)),
       () => undefined,
+      { timeout: 10000, maximumAge: 300000 },
     )
   }
 

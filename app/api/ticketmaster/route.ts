@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(`${ENDPOINT}?${params.toString()}`, { next: { revalidate: 300 } })
+    // Ticketmaster responses can exceed Next.js' 2 MB data-cache limit.
+    // The client already caches requests with SWR, so avoid server-side caching here.
+    const res = await fetch(`${ENDPOINT}?${params.toString()}`, { cache: 'no-store' })
     if (!res.ok) {
       return NextResponse.json({ events: [], error: `Ticketmaster responded with ${res.status}` }, { status: 200 })
     }

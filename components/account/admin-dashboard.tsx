@@ -8,7 +8,16 @@ import { dateBadge } from '@/lib/format'
 import type { Seat, TMEvent, Ticket } from '@/lib/types'
 import { TicketCountIcon } from '../icons'
 
-const fetchEvents = (url: string): Promise<{ events: TMEvent[] }> => fetch(url).then((r) => r.json())
+const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return { events: [] }
+    const payload = await response.json()
+    return { events: Array.isArray(payload?.events) ? payload.events : [] }
+  } catch {
+    return { events: [] }
+  }
+}
 
 const inputCls =
   'h-12 w-full min-w-0 rounded-md border border-white/15 bg-[#1a1a1a] px-3 text-base text-white outline-none placeholder:text-white/30 focus:border-tm-blue-light'

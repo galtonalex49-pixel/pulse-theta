@@ -10,8 +10,16 @@ import type { TMEvent } from '@/lib/types'
 import { SearchBar } from './search-bar'
 import { ForYouRail, MiniRail, RailSection, TrendingRail } from './event-rails'
 
-export const fetchEvents = (url: string): Promise<{ events: TMEvent[] }> =>
-  fetch(url).then((r) => r.json())
+export const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return { events: [] }
+    const payload = await response.json()
+    return { events: Array.isArray(payload?.events) ? payload.events : [] }
+  } catch {
+    return { events: [] }
+  }
+}
 
 function dedupeByName(events: TMEvent[]) {
   const seen = new Set<string>()
