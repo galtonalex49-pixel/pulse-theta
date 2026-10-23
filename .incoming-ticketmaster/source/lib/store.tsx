@@ -1,0 +1,258 @@
+'use client'
+
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import type { City, Seat, TMEvent, TabId, Ticket, TicketView } from './types'
+import { DEFAULT_CITY, DEFAULT_RECENT } from './locations'
+import { uid } from './format'
+
+const OLIVIA_POSTER =
+  'https://s1.ticketm.net/dam/a/4e1/ca96dd03-8def-46ae-b6d3-9441e992c4e1_TABLET_LANDSCAPE_3_2.jpg'
+const DEF_LEPPARD_POSTER =
+  'https://s1.ticketm.net/dam/a/861/d7e41d08-4127-4710-b298-e566b30ac861_RETINA_LANDSCAPE_16_9.jpg'
+
+const SEED_TICKETS: Ticket[] = [
+  {
+    id: 'seed-xfinity',
+    visible: true,
+    artist: 'Olivia Rodrigo: The Unraveled Tour',
+    venue: 'Xfinity Mobile Arena',
+    posterUrl: OLIVIA_POSTER,
+    dateTime: '2026-11-07T19:00',
+    orderNumber: '41-22907/PHL',
+    quantity: 2,
+    purchaseType: 'General Sale',
+    lat: 39.9012,
+    lng: -75.172,
+    seats: [
+      { id: 'seed-xfinity-1', section: '112', row: '14', seat: '3', transferStatus: '' },
+      { id: 'seed-xfinity-2', section: '112', row: '14', seat: '4', transferStatus: '' },
+    ],
+  },
+  {
+    id: 'seed-intuit',
+    visible: true,
+    artist: 'Olivia Rodrigo: The Unraveled Tour',
+    venue: 'Intuit Dome',
+    posterUrl: OLIVIA_POSTER,
+    dateTime: '2027-01-12T19:00',
+    orderNumber: '12-30884/NY2',
+    quantity: 3,
+    purchaseType: 'American Express® Presale',
+    lat: 33.9958,
+    lng: -118.3419,
+    seats: [
+      { id: 'seed-intuit-1', section: 'Xx', row: '5', seat: '5', transferStatus: 'Transfer Accepted: TOM B' },
+      { id: 'seed-intuit-2', section: 'Xx', row: '5', seat: '6', transferStatus: 'Transfer Accepted: TOM B' },
+      { id: 'seed-intuit-3', section: 'Xx', row: '5', seat: '7', transferStatus: '' },
+    ],
+  },
+  {
+    id: 'seed-scotiabank',
+    visible: true,
+    artist: 'Def Leppard',
+    venue: 'Scotiabank Arena',
+    posterUrl: DEF_LEPPARD_POSTER,
+    dateTime: '2027-03-09T19:00',
+    orderNumber: '35-70054/LLP',
+    quantity: 3,
+    purchaseType: 'General Sale',
+    lat: 43.6435,
+    lng: -79.3791,
+    seats: [
+      { id: 'seed-scotia-1', section: '224', row: '2', seat: '10', transferStatus: '' },
+      { id: 'seed-scotia-2', section: '224', row: '2', seat: '11', transferStatus: '' },
+      { id: 'seed-scotia-3', section: '224', row: '2', seat: '12', transferStatus: '' },
+    ],
+  },
+]
+
+interface Profile {
+  name: string
+  email: string
+}
+
+interface AppState {
+  tab: TabId
+  setTab: (tab: TabId) => void
+
+  location: City
+  recentLocations: City[]
+  locationConfirmed: boolean
+  locationSheetOpen: boolean
+  setLocationSheetOpen: (open: boolean) => void
+  selectLocation: (city: City) => void
+
+  tickets: Ticket[]
+  addTicket: () => string
+  updateTicket: (id: string, patch: Partial<Ticket>) => void
+  deleteTicket: (id: string) => void
+
+  ticketView: { view: TicketView; id: string | null }
+  openDetails: (id: string) => void
+  openSafetix: (id: string) => void
+  backToLanding: () => void
+
+  watchlist: TMEvent[]
+  toggleWatchlist: (event: TMEvent) => void
+  favorites: TMEvent[]
+  toggleFavorite: (event: TMEvent) => void
+  browsed: TMEvent[]
+  browse: (event: TMEvent) => void
+
+  profile: Profile
+  setProfile: (patch: Partial<Profile>) => void
+  accountPage: 'main' | 'edit'
+  setAccountPage: (page: 'main' | 'edit') => void
+}
+
+const AppContext = createContext<AppState | null>(null)
+
+export function useApp() {
+  const ctx = useContext(AppContext)
+  if (!ctx) throw new Error('useApp must be used inside AppProvider')
+  return ctx
+}
+
+export function useNow(intervalMs = 30000) {
+  const [now, setNow] = useState<Date | null>(null)
+  useEffect(() => {
+    setNow(new Date())
+    const t = setInterval(() => setNow(new Date()), intervalMs)
+    return () => clearInterval(t)
+  }, [intervalMs])
+  return now
+}
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [tab, setTabState] = useState<TabId>('home')
+  const [location, setLocation] = useState<City>(DEFAULT_CITY)
+  const [recentLocations, setRecentLocations] = useState<City[]>(DEFAULT_RECENT)
+  const [locationConfirmed, setLocationConfirmed] = useState(false)
+  const [locationSheetOpen, setLocationSheetOpen] = useState(false)
+
+  const [tickets, setTickets] = useState<Ticket[]>(SEED_TICKETS)
+  const [ticketView, setTicketView] = useState<{ view: TicketView; id: string | null }>({
+    view: 'landing',
+    id: null,
+  })
+
+  const [watchlist, setWatchlist] = useState<TMEvent[]>([])
+  const [favorites, setFavorites] = useState<TMEvent[]>([])
+  const [browsed, setBrowsed] = useState<TMEvent[]>([])
+
+  const [profile, setProfileState] = useState<Profile>({
+    name: 'Lonnie Brew',
+    email: 'galtonalex88@gmail.com',
+  })
+  const [accountPage, setAccountPage] = useState<'main' | 'edit'>('main')
+
+  const setTab = useCallback((next: TabId) => {
+    setTabState(next)
+    if (next === 'tickets') setTicketView({ view: 'landing', id: null })
+    if (next === 'account') setAccountPage('main')
+  }, [])
+
+  const selectLocation = useCallback((city: City) => {
+    setLocation(city)
+    setLocationConfirmed(true)
+    setRecentLocations((prev) => [city, ...prev.filter((c) => c.name !== city.name)].slice(0, 3))
+    setLocationSheetOpen(false)
+  }, [])
+
+  const addTicket = useCallback(() => {
+    const id = uid()
+    const next: Ticket = {
+      id,
+      visible: true,
+      artist: 'New Event',
+      venue: 'Venue Name',
+      posterUrl: OLIVIA_POSTER,
+      dateTime: '2027-06-01T19:00',
+      orderNumber: '00-00000/XX',
+      quantity: 1,
+      purchaseType: 'General Sale',
+      lat: 40.7505,
+      lng: -73.9934,
+      seats: [{ id: uid(), section: '101', row: '1', seat: '1', transferStatus: '' }],
+    }
+    setTickets((prev) => [next, ...prev])
+    return id
+  }, [])
+
+  const updateTicket = useCallback((id: string, patch: Partial<Ticket>) => {
+    setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)))
+  }, [])
+
+  const deleteTicket = useCallback((id: string) => {
+    setTickets((prev) => prev.filter((t) => t.id !== id))
+    setTicketView((prev) => (prev.id === id ? { view: 'landing', id: null } : prev))
+  }, [])
+
+  const openDetails = useCallback((id: string) => setTicketView({ view: 'details', id }), [])
+  const openSafetix = useCallback((id: string) => setTicketView({ view: 'safetix', id }), [])
+  const backToLanding = useCallback(() => setTicketView({ view: 'landing', id: null }), [])
+
+  const toggleIn = (setter: React.Dispatch<React.SetStateAction<TMEvent[]>>) => (event: TMEvent) =>
+    setter((prev) =>
+      prev.some((e) => e.id === event.id) ? prev.filter((e) => e.id !== event.id) : [event, ...prev],
+    )
+
+  const toggleWatchlist = useMemo(() => toggleIn(setWatchlist), [])
+  const toggleFavorite = useMemo(() => toggleIn(setFavorites), [])
+
+  const browse = useCallback((event: TMEvent) => {
+    setBrowsed((prev) => [event, ...prev.filter((e) => e.id !== event.id)].slice(0, 12))
+  }, [])
+
+  const setProfile = useCallback((patch: Partial<Profile>) => {
+    setProfileState((prev) => ({ ...prev, ...patch }))
+  }, [])
+
+  const value: AppState = {
+    tab,
+    setTab,
+    location,
+    recentLocations,
+    locationConfirmed,
+    locationSheetOpen,
+    setLocationSheetOpen,
+    selectLocation,
+    tickets,
+    addTicket,
+    updateTicket,
+    deleteTicket,
+    ticketView,
+    openDetails,
+    openSafetix,
+    backToLanding,
+    watchlist,
+    toggleWatchlist,
+    favorites,
+    toggleFavorite,
+    browsed,
+    browse,
+    profile,
+    setProfile,
+    accountPage,
+    setAccountPage,
+  }
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>
+}
+
+export function resizeSeats(seats: Seat[], quantity: number): Seat[] {
+  if (quantity <= seats.length) return seats.slice(0, Math.max(0, quantity))
+  const next = [...seats]
+  while (next.length < quantity) {
+    const last = next[next.length - 1]
+    const lastSeatNum = last ? parseInt(last.seat, 10) : 0
+    next.push({
+      id: uid(),
+      section: last?.section ?? '101',
+      row: last?.row ?? '1',
+      seat: Number.isFinite(lastSeatNum) ? String(lastSeatNum + 1) : '1',
+      transferStatus: '',
+    })
+  }
+  return next
+}

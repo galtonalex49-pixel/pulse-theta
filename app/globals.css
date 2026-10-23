@@ -1,8 +1,22 @@
+@import url('https://fonts.cdnfonts.com/css/averta');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-tm-black: #0a0a0a;
+  --color-tm-surface: #111111;
+  --color-tm-card: #1a1a1a;
+  --color-tm-row: #232323;
+  --color-tm-blue: #1f4fd8;
+  --color-tm-blue-light: #2d62ea;
+  --color-tm-purple: #b95cff;
+  --color-tm-pink: #e83fa8;
+  --color-tm-teal: #5fe6d9;
+  --color-tm-muted: #888888;
+}
 
 @theme inline {
   --color-sidebar-ring: var(--sidebar-ring);
@@ -159,5 +173,60 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+html,
+body {
+  background: #0a0a0a;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  font-family: 'Averta', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@keyframes laser-sweep {
+  0% { left: 3%; }
+  50% { left: 96%; }
+  100% { left: 3%; }
+}
+.animate-laser {
+  animation: laser-sweep 2.6s ease-in-out infinite;
+}
+
+@keyframes placeholder-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-placeholder {
+  animation: placeholder-in 0.35s ease-out;
+}
+
+.leaflet-container {
+  background: #1a1a1a;
+  font-family: inherit;
+}
+
+/* Keeps the dense mobile layout readable without oversized typography. */
+.app-scale {
+  zoom: 0.82;
+}
+
+@supports not (zoom: 1) {
+  .app-scale {
+    transform: scale(0.82);
+    transform-origin: top center;
+    width: 121.95%;
+    height: 121.95%;
   }
 }
