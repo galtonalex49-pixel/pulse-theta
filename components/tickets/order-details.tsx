@@ -84,15 +84,15 @@ function SeatCard({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][numb
       <div className="bg-[#232323] px-3 py-2.5 text-[14px] font-bold leading-[18px]">{ticket.purchaseType}</div>
       <div className="mt-0.5 grid grid-cols-3 bg-[#1a1a1a] px-3 py-2.5">
         <div className="min-w-0">
-          <p className="text-lg font-bold uppercase tracking-wide text-white/60">Section</p>
+          <p className="text-[11px] font-bold uppercase leading-4 tracking-wide text-white/60">Section</p>
           <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.section}</p>
         </div>
         <div className="min-w-0 text-center">
-          <p className="text-lg font-bold uppercase tracking-wide text-white/60">Row</p>
+          <p className="text-[11px] font-bold uppercase leading-4 tracking-wide text-white/60">Row</p>
           <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.row}</p>
         </div>
         <div className="min-w-0 text-right">
-          <p className="text-lg font-bold uppercase tracking-wide text-white/60">Seat</p>
+          <p className="text-[11px] font-bold uppercase leading-4 tracking-wide text-white/60">Seat</p>
           <p className="mt-1 truncate text-[14px] font-extrabold leading-[18px]">{seat.seat}</p>
         </div>
       </div>
@@ -184,7 +184,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             {dateBadge(ticket.dateTime)}
           </span>
           <div className="bg-[#1a1a1a] px-6 pb-6 pt-3">
-            <h1 className="break-words text-[34px] font-extrabold uppercase leading-[1.1]">{ticket.artist}</h1>
+            <h1 className="line-clamp-2 break-words text-[20px] font-extrabold uppercase leading-6">{ticket.artist}</h1>
             <div className="mt-5 flex items-center justify-between gap-3">
               <p className="min-w-0 truncate text-xl text-white/70">{ticket.venue}</p>
               <span className="flex shrink-0 items-center gap-2 text-xl font-bold">

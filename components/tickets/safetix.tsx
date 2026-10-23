@@ -22,11 +22,11 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
           <img
             src={ticket.posterUrl}
             alt=""
-            className="h-[180px] w-full object-cover object-top"
+            className="h-[168px] w-full object-cover object-top"
           />
-          <div className="absolute inset-x-3 top-3 rounded-xl bg-[#1c1c1c]/95 p-3 shadow-xl">
+          <div className="absolute inset-x-3 top-3 rounded-xl bg-[#1c1c1c]/95 px-3 py-2.5 shadow-xl">
             <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 text-center text-[13px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
+              <p className="min-w-0 flex-1 text-center text-[12px] font-semibold leading-4">Screenshots won&apos;t get you in</p>
               <button
                 type="button"
                 aria-label="Refresh barcode"
@@ -40,7 +40,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
                 />
               </button>
             </div>
-            <div className="relative mt-4 overflow-hidden px-1">
+            <div className="relative mt-2 overflow-hidden px-1">
               <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
               <span
                 aria-hidden="true"
@@ -48,30 +48,30 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               />
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 max-w-[75%] bg-[#111] px-4 pb-3 pt-3">
-            <p className="truncate text-[16px] font-extrabold leading-5">{ticket.purchaseType}</p>
+          <div className="absolute bottom-0 left-0 max-w-[78%] bg-[#111] px-3 pb-2 pt-2">
+            <p className="line-clamp-2 text-[14px] font-extrabold leading-4 break-words">{ticket.purchaseType}</p>
             <p className="mt-0.5 truncate text-[13px] leading-5 text-white/70">Reserved Seating</p>
           </div>
         </div>
-        <div className="px-4 pb-5 pt-3">
-          <hr className="mx-auto mb-4 w-[80%] border-white/30" />
+        <div className="px-3 pb-3 pt-2">
+          <hr className="mx-auto mb-2 w-[80%] border-white/30" />
           <dl className="grid grid-cols-3">
             <div className="min-w-0">
-              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Section</dt>
+              <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Section</dt>
               <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.section}</dd>
             </div>
             <div className="min-w-0">
-              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Row</dt>
+              <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Row</dt>
               <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.row}</dd>
             </div>
             <div className="min-w-0 text-right">
-              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Seat</dt>
+              <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Seat</dt>
               <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.seat}</dd>
             </div>
           </dl>
           <button
             type="button"
-            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[14px] font-extrabold uppercase tracking-wide"
+            className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[12px] font-extrabold uppercase tracking-wide"
           >
             Mobile Entry
             <ArrowRight size={18} aria-hidden="true" />
@@ -108,7 +108,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
           <ArrowLeft size={28} strokeWidth={2.4} />
         </button>
         <div className="min-w-0 flex-1 text-center">
-          <h1 className="truncate text-[16px] font-extrabold leading-5">{ticket.artist}</h1>
+          <h1 className="line-clamp-2 text-[16px] font-extrabold leading-5 break-words">{ticket.artist}</h1>
           <p className="mt-0.5 truncate text-[11px] leading-4 text-white/80">
             {dateLong(ticket.dateTime)} - {ticket.venue}
           </p>
