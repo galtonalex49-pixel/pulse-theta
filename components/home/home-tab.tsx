@@ -127,16 +127,16 @@ export function HomeTab() {
   const recent = browsed.length > 0 ? browsed : sections.trending.slice(0, 6)
 
   return (
-    <div className="relative h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
+    <div className="relative mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto pb-24 pt-[max(env(safe-area-inset-top),12px)]">
       <button
         type="button"
         onClick={() => setLocationSheetOpen(true)}
-        className="mb-6 flex w-full items-center gap-3 px-4 py-2 text-left"
+        className="mb-4 flex w-full items-center gap-2 px-4 py-1.5 text-left"
         aria-label={`Current location ${cityLine(location)}. Change location`}
       >
-        <MapPin size={24} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
-        <span className="min-w-0 truncate text-xl font-extrabold text-white/90">{cityLine(location)}</span>
-        <ChevronRight size={22} className="shrink-0 text-white/70" aria-hidden="true" />
+        <MapPin size={18} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
+        <span className="min-w-0 truncate text-[14px] font-bold leading-[18px] text-white/90">{cityLine(location)}</span>
+        <ChevronRight size={18} className="shrink-0 text-white/70" aria-hidden="true" />
       </button>
 
       <SearchBar value={query} onChange={setQuery} />
@@ -165,8 +165,8 @@ export function HomeTab() {
 
           {!sections.empty && (
             <>
-              <section className="mt-9" aria-label="For You">
-                <h2 className="mb-4 px-4 text-[22px] font-extrabold">For You</h2>
+              <section className="mt-4" aria-label="For You">
+                <h2 className="mb-2.5 px-4 text-base font-bold tracking-[-0.01em]">For You</h2>
                 <ForYouRail events={sections.forYou} />
               </section>
 
@@ -198,16 +198,16 @@ export function HomeTab() {
         <button
           type="button"
           onClick={() => setLocationSheetOpen(true)}
-          className="fixed bottom-[96px] z-20 flex w-[calc(min(100vw,480px)-32px)] items-center gap-4 rounded-full bg-white p-2 pr-6 text-left text-black shadow-2xl left-1/2 -translate-x-1/2"
+          className="fixed bottom-[68px] left-1/2 z-20 flex h-11 w-[88%] max-w-[379px] -translate-x-1/2 items-center gap-2 rounded-full bg-white px-2 pr-3 text-left text-black shadow-2xl"
         >
-          <span className="flex size-[54px] shrink-0 items-center justify-center rounded-full bg-tm-teal">
-            <MapPin size={26} className="fill-[#111] text-[#111]" aria-hidden="true" />
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-tm-teal">
+            <MapPin size={18} className="fill-[#111] text-[#111]" aria-hidden="true" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="text-lg font-extrabold leading-tight">Find Events Near You</span>
-            <span className="text-base leading-tight text-black/70">Set your location</span>
+            <span className="text-xs font-bold leading-tight">Find Events Near You</span>
+            <span className="text-[10px] leading-tight text-black/70">Set your location</span>
           </span>
-          <ArrowRight size={26} aria-hidden="true" />
+          <ArrowRight size={18} aria-hidden="true" />
         </button>
       )}
     </div>

@@ -24,7 +24,7 @@ function ActiveTab() {
 
 function AppContent() {
   return (
-    <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-tm-surface">
+    <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-surface">
       <main className="relative min-h-0 flex-1">
         <ActiveTab />
       </main>
