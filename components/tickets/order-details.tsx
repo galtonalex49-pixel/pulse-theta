@@ -108,26 +108,61 @@ function SeatCard({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][numb
   )
 }
 
+function ExtraCard({
+  tag,
+  title,
+  description,
+  action,
+  outlined = false,
+}: {
+  tag: string
+  title: string
+  description: string
+  action: string
+  outlined?: boolean
+}) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-[#1a1a1a] p-5 shadow-lg">
+      <span className="inline-flex rounded-md bg-tm-blue/20 px-3 py-1 text-xs font-extrabold tracking-wider text-tm-blue-light">{tag}</span>
+      <h2 className="mt-5 text-2xl font-extrabold">{title}</h2>
+      <p className="mt-2 text-base leading-snug text-white/60">{description}</p>
+      <button type="button" className={`mt-6 h-14 w-full rounded-lg text-base font-extrabold ${outlined ? 'border border-tm-blue-light text-tm-blue-light' : 'bg-tm-blue text-white'}`}>
+        {action}
+      </button>
+    </article>
+  )
+}
+
 export function OrderDetails({ ticket }: { ticket: Ticket }) {
   const { openSafetix } = useApp()
   const [scrolled, setScrolled] = useState(false)
   const [tab, setTab] = useState<'tickets' | 'extras'>('tickets')
   const [transferOpen, setTransferOpen] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [shareSaved, setShareSaved] = useState(false)
   const count = ticket.seats.length
 
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${ticket.lat},${ticket.lng}`
 
-  const share = async () => {
-    const text = `I'm going to ${ticket.artist} at ${ticket.venue}!`
+  const share = () => {
+    setShareSaved(false)
+    setShareOpen(true)
+  }
+
+  const saveShareCard = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: ticket.artist, text })
-      } else {
-        await navigator.clipboard.writeText(text)
-      }
+      const response = await fetch(ticket.posterUrl)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${ticket.artist.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-tickets.jpg`
+      link.click()
+      URL.revokeObjectURL(url)
     } catch {
-      /* user dismissed the share sheet */
+      // The preview card remains available even when a remote image blocks download.
     }
+    setShareSaved(true)
   }
 
   return (
@@ -272,11 +307,11 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </section>
           </div>
         ) : (
-          <div className="px-8 pb-44 pt-20 text-center">
-            <h2 className="text-2xl font-extrabold">No Extras Available</h2>
-            <p className="mt-3 text-lg text-white/60">
-              Parking, VIP upgrades and merchandise for this event will appear here.
-            </p>
+          <div className="space-y-5 px-4 pb-44 pt-8">
+            <ExtraCard tag="PARKING" title="Official Parking" description="Guaranteed spot near the venue" action="Add to Apple Wallet" />
+            <ExtraCard tag="UPGRADE" title="VIP Lounge Access" description="Private bar, restrooms, and early entry" action="View Details" outlined />
+            <ExtraCard tag="VENUE INFO" title="Bag Policy" description="Clear bag policy is in effect at this venue." action="View Info" outlined />
+            <ExtraCard tag="MERCH" title={`${ticket.artist} Merchandise`} description="Shop official event merchandise before doors open." action="Shop Merch" outlined />
           </div>
         )}
       </div>
@@ -308,6 +343,28 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
       </div>
 
       {transferOpen && <TransferModal ticket={ticket} onClose={() => setTransferOpen(false)} />}
+
+      {shareOpen && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 p-5" role="dialog" aria-modal="true" aria-labelledby="share-card-title">
+          <div className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-white/15 bg-[#151515] p-4 shadow-2xl">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-[#090909]">
+              <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top opacity-75" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/95" />
+              <div className="absolute inset-x-5 top-6 text-center">
+                <p className="text-2xl font-extrabold uppercase tracking-wide">I Got Tickets!</p>
+                <div className="mx-auto mt-3 h-0.5 w-2/3 bg-white/70" />
+              </div>
+              <div className="absolute inset-x-5 bottom-6">
+                <p className="text-xs font-extrabold uppercase tracking-wide text-white/70">{dateBadge(ticket.dateTime)}</p>
+                <h2 id="share-card-title" className="mt-3 text-2xl font-extrabold uppercase leading-tight">{ticket.artist}</h2>
+                <p className="mt-2 text-base text-white/70">{ticket.venue}</p>
+              </div>
+            </div>
+            <button type="button" onClick={saveShareCard} className="mt-4 h-14 w-full rounded-lg bg-tm-blue text-lg font-extrabold">{shareSaved ? 'Saved to Photos ✓' : 'Save to Photos'}</button>
+            <button type="button" onClick={() => setShareOpen(false)} className="mt-2 h-12 w-full text-base font-bold text-white/60">Close</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -24,7 +24,8 @@ function ActiveTab() {
 
 function ScaledApp() {
   const { appZoom } = useApp()
-  const scale = 0.7 + appZoom * 0.3
+  // Keep the app full-bleed while scaling its internal content, not the viewport.
+  const scale = 0.5 + appZoom * 0.5
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-tm-surface">
