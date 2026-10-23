@@ -25,10 +25,10 @@ export function EventCard({ ticket, onView, compact = false, past = false }: Eve
           {dateBadge(ticket.dateTime)}
         </span>
       </div>
-      <div className="px-6 pb-6 pt-3">
+      <div className="px-4 pb-4 pt-3">
         <h2
-          className={`line-clamp-3 break-words font-extrabold uppercase leading-[1.05] ${
-            compact ? 'text-[30px]' : 'text-[42px]'
+          className={`line-clamp-3 break-words font-extrabold uppercase leading-8 ${
+            compact ? 'text-[24px]' : 'text-[30px]'
           }`}
         >
           {ticket.artist}

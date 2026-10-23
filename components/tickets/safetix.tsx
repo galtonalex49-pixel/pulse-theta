@@ -12,21 +12,21 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const [refreshes, setRefreshes] = useState(0)
 
   return (
-    <li className="h-[380px] w-[280px] min-w-0 shrink-0 snap-center">
+    <li className="w-[82%] min-w-0 shrink-0 snap-center">
       <div className="overflow-hidden rounded-t-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
-          <span className="text-[30px] font-extrabold italic tracking-tight">ticketmaster</span>
+          <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
         <div className="relative">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={ticket.posterUrl}
             alt=""
-            className="h-[150px] w-full object-cover object-top"
+            className="h-[180px] w-full object-cover object-top"
           />
           <div className="absolute inset-x-3 top-3 rounded-xl bg-[#1c1c1c]/95 p-3 shadow-xl">
             <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 text-center text-lg">Screenshots won&apos;t get you in</p>
+              <p className="min-w-0 flex-1 text-center text-[13px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
               <button
                 type="button"
                 aria-label="Refresh barcode"
@@ -48,33 +48,33 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               />
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 max-w-[75%] bg-[#111] pb-4 pl-6 pr-6 pt-5">
-            <p className="text-[26px] font-extrabold leading-tight">{ticket.purchaseType}</p>
-            <p className="mt-1 text-xl text-white/70">Reserved Seating</p>
+          <div className="absolute bottom-0 left-0 max-w-[75%] bg-[#111] px-4 pb-3 pt-3">
+            <p className="truncate text-[16px] font-extrabold leading-5">{ticket.purchaseType}</p>
+            <p className="mt-0.5 truncate text-[13px] leading-5 text-white/70">Reserved Seating</p>
           </div>
         </div>
-        <div className="px-6 pb-8 pt-2">
-          <hr className="mx-auto mb-8 w-[80%] border-white/30" />
+        <div className="px-4 pb-5 pt-3">
+          <hr className="mx-auto mb-4 w-[80%] border-white/30" />
           <dl className="grid grid-cols-3">
             <div className="min-w-0">
-              <dt className="text-lg font-bold uppercase tracking-widest text-white/60">Section</dt>
-              <dd className="mt-3 truncate text-[44px] font-extrabold leading-none">{seat.section}</dd>
+              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Section</dt>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.section}</dd>
             </div>
             <div className="min-w-0">
-              <dt className="text-lg font-bold uppercase tracking-widest text-white/60">Row</dt>
-              <dd className="mt-3 truncate text-[44px] font-extrabold leading-none">{seat.row}</dd>
+              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Row</dt>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.row}</dd>
             </div>
             <div className="min-w-0 text-right">
-              <dt className="text-lg font-bold uppercase tracking-widest text-white/60">Seat</dt>
-              <dd className="mt-3 truncate text-[44px] font-extrabold leading-none">{seat.seat}</dd>
+              <dt className="text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-white/60">Seat</dt>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-7">{seat.seat}</dd>
             </div>
           </dl>
           <button
             type="button"
-            className="mt-10 flex h-[68px] w-full items-center justify-center gap-4 rounded-md bg-tm-blue-light text-2xl font-extrabold uppercase tracking-wide"
+            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[14px] font-extrabold uppercase tracking-wide"
           >
             Mobile Entry
-            <ArrowRight size={28} aria-hidden="true" />
+            <ArrowRight size={18} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -98,18 +98,18 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
 
   return (
     <div className="compact-screen mx-auto flex h-full w-full max-w-[430px] flex-col overflow-x-hidden bg-[#111]">
-      <header className="relative flex shrink-0 items-center justify-center px-16 pb-4 pt-[max(env(safe-area-inset-top),20px)]">
+      <header className="relative flex shrink-0 items-center justify-center px-12 pb-3 pt-[max(env(safe-area-inset-top),12px)]">
         <button
           type="button"
           onClick={backToLanding}
           aria-label="Back to My Events"
-          className="absolute left-5 top-[max(env(safe-area-inset-top),20px)] mt-1"
+          className="absolute left-3 top-[max(env(safe-area-inset-top),12px)] mt-1"
         >
-          <ArrowLeft size={36} strokeWidth={2.4} />
+          <ArrowLeft size={28} strokeWidth={2.4} />
         </button>
         <div className="min-w-0 flex-1 text-center">
-          <h1 className="truncate text-[24px] font-extrabold">{ticket.artist}</h1>
-          <p className="mt-1 truncate text-lg">
+          <h1 className="truncate text-[16px] font-extrabold leading-5">{ticket.artist}</h1>
+          <p className="mt-0.5 truncate text-[11px] leading-4 text-white/80">
             {dateLong(ticket.dateTime)} - {ticket.venue}
           </p>
         </div>
@@ -123,7 +123,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
             ref={scroller}
             onScroll={onScroll}
             aria-label="Tickets"
-            className="no-scrollbar flex h-full snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-auto px-[9%] pt-4"
+            className="no-scrollbar flex h-full snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-auto px-[9%] pt-2"
           >
             {ticket.seats.map((seat) => (
               <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
@@ -141,20 +141,20 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         </p>
       )}
 
-      <div className="flex shrink-0 items-center justify-between gap-4 border-t border-white/10 px-5 pb-[max(env(safe-area-inset-bottom),20px)] pt-4">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/10 px-4 pb-[max(env(safe-area-inset-bottom),10px)] pt-2">
         <button
           type="button"
           aria-label="Add to Apple Wallet"
           className="shrink-0 rounded-xl border border-white/10 bg-[#1a1a1a] p-3"
         >
-          <AppleWalletBadge className="h-[56px] w-auto rounded-lg" />
+          <AppleWalletBadge className="h-10 w-auto rounded-lg" />
         </button>
         <button
           type="button"
           className="flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-white text-[13px] font-extrabold"
         >
-          <span className="flex size-10 items-center justify-center rounded-full bg-white text-black">
-            <Info size={24} strokeWidth={3} aria-hidden="true" />
+          <span className="flex size-7 items-center justify-center rounded-full bg-white text-black">
+            <Info size={17} strokeWidth={3} aria-hidden="true" />
           </span>
           Ticket Info
         </button>
