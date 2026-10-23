@@ -22,18 +22,30 @@ function ActiveTab() {
   }
 }
 
+function ScaledApp() {
+  const { appZoom } = useApp()
+  const scale = 0.7 + appZoom * 0.3
+
+  return (
+    <div className="flex h-dvh w-full justify-center bg-black">
+      <div
+        className="app-scale relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-tm-surface"
+        style={{ zoom: scale }}
+      >
+        <main className="relative min-h-0 flex-1">
+          <ActiveTab />
+        </main>
+        <BottomNav />
+        <LocationSheet />
+      </div>
+    </div>
+  )
+}
+
 export function AppShell() {
   return (
     <AppProvider>
-      <div className="flex h-dvh w-full justify-center bg-black">
-        <div className="app-scale relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-tm-surface">
-          <main className="relative min-h-0 flex-1">
-            <ActiveTab />
-          </main>
-          <BottomNav />
-          <LocationSheet />
-        </div>
-      </div>
+      <ScaledApp />
     </AppProvider>
   )
 }
