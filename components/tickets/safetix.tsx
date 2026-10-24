@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useNow } from '@/lib/store'
 import { ArrowLeft, ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { dateLong } from '@/lib/format'
@@ -8,8 +9,40 @@ import type { Ticket } from '@/lib/types'
 import { AppleWalletBadge } from '../icons'
 import { Barcode } from './barcode'
 
+function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () => void }) {
+  const total = (ticket.ticketPrice ?? 0) + (ticket.serviceFee ?? 0)
+  const lines = [ticket.presenter, ticket.artist, ticket.venue, ticket.policyNotice, dateLong(ticket.dateTime)].filter(Boolean)
+  return (
+    <div className="absolute inset-0 z-50 overflow-y-auto bg-white text-[#202124]" role="dialog" aria-modal="true" aria-labelledby="ticket-details-title">
+      <header className="sticky top-0 flex items-center gap-4 bg-[#161923] px-5 py-4 text-white">
+        <button type="button" onClick={onClose} aria-label="Back"><ArrowLeft size={28} /></button>
+        <h2 id="ticket-details-title" className="text-xl font-bold">Ticket Details</h2>
+      </header>
+      <div className="divide-y divide-black/10 text-[16px]">
+        <section className="px-6 py-6"><h3 className="text-2xl font-extrabold uppercase">{ticket.artist}</h3><p className="mt-2 text-black/60">{dateLong(ticket.dateTime)} · {ticket.venue}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Entry Info</h3><p className="mt-2">{ticket.entryInfo || 'General Admission'}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Ticket Info</h3><pre className="mt-3 whitespace-pre-wrap font-mono text-[14px] leading-6">{lines.join('\\n')}</pre></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Venue</h3><p className="mt-2">{ticket.venueLocation || ticket.venue}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Order Number</h3><p className="mt-2 font-mono">{ticket.orderNumber || 'XXXXXXXXXX'}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Ticket Type</h3><p className="mt-2">{ticket.ticketTypeOverride || ticket.purchaseType}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Purchase Date</h3><p className="mt-2">{ticket.purchaseDate ? new Date(ticket.purchaseDate).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' }) : 'Not provided'}</p></section>
+        <section className="px-6 py-6"><div className="flex justify-between"><span>Ticket Price</span><span>${(ticket.ticketPrice ?? 0).toFixed(2)}</span></div><div className="mt-2 flex justify-between"><span>Service Fee</span><span>${(ticket.serviceFee ?? 0).toFixed(2)}</span></div><div className="mt-3 flex justify-between font-extrabold"><span>GRAND TOTAL</span><span>${total.toFixed(2)}</span></div></section>
+        <section className="px-6 py-6 text-sm text-black/60">By using this ticket, you agree to Ticketmaster&apos;s <a className="text-blue-600 underline" href="https://www.ticketmaster.com/legal/terms-of-use" target="_blank" rel="noreferrer">Terms of Use</a>. Tickets are non-refundable except as required by law. For full terms, visit <a className="text-blue-600 underline" href="https://www.ticketmaster.com" target="_blank" rel="noreferrer">Ticketmaster.com</a>.</section>
+      </div>
+    </div>
+  )
+}
+
 function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][number] }) {
   const [refreshes, setRefreshes] = useState(0)
+  const now = useNow(1000)
+  const eventTime = new Date(ticket.dateTime).getTime()
+  const locked = now ? eventTime - now.getTime() > 3 * 24 * 60 * 60 * 1000 : true
+  const remaining = Math.max(0, eventTime - (now?.getTime() ?? Date.now()))
+  const days = Math.floor(remaining / 86400000)
+  const hours = Math.floor((remaining % 86400000) / 3600000)
+  const minutes = Math.floor((remaining % 3600000) / 60000)
+  const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
     <li className="w-[82%] min-w-0 shrink-0 snap-center">
@@ -41,11 +74,9 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               </button>
             </div>
             <div className="relative mt-2 overflow-hidden px-1">
-              <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
-              <span
-                aria-hidden="true"
-                className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]"
-              />
+              {locked ? (
+                <div className="flex min-h-[76px] flex-col items-center justify-center text-center text-white/80"><span className="text-[11px] uppercase tracking-wide">Tickets Barcode will be ready in:</span><strong className="mt-1 font-mono text-xl text-white">{String(days).padStart(2, '0')} : {String(hours).padStart(2, '0')} : {String(minutes).padStart(2, '0')} : {String(seconds).padStart(2, '0')}</strong></div>
+              ) : <><Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} /><span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" /></>}
             </div>
           </div>
           <div className="absolute bottom-0 left-0 max-w-[78%] bg-[#111] px-3 pb-2 pt-2">
@@ -84,6 +115,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
 
 export function Safetix({ ticket }: { ticket: Ticket }) {
   const { backToLanding } = useApp()
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const scroller = useRef<HTMLUListElement>(null)
   const [index, setIndex] = useState(0)
   const total = ticket.seats.length
@@ -107,11 +139,9 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         >
           <ArrowLeft size={28} strokeWidth={2.4} />
         </button>
-        <div className="min-w-0 flex-1 text-center">
-          <h1 className="line-clamp-2 text-[16px] font-extrabold leading-5 break-words">{ticket.artist}</h1>
-          <p className="mt-0.5 truncate text-[11px] leading-4 text-white/80">
-            {dateLong(ticket.dateTime)} - {ticket.venue}
-          </p>
+        <div className="min-w-0 flex-1 overflow-hidden text-center">
+          <div className="overflow-hidden whitespace-nowrap"><div className="inline-block min-w-full animate-marquee text-[16px] font-extrabold">{ticket.artist} · {ticket.artist}</div></div>
+          <p className="mt-0.5 truncate text-[11px] leading-4 text-white/80">{dateLong(ticket.dateTime)} - {ticket.venue}</p>
         </div>
       </header>
 
@@ -151,6 +181,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         </button>
         <button
           type="button"
+          onClick={() => setDetailsOpen(true)}
           className="flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full border-2 border-white text-[13px] font-extrabold"
         >
           <span className="flex size-7 items-center justify-center rounded-full bg-white text-black">
@@ -159,6 +190,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
           Ticket Info
         </button>
       </div>
+      {detailsOpen && <TicketDetailsSheet ticket={ticket} onClose={() => setDetailsOpen(false)} />}
     </div>
   )
 }

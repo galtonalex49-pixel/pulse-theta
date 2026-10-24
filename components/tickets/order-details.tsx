@@ -81,7 +81,7 @@ function StickyHeader({ ticket, scrolled }: { ticket: Ticket; scrolled: boolean 
 function SeatCard({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][number] }) {
   return (
     <li className="mb-6">
-      <div className="bg-[#232323] px-3 py-2.5 text-[14px] font-bold leading-[18px]">{ticket.purchaseType}</div>
+      <div className="bg-[#232323] px-3 py-2.5 text-[14px] font-bold leading-[18px]">{ticket.ticketTypeOverride || ticket.purchaseType}</div>
       <div className="mt-0.5 grid grid-cols-3 bg-[#1a1a1a] px-3 py-2.5">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase leading-4 tracking-wide text-white/60">Section</p>

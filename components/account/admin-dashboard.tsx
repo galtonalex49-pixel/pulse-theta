@@ -270,6 +270,16 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             <NumberField label="Venue longitude" value={ticket.lng} min={-180} max={180} step={0.0001} onCommit={(v) => patch({ lng: v })} />
           </div>
           <Field label="Order number" value={ticket.orderNumber} onChange={(v) => patch({ orderNumber: v })} />
+          <Field label="Entry info" value={ticket.entryInfo ?? ''} onChange={(v) => patch({ entryInfo: v })} />
+          <Field label="Presenter" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
+          <Field label="Policy notice" value={ticket.policyNotice ?? ''} onChange={(v) => patch({ policyNotice: v })} />
+          <Field label="Venue location" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
+          <Field label="Purchase date" type="datetime-local" value={ticket.purchaseDate ?? ''} onChange={(v) => patch({ purchaseDate: v })} />
+          <Field label="Ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
+          <div className="grid grid-cols-2 gap-3">
+            <NumberField label="Ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
+            <NumberField label="Service fee" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />
+          </div>
           <div className="grid grid-cols-[110px_1fr] gap-3">
             <NumberField
               label="Quantity"
@@ -324,6 +334,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
         <h2 className="text-xl font-extrabold">Profile</h2>
         <Field label="Full name" value={profile.name} onChange={(v) => setProfile({ name: v })} />
         <Field label="Email" type="email" value={profile.email} onChange={(v) => setProfile({ email: v })} />
+        <Field label="Avatar initials" value={profile.initials} onChange={(v) => setProfile({ initials: v.toUpperCase().slice(0, 3) })} />
       </section>
 
       <section className="mt-10 px-4" aria-label="Master admin dashboard">

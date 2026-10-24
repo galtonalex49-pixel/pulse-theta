@@ -21,6 +21,13 @@ const SEED_TICKETS: Ticket[] = [
     orderNumber: '41-22907/PHL',
     quantity: 2,
     purchaseType: 'General Sale',
+    entryInfo: 'Reserved Seating',
+    presenter: 'LIVE NATION PRESENTS',
+    policyNotice: 'NO BAGS PERMITTED',
+    venueLocation: 'Philadelphia PA US',
+    purchaseDate: '2026-10-24T00:00',
+    ticketPrice: 89.5,
+    serviceFee: 26.25,
     lat: 39.9012,
     lng: -75.172,
     seats: [
@@ -69,6 +76,7 @@ const SEED_TICKETS: Ticket[] = [
 interface Profile {
   name: string
   email: string
+  initials: string
 }
 
 interface AppState {
@@ -144,8 +152,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfileState] = useState<Profile>({
     name: 'Lonnie Brew',
     email: 'galtonalex88@gmail.com',
+    initials: 'LB',
   })
   const [accountPage, setAccountPage] = useState<'main' | 'edit'>('main')
+  const [storageReady, setStorageReady] = useState(false)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ticketmaster-app-state')
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<{ tickets: Ticket[]; profile: Profile; location: City; recentLocations: City[] }>
+        if (Array.isArray(parsed.tickets)) setTickets(parsed.tickets)
+        if (parsed.profile) setProfileState((prev) => ({ ...prev, ...parsed.profile }))
+        if (parsed.location) setLocation(parsed.location)
+        if (Array.isArray(parsed.recentLocations)) setRecentLocations(parsed.recentLocations)
+      }
+    } catch {
+      // Ignore malformed device data and keep safe defaults.
+    } finally {
+      setStorageReady(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!storageReady) return
+    localStorage.setItem('ticketmaster-app-state', JSON.stringify({ tickets, profile, location, recentLocations }))
+  }, [tickets, profile, location, recentLocations, storageReady])
 
   const setTab = useCallback((next: TabId) => {
     setTabState(next)
@@ -172,6 +204,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       orderNumber: '00-00000/XX',
       quantity: 1,
       purchaseType: 'General Sale',
+      entryInfo: 'General Admission',
+      presenter: 'LIVE NATION PRESENTS',
+      policyNotice: 'NO BAGS PERMITTED',
+      venueLocation: 'New York NY US',
+      ticketPrice: 89.5,
+      serviceFee: 26.25,
       lat: 40.7505,
       lng: -73.9934,
       seats: [{ id: uid(), section: '101', row: '1', seat: '1', transferStatus: '' }],

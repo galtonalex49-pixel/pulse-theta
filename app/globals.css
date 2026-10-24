@@ -195,7 +195,14 @@ body {
   scrollbar-width: none;
 }
 
-@keyframes laser-sweep {
+ @keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+ }
+
+ .animate-marquee { animation: marquee 12s linear infinite; }
+
+ @keyframes laser-sweep {
   0% { left: 3%; }
   50% { left: 96%; }
   100% { left: 3%; }

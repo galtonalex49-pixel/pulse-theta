@@ -111,7 +111,7 @@ export function AccountTab() {
           aria-hidden="true"
           className="flex size-[84px] shrink-0 items-center justify-center rounded-full border-[5px] border-tm-blue text-[34px] font-extrabold"
         >
-          {initials(profile.name)}
+          {profile.initials || initials(profile.name)}
         </span>
         <div className="min-w-0">
           <h1 className="truncate text-[34px] font-extrabold leading-tight">{profile.name}</h1>

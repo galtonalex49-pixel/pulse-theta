@@ -36,6 +36,14 @@ export interface Ticket {
   orderNumber: string
   quantity: number
   purchaseType: string
+  entryInfo?: string
+  presenter?: string
+  policyNotice?: string
+  venueLocation?: string
+  ticketTypeOverride?: string
+  purchaseDate?: string
+  ticketPrice?: number
+  serviceFee?: number
   seats: Seat[]
   lat: number
   lng: number
