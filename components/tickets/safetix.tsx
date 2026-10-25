@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ArrowLeft, ArrowRight, Info, RefreshCw } from 'lucide-react'
-import { useApp } from '@/lib/store'
+import { useApp, useNow } from '@/lib/store'
 import { dateLong } from '@/lib/format'
 import type { Ticket } from '@/lib/types'
 import { AppleWalletBadge } from '../icons'
@@ -36,6 +36,14 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
 
 function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][number] }) {
   const [refreshes, setRefreshes] = useState(0)
+  const now = useNow(1000)
+  const eventTime = new Date(ticket.dateTime).getTime()
+  const remaining = Math.max(0, eventTime - (now?.getTime() ?? Date.now()))
+  const locked = remaining > 3 * 24 * 60 * 60 * 1000
+  const days = Math.floor(remaining / 86400000)
+  const hours = Math.floor((remaining % 86400000) / 3600000)
+  const minutes = Math.floor((remaining % 3600000) / 60000)
+  const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
     <li className="w-[82%] min-w-0 shrink-0 snap-center px-1">
@@ -46,7 +54,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="relative">
           <img src={ticket.posterUrl} alt="" className="h-[260px] w-full object-cover object-top" />
-          <div className="absolute inset-x-3 top-7 rounded-xl bg-[#1c1c1c]/95 px-3 py-5 shadow-xl">
+          <div className="absolute inset-x-3 top-7 rounded-xl bg-[#1c1c1c]/95 px-3 py-4 shadow-xl">
             <div className="flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 text-center text-[14px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
               <button type="button" aria-label="Refresh barcode" onClick={() => setRefreshes((r) => r + 1)} className="shrink-0 text-white">
@@ -54,8 +62,21 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               </button>
             </div>
             <div className="relative mt-5 overflow-hidden px-1">
-              <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
-              <span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" />
+              {locked ? (
+                <div className="flex min-h-[112px] flex-col items-center justify-center text-center text-white">
+                  <span className="text-[10px] uppercase tracking-[0.12em] text-white/75">Tickets barcode will be ready in:</span>
+                  <div className="mt-2 grid grid-cols-4 gap-2 font-mono text-xl font-bold">
+                    {([['DAY', days], ['HOUR', hours], ['MIN', minutes], ['SEC', seconds]] as const).map(([label, value]) => (
+                      <span key={label}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] font-sans tracking-[0.12em] text-white/60">{label}</small></span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
+                  <span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" />
+                </>
+              )}
             </div>
           </div>
         </div>
