@@ -53,8 +53,8 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="relative">
-          <img src={ticket.posterUrl} alt="" className="h-[300px] w-full object-cover object-top" />
-          <div className="absolute inset-x-3 top-7 rounded-xl bg-[#1c1c1c]/95 px-3 py-4 shadow-xl">
+          <img src={ticket.posterUrl} alt="" className="h-[220px] w-full object-cover object-top" />
+          <div className="absolute inset-x-3 top-5 rounded-xl bg-[#1c1c1c]/95 px-3 py-3 shadow-xl">
             <div className="flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 text-center text-[14px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
               <button type="button" aria-label="Refresh barcode" onClick={() => setRefreshes((r) => r + 1)} className="shrink-0 text-white">
@@ -63,7 +63,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
             </div>
             <div className="relative mt-5 overflow-hidden px-1">
               {locked ? (
-                <div className="flex min-h-[112px] flex-col items-center justify-center text-center text-white">
+                <div className="flex min-h-[86px] flex-col items-center justify-center text-center text-white">
                   <span className="text-[10px] uppercase tracking-[0.12em] text-white/75">Tickets barcode will be ready in:</span>
                   <div className="mt-2 grid grid-cols-4 gap-2 font-mono text-xl font-bold">
                     {([['DAY', days], ['HOUR', hours], ['MIN', minutes], ['SEC', seconds]] as const).map(([label, value]) => (
@@ -80,25 +80,25 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
             </div>
           </div>
         </div>
-        <div className="px-3 pb-5 pt-4">
-          <hr className="mx-auto mb-5 w-[90%] border-white/30" />
+        <div className="px-3 pb-3 pt-3">
+          <hr className="mx-auto mb-3 w-[90%] border-white/30" />
           <dl className="grid grid-cols-3 gap-3 px-1">
             <div className="min-w-0">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Section</dt>
-              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.section}</dd>
+              <dd className="mt-1 truncate text-[22px] font-extrabold leading-7">{seat.section}</dd>
             </div>
             <div className="min-w-0">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Row</dt>
-              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.row}</dd>
+              <dd className="mt-1 truncate text-[22px] font-extrabold leading-7">{seat.row}</dd>
             </div>
             <div className="min-w-0 text-right">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Seat</dt>
-              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.seat}</dd>
+              <dd className="mt-1 truncate text-[22px] font-extrabold leading-7">{seat.seat}</dd>
             </div>
           </dl>
           <button
             type="button"
-            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[13px] font-extrabold uppercase tracking-wide"
+            className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[12px] font-extrabold uppercase tracking-wide"
           >
             Mobile Entry
             <ArrowRight size={18} aria-hidden="true" />
@@ -135,12 +135,12 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         </button>
         <div className="min-w-0 flex-1 overflow-hidden text-center">
           <div className="overflow-hidden whitespace-nowrap">
-            <div className="inline-flex min-w-full animate-marquee gap-8 text-[20px] font-extrabold leading-6">
+            <div className="inline-flex animate-marquee gap-8 whitespace-nowrap text-[20px] font-extrabold leading-6">
               <span>{ticket.artist}</span><span aria-hidden="true">{ticket.artist}</span>
             </div>
           </div>
           <div className="overflow-hidden whitespace-nowrap">
-            <div className="inline-flex min-w-full animate-marquee-slow gap-8 text-[13px] leading-5 text-white/80">
+            <div className="inline-flex animate-marquee-slow gap-8 whitespace-nowrap text-[13px] leading-5 text-white/80">
               <span>{dateLong(ticket.dateTime)} - {ticket.venue}</span><span aria-hidden="true">{dateLong(ticket.dateTime)} - {ticket.venue}</span>
             </div>
           </div>
