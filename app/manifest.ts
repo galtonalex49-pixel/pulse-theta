@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/app-icon.jpeg',
         sizes: '341x341',
         type: 'image/jpeg',
-        purpose: 'any maskable',
+        purpose: 'any',
       },
     ],
   }
