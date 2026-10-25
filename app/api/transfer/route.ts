@@ -38,7 +38,7 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
       <tr><td align="center">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
           <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
-          <tr><td align="center" style="padding:28px 24px 22px;font-size:24px;font-weight:700;letter-spacing:.4px;color:#123b78">Event Transfer</td></tr>
+          <tr><td align="center" style="padding:28px 24px 22px;font-size:24px;font-weight:700;letter-spacing:.4px;color:#123b78">Ticketmarter Transfer</td></tr>
           <tr><td style="padding:12px 32px 8px;text-align:center;font-size:26px;line-height:1.3;font-weight:700">${safeSenderName} transferred tickets to you</td></tr>
           <tr><td style="padding:0 32px 24px;text-align:center;font-size:18px;line-height:1.45;color:#344054">${safeEventName}</td></tr>
           <tr><td style="padding:0 32px 28px">
@@ -53,7 +53,7 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
           <tr><td style="padding:0 32px 28px;font-size:16px;line-height:1.65"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
           <tr><td style="padding:0 32px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7"><tr><td style="padding:26px"><div style="height:150px;background:linear-gradient(135deg,#173b72,#2d72c7);text-align:center;line-height:150px;color:#fff;font-size:18px;font-weight:700">${safeEventName}</div><p style="margin:24px 0 8px;font-size:20px;font-weight:700">${safeEventName}</p><p style="margin:0;color:#667085;line-height:1.6">${safeEventDate}<br>${safeVenue}<br>${safeSeats}</p><a href="${safeEventUrl}" style="display:block;margin-top:24px;background:#1769e0;color:#fff;text-align:center;text-decoration:none;padding:16px;font-weight:700;font-size:16px">ACCEPT TICKETS</a></td></tr></table></td></tr>
           <tr><td style="padding:0 32px 28px;color:#667085;font-size:13px;line-height:1.6">By accepting, you agree to the applicable event terms. If you did not expect this transfer, you can ignore this email.<br><br><strong>This email is NOT your ticket.</strong></td></tr>
-          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:13px;line-height:1.5">Support: 707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
+          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:13px;line-height:1.5">Ticketmarter Support<br>707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
         </table>
       </td></tr>
     </table>
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         method: 'POST',
         headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: `Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>`,
+          from: `Ticketmarter Transfer <transfers@ticketmaster.bbroot.com>`,
           to: [recipientEmail],
           subject: linkedTemplate?.subject || `You received tickets from ${senderName}`,
           html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }),
