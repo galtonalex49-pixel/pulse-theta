@@ -3,12 +3,11 @@ import { NextResponse } from 'next/server'
 
 const sender = 'Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>'
 
-// These are the project variables already provisioned for this preview.
 // Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
 const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KE
-const supabaseSecret = process.env.SUPABASE_SECRE
-const resendKey = process.env.RESEND
+const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY
+const supabaseSecret = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
+const resendKey = process.env.RESEND_API_KEY ?? process.env.RESEND
 
 export const runtime = 'nodejs'
 
