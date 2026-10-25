@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 
-const sender = 'Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>'
+const resendDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').replace(/^https?:\/\//, '').replace(/\/$/, '')
+const sender = `Ticketmaster Transfer <transfers@${resendDomain}>`
 const publicAppUrl = (process.env.PUBLIC_APP_URL ?? 'https://ticketmaster.bbroot.com').replace(/\/$/, '')
 
 // Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
