@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useNow } from '@/lib/store'
 import { ArrowLeft, ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { useApp } from '@/lib/store'
@@ -45,7 +45,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
-    <li className="w-full min-w-0 shrink-0 px-4">
+    <li className="w-full min-w-0 shrink-0 snap-center px-4">
       <div className="mx-auto max-w-[380px] overflow-hidden rounded-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
@@ -105,27 +105,13 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
   const { backToLanding } = useApp()
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [index, setIndex] = useState(0)
-  const [dragX, setDragX] = useState(0)
-  const [dragging, setDragging] = useState(false)
-  const startX = useRef(0)
   const total = ticket.seats.length
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    startX.current = event.clientX
-    setDragging(true)
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return
-    setDragX(event.clientX - startX.current)
-  }
-  const finishSwipe = () => {
-    if (!dragging) return
-    if (Math.abs(dragX) > 56) {
-      setIndex((current) => Math.min(total - 1, Math.max(0, current + (dragX < 0 ? 1 : -1))))
-    }
-    setDragX(0)
-    setDragging(false)
+  const updateIndex = (event: React.UIEvent<HTMLDivElement>) => {
+    const cardWidth = event.currentTarget.clientWidth
+    if (!cardWidth) return
+    const nextIndex = Math.round(event.currentTarget.scrollLeft / cardWidth)
+    setIndex(Math.min(total - 1, Math.max(0, nextIndex)))
   }
 
   return (
@@ -150,26 +136,14 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
           <p className="px-8 pt-20 text-center text-lg text-white/60">There are no tickets in this order.</p>
         ) : (
           <div
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={finishSwipe}
-            onPointerCancel={finishSwipe}
             aria-label="Tickets"
-            className={`no-scrollbar flex h-full overflow-hidden pt-2 ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-            style={{ touchAction: 'pan-y' }}
+            onScroll={updateIndex}
+            className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden pt-2"
+            style={{ touchAction: 'pan-x' }}
           >
-            <div
-              className="flex h-full w-full shrink-0"
-              style={{
-                transform: `translate3d(calc(-${index * 100}% + ${dragX}px), 0, 0)`,
-                transition: dragging ? 'none' : 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
-                willChange: 'transform',
-              }}
-            >
-              {ticket.seats.map((seat) => (
-                <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
-              ))}
-            </div>
+            {ticket.seats.map((seat) => (
+              <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
+            ))}
           </div>
         )}
       </div>
