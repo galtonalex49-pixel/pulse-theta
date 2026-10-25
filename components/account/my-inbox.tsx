@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, Pencil, Save, Trash2 } from 'lucide-react'
 import { useApp } from '@/lib/store'
 
-type Template = { id: string; ticket_id: string; event_name: string; template_name: string; sender_name: string; recipient_name: string; recipient_email: string; event_date: string; venue: string; seat_info: string; event_url: string; subject: string; html: string }
+type Template = { id: string; ticket_id: string; event_name: string; template_name: string; banner_image?: string; sender_name: string; recipient_name: string; recipient_email: string; event_date: string; venue: string; seat_info: string; event_url: string; subject: string; html: string }
 
 export function MyInbox({ onBack }: { onBack: () => void }) {
-  const { profile } = useApp()
+  const { profile, tickets } = useApp()
   const [templates, setTemplates] = useState<Template[]>([])
   const [selected, setSelected] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
@@ -15,9 +15,12 @@ export function MyInbox({ onBack }: { onBack: () => void }) {
 
   const load = async () => {
     const response = await fetch(`/api/transfer/templates?ownerEmail=${encodeURIComponent(profile.email)}`, { cache: 'no-store' })
-    if (response.ok) setTemplates((await response.json()).templates ?? [])
+    if (response.ok) {
+      const activeIds = new Set(tickets.map((ticket) => ticket.id))
+      setTemplates(((await response.json()).templates ?? []).filter((template: Template) => activeIds.has(template.ticket_id)))
+    }
   }
-  useEffect(() => { void load() }, [profile.email])
+  useEffect(() => { void load() }, [profile.email, tickets])
 
   const save = async (template: Template) => {
     await fetch('/api/transfer/templates', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: template.id, ownerEmail: profile.email, ...draft }) })

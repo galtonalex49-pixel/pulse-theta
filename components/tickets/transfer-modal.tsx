@@ -162,6 +162,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
           ticketId: ticket.id,
           ownerEmail: profile.email,
           eventUrl: `${window.location.origin}/tickets/${ticket.id}`,
+          bannerImage: ticket.posterUrl,
           recipientEmail: email.trim(),
           email: email.trim(),
           senderName,
