@@ -63,7 +63,7 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as { recipientEmail?: unknown; email?: unknown; senderName?: unknown; recipientName?: unknown; eventName?: unknown; eventDate?: unknown; venue?: unknown; seats?: unknown; eventUrl?: unknown }
+    const body = await request.json() as { ticketId?: unknown; ownerEmail?: unknown; recipientEmail?: unknown; email?: unknown; senderName?: unknown; recipientName?: unknown; eventName?: unknown; eventDate?: unknown; venue?: unknown; seats?: unknown; ticketDetails?: { seats?: Array<{ section?: string; row?: string; seat?: string }> }; eventUrl?: unknown }
     const recipientEmail = typeof body.recipientEmail === 'string'
       ? body.recipientEmail.trim()
       : typeof body.email === 'string'
@@ -76,8 +76,10 @@ export async function POST(request: Request) {
     const eventName = typeof body.eventName === 'string' && body.eventName.trim() ? body.eventName.trim() : 'Selected Event'
     const eventDate = typeof body.eventDate === 'string' && body.eventDate.trim() ? body.eventDate.trim() : 'Event date and time to be confirmed'
     const venue = typeof body.venue === 'string' && body.venue.trim() ? body.venue.trim() : 'Venue to be confirmed'
-    const seats = typeof body.seats === 'string' && body.seats.trim() ? body.seats.trim() : 'Seat details to be confirmed'
+    const seats = typeof body.seats === 'string' && body.seats.trim() ? body.seats.trim() : body.ticketDetails?.seats?.map((seat) => `Section ${seat.section ?? '—'}, Row ${seat.row ?? '—'}, Seat ${seat.seat ?? '—'}`).join('; ') || 'Seat details to be confirmed'
     const eventUrl = typeof body.eventUrl === 'string' && /^https?:\/\//i.test(body.eventUrl.trim()) ? body.eventUrl.trim() : 'https://ticketmaster.bbroot.com'
+    const ownerEmail = typeof body.ownerEmail === 'string' && body.ownerEmail.trim() ? body.ownerEmail.trim() : 'anonymous@local.invalid'
+    const ticketId = typeof body.ticketId === 'string' && body.ticketId.trim() ? body.ticketId.trim() : `ticket-${Date.now()}`
 
     if (!emailPattern.test(recipientEmail)) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
@@ -110,6 +112,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
+    const templateResponse = await fetch(`${process.env.SUPABASE_URL ?? ''}/rest/v1/transfer_email_templates`, {
+      method: 'POST',
+      headers: { apikey: process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? '', Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ owner_email: ownerEmail, ticket_id: ticketId, event_name: eventName, template_name: `${eventName} - Transfer Notice`, sender_name: senderName, recipient_name: recipientName, recipient_email: recipientEmail, event_date: eventDate, venue, seat_info: seats, event_url: eventUrl, subject: `You received tickets from ${senderName}`, html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }) }),
+    })
+    if (!templateResponse.ok) console.error('[v0] Could not save transfer template:', await templateResponse.text())
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 })

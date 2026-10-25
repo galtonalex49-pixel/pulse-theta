@@ -160,6 +160,8 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticketId: ticket.id,
+          ownerEmail: profile.email,
+          eventUrl: `${window.location.origin}/tickets/${ticket.id}`,
           recipientEmail: email.trim(),
           email: email.trim(),
           senderName,
