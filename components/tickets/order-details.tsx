@@ -14,7 +14,7 @@ import {
 import { useApp } from '@/lib/store'
 import { dateBadge } from '@/lib/format'
 import type { Ticket } from '@/lib/types'
-import { TicketCountIcon } from '../icons'
+import { DualTicketIcon } from '../icons'
 import { TransferModal } from './transfer-modal'
 
 const TicketMap = dynamic(() => import('./ticket-map'), {
@@ -188,7 +188,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             <div className="mt-5 flex items-center justify-between gap-3">
               <p className="min-w-0 truncate text-xl text-white/70">{ticket.venue}</p>
               <span className="flex shrink-0 items-center gap-2 text-xl font-bold">
-                <TicketCountIcon size={22} />
+                <DualTicketIcon size={22} />
                 x{count}
               </span>
             </div>

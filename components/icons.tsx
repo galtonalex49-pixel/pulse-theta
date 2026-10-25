@@ -5,9 +5,11 @@ interface IconProps {
 
 export function DualTicketIcon({ size = 18, className }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
-      <path d="M4 6h16a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V8a2 2 0 0 1 2-2z" />
-      <path d="M10 6v12" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <rect x="7" y="3" width="11" height="15" rx="1.5" transform="rotate(8 12.5 10.5)" />
+      <rect x="4" y="5" width="11" height="15" rx="1.5" fill="#0A0A0A" />
+      <rect x="6.5" y="8" width="6" height="4" rx="0.5" strokeWidth="1.2" />
+      <line x1="8" y1="10" x2="11" y2="10" strokeWidth="1" />
     </svg>
   )
 }

@@ -1,6 +1,6 @@
 import { dateBadge } from '@/lib/format'
 import type { Ticket } from '@/lib/types'
-import { TicketCountIcon } from '../icons'
+import { DualTicketIcon } from '../icons'
 
 interface EventCardProps {
   ticket: Ticket
@@ -37,7 +37,7 @@ export function EventCard({ ticket, onView, compact = false, past = false }: Eve
         <div className="flex items-center justify-between gap-3">
           <p className="min-w-0 truncate text-lg font-bold">{ticket.venue}</p>
           <span className="flex shrink-0 items-center gap-2 text-lg font-bold text-white/90">
-            <TicketCountIcon size={20} />
+            <DualTicketIcon size={20} />
             <span>x{count}</span>
           </span>
         </div>

@@ -6,7 +6,7 @@ import { ArrowDown, ArrowLeft, ArrowUp, Plus, Search, Trash2 } from 'lucide-reac
 import { resizeSeats, useApp } from '@/lib/store'
 import { dateBadge } from '@/lib/format'
 import type { Seat, TMEvent, Ticket } from '@/lib/types'
-import { TicketCountIcon } from '../icons'
+import { DualTicketIcon } from '../icons'
 
 const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
   try {
@@ -198,6 +198,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
       venue: event.venue || ticket.venue,
       posterUrl: event.image ?? ticket.posterUrl,
       dateTime: event.dateTime ?? ticket.dateTime,
+      purchaseDate: event.dateTime ? new Date(new Date(event.dateTime).getTime() - 7 * 86400000).toISOString().slice(0, 16) : ticket.purchaseDate,
       venueLocation: [event.city, event.countryCode].filter(Boolean).join(', '),
       presenter: event.promoter ? `${event.promoter.toUpperCase()} PRESENTS` : ticket.presenter,
       orderNumber: `${String(eventCode).padStart(5, '0')}/${cityCode}`,
@@ -227,7 +228,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           <h3 className="truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
           <p className="flex items-center gap-2 truncate text-sm text-white/60">
             <span className="truncate">{ticket.venue}</span>
-            <TicketCountIcon size={16} className="shrink-0" />
+            <DualTicketIcon size={16} className="shrink-0" />
             <span className="shrink-0">x{ticket.seats.length}</span>
           </p>
         </div>

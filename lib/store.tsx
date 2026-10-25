@@ -26,7 +26,7 @@ const SEED_TICKETS: Ticket[] = [
     presenter: 'LIVE NATION PRESENTS',
     policyNotice: 'NO BAGS PERMITTED',
     venueLocation: 'Philadelphia PA US',
-    purchaseDate: '2026-10-24T00:00',
+    purchaseDate: '2026-10-18T00:00',
     ticketPrice: 89.5,
     serviceFee: 26.25,
     lat: 39.9012,
