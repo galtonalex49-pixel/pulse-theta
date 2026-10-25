@@ -83,7 +83,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const resendKey = process.env.RESEND ?? process.env.RESEND_API_KEY
+    // Prefer the verified Resend account key; RESEND may point to an older account.
+    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
     if (!resendKey) return NextResponse.json({ error: 'RESEND is not configured.' }, { status: 503 })
 
     let response: Response
