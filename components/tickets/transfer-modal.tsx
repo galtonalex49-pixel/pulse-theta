@@ -151,9 +151,15 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
   const complete = async () => {
     setSending(true)
     setSendError('')
-    const response = await fetch('/api/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: ticket.id, recipientEmail: email.trim(), eventName: ticket.artist, eventDate: dateBadge(ticket.dateTime), venue: ticket.venue, ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber } }) })
-    const data = await response.json()
-    if (!response.ok) { setSendError(data.error || 'Unable to send transfer.'); setSending(false); return }
+    try {
+      const response = await fetch('/api/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: ticket.id, recipientEmail: email.trim(), eventName: ticket.artist, eventDate: dateBadge(ticket.dateTime), venue: ticket.venue, ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber } }) })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) { setSendError(data.error || 'Unable to send transfer.'); setSending(false); return }
+    } catch {
+      setSendError('Unable to reach the transfer service. Please try again.')
+      setSending(false)
+      return
+    }
     const label = `${first.trim()} ${last.trim().charAt(0)}`.toUpperCase()
     updateTicket(ticket.id, { seats: ticket.seats.map((s) => selected.has(s.id) ? { ...s, transferStatus: `Transfer Pending: ${label}` } : s) })
     setSending(false)

@@ -149,19 +149,15 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
     setShareOpen(true)
   }
 
-  const saveShareCard = async () => {
-    try {
-      const response = await fetch(ticket.posterUrl)
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${ticket.artist.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-tickets.jpg`
-      link.click()
-      URL.revokeObjectURL(url)
-    } catch {
-      // The preview card remains available even when a remote image blocks download.
-    }
+  const saveShareCard = () => {
+    const link = document.createElement('a')
+    link.href = ticket.posterUrl
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    link.download = `${ticket.artist.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-tickets.jpg`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
     setShareSaved(true)
   }
 
