@@ -226,6 +226,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       venueLocation: '',
       ticketPrice: 89.5,
       serviceFee: 26.25,
+      currency: 'USD',
       lat: 40.7505,
       lng: -73.9934,
       seats: [{ id: uid(), section: '101', row: '1', seat: '1', transferStatus: '' }],

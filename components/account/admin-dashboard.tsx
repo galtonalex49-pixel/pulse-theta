@@ -190,17 +190,21 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
   const [open, setOpen] = useState(defaultOpen)
   const patch = (p: Partial<Ticket>) => updateTicket(ticket.id, p)
 
-  const applyEvent = (event: TMEvent) =>
+  const applyEvent = (event: TMEvent) => {
+    const cityCode = (event.city || 'CITY').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase().padEnd(3, 'X')
+    const eventCode = Array.from(event.id).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 100000
     patch({
       artist: event.name,
       venue: event.venue || ticket.venue,
       posterUrl: event.image ?? ticket.posterUrl,
       dateTime: event.dateTime ?? ticket.dateTime,
-      venueLocation: [event.venueLocation || event.venue, event.city, event.state, event.countryCode].filter(Boolean).join(', '),
+      venueLocation: [event.city, event.countryCode].filter(Boolean).join(', '),
       presenter: event.promoter ? `${event.promoter.toUpperCase()} PRESENTS` : ticket.presenter,
+      orderNumber: `${String(eventCode).padStart(5, '0')}/${cityCode}`,
       lat: event.lat ?? ticket.lat,
       lng: event.lng ?? ticket.lng,
     })
+  }
 
   const editSeat = (id: string, p: Partial<Seat>) =>
     patch({ seats: ticket.seats.map((s) => (s.id === id ? { ...s, ...p } : s)) })
@@ -286,7 +290,8 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             </select>
           </label>
           <Field label="Custom ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Currency" value={ticket.currency ?? 'USD'} onChange={(v) => patch({ currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) })} />
             <NumberField label="Ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
             <NumberField label="Service fee" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />
           </div>

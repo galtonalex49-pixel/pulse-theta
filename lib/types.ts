@@ -46,6 +46,7 @@ export interface Ticket {
   purchaseDate?: string
   ticketPrice?: number
   serviceFee?: number
+  currency?: string
   seats: Seat[]
   lat: number
   lng: number

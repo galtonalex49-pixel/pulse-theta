@@ -9,6 +9,8 @@ import { AppleWalletBadge } from '../icons'
 import { Barcode } from './barcode'
 
 function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () => void }) {
+  const currency = (ticket.currency || 'USD').toUpperCase()
+  const formatMoney = (value: number) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
   const total = (ticket.ticketPrice ?? 0) + (ticket.serviceFee ?? 0)
   const lines = [ticket.presenter ? `${ticket.presenter.replace(/\s+PRESENTS$/i, '')} PRESENTS` : '', ticket.artist, ticket.venue, ticket.policyNotice, dateLong(ticket.dateTime)].filter(Boolean)
   const ticketType = ticket.ticketTypeOverride || ticket.purchaseType
@@ -27,7 +29,7 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
         <section className="px-6 py-6"><h3 className="font-bold">Order Number</h3><p className="mt-2 font-mono">{ticket.orderNumber ? `${ticket.orderNumber.slice(0, 3)}******/${ticket.orderNumber.split('/')[1] ?? 'XX'}` : 'XXXXXXXXXX'}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">Ticket Type</h3><p className="mt-2">{ticketType}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">Purchase Date</h3><p className="mt-2">{purchaseDate}</p></section>
-        <section className="px-6 py-6"><div className="flex justify-between"><span>Ticket Price</span><span>${(ticket.ticketPrice ?? 0).toFixed(2)}</span></div><div className="mt-2 flex justify-between"><span>Service Fee</span><span>${(ticket.serviceFee ?? 0).toFixed(2)}</span></div><div className="mt-3 flex justify-between font-extrabold"><span>GRAND TOTAL</span><span>${total.toFixed(2)}</span></div></section>
+        <section className="px-6 py-6"><div className="flex justify-between"><span>Ticket Price</span><span>{formatMoney(ticket.ticketPrice ?? 0)}</span></div><div className="mt-2 flex justify-between"><span>Service Fee</span><span>{formatMoney(ticket.serviceFee ?? 0)}</span></div><div className="mt-3 flex justify-between font-extrabold"><span>GRAND TOTAL</span><span>{formatMoney(total)}</span></div></section>
         <section className="px-6 py-6 text-sm text-black/60">By using this ticket, you agree to Ticketmaster&apos;s <a className="text-blue-600 underline" href="https://www.ticketmaster.com/legal/terms-of-use" target="_blank" rel="noreferrer">Terms of Use</a>. Tickets are non-refundable except as required by law. For full terms, visit <a className="text-blue-600 underline" href="https://www.ticketmaster.com" target="_blank" rel="noreferrer">Ticketmaster.com</a>.</section>
       </div>
     </div>
