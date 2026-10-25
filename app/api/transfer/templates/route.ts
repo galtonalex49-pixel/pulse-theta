@@ -19,9 +19,11 @@ export async function POST(request: Request) {
     sender_name: String(body.senderName ?? 'Account Holder'), recipient_name: '', recipient_email: '', event_date: String(body.eventDate ?? 'Event date and time to be confirmed'), venue: String(body.venue ?? 'Venue to be confirmed'), seat_info: String(body.seatInfo ?? 'Seat details to be confirmed'), event_url: String(body.eventUrl ?? ''), banner_image: String(body.bannerImage ?? ''), subject: `Ticket transfer for ${body.eventName}`,
     html: renderTemplate({ senderName: String(body.senderName ?? 'Account Holder'), recipientName: 'Ticket Recipient', eventName: String(body.eventName), eventDate: String(body.eventDate ?? 'Event date and time to be confirmed'), venue: String(body.venue ?? 'Venue to be confirmed'), seatInfo: String(body.seatInfo ?? 'Seat details to be confirmed'), eventUrl: String(body.eventUrl ?? ''), bannerImage: String(body.bannerImage ?? '') }),
   }
-  const response = await fetch(endpoint(), { method: 'POST', headers, body: JSON.stringify(values) })
+  const existingResponse = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(values.owner_email)}&ticket_id=eq.${encodeURIComponent(values.ticket_id)}&select=id&limit=1`), { headers, cache: 'no-store' })
+  const existing = existingResponse.ok ? (await existingResponse.json() as Array<{ id: string }>)[0] : undefined
+  const response = await fetch(endpoint(existing ? `?id=eq.${encodeURIComponent(existing.id)}` : ''), { method: existing ? 'PATCH' : 'POST', headers, body: JSON.stringify({ ...values, updated_at: new Date().toISOString() }) })
   if (!response.ok) return NextResponse.json({ error: 'Unable to create template.' }, { status: 502 })
-  return NextResponse.json({ template: (await response.json())[0] })
+  return NextResponse.json({ template: existing ? { ...values, id: existing.id } : (await response.json())[0] })
 }
 
 export async function GET(request: Request) {

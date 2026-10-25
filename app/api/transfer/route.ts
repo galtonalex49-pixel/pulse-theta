@@ -80,7 +80,16 @@ export async function POST(request: Request) {
     const eventUrl = typeof body.eventUrl === 'string' && /^https?:\/\//i.test(body.eventUrl.trim()) ? body.eventUrl.trim() : 'https://ticketmaster.bbroot.com'
     const ownerEmail = typeof body.ownerEmail === 'string' && body.ownerEmail.trim() ? body.ownerEmail.trim() : 'anonymous@local.invalid'
     const ticketId = typeof body.ticketId === 'string' && body.ticketId.trim() ? body.ticketId.trim() : `ticket-${Date.now()}`
-    const bannerImage = typeof body.bannerImage === 'string' ? body.bannerImage.trim() : ''
+    let bannerImage = typeof body.bannerImage === 'string' ? body.bannerImage.trim() : ''
+    const supabaseKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+    const supabaseHeaders = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }
+    const templateEndpoint = `${process.env.SUPABASE_URL ?? ''}/rest/v1/transfer_email_templates`
+    let linkedTemplate: { id: string; banner_image?: string; subject?: string } | null = null
+    if (supabaseKey && process.env.SUPABASE_URL) {
+      const lookup = await fetch(`${templateEndpoint}?owner_email=eq.${encodeURIComponent(ownerEmail)}&ticket_id=eq.${encodeURIComponent(ticketId)}&select=id,banner_image,subject&limit=1`, { headers: supabaseHeaders, cache: 'no-store' })
+      if (lookup.ok) linkedTemplate = ((await lookup.json()) as Array<{ id: string; banner_image?: string; subject?: string }>)[0] ?? null
+      if (linkedTemplate?.banner_image) bannerImage = linkedTemplate.banner_image
+    }
 
     if (!emailPattern.test(recipientEmail)) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
@@ -98,7 +107,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           from: `Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>`,
           to: [recipientEmail],
-          subject: `You received tickets from ${senderName}`,
+          subject: linkedTemplate?.subject || `You received tickets from ${senderName}`,
           html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }),
         }),
       })
@@ -113,8 +122,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
-    const supabaseKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
-    const supabaseHeaders = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }
     const templatePayload = { owner_email: ownerEmail, ticket_id: ticketId, event_name: eventName, template_name: `${eventName} - Transfer Notice`, sender_name: senderName, recipient_name: recipientName, recipient_email: recipientEmail, event_date: eventDate, venue, seat_info: seats, event_url: eventUrl, banner_image: bannerImage, subject: `You received tickets from ${senderName}`, html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }) }
     const existingTemplateResponse = await fetch(`${process.env.SUPABASE_URL ?? ''}/rest/v1/transfer_email_templates?owner_email=eq.${encodeURIComponent(ownerEmail)}&ticket_id=eq.${encodeURIComponent(ticketId)}&select=id`, { headers: supabaseHeaders, cache: 'no-store' })
     const existingTemplates = existingTemplateResponse.ok ? await existingTemplateResponse.json() as Array<{ id: string }> : []
