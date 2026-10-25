@@ -46,14 +46,14 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
-    <li className="w-[82%] min-w-0 shrink-0 snap-center px-1">
+    <li className="w-full min-w-0 shrink-0 snap-center px-4">
       <div className="mx-auto overflow-hidden rounded-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="relative">
-          <img src={ticket.posterUrl} alt="" className="h-[260px] w-full object-cover object-top" />
+          <img src={ticket.posterUrl} alt="" className="h-[285px] w-full object-cover object-top" />
           <div className="absolute inset-x-3 top-7 rounded-xl bg-[#1c1c1c]/95 px-3 py-4 shadow-xl">
             <div className="flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 text-center text-[14px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
@@ -80,10 +80,8 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
             </div>
           </div>
         </div>
-        <div className="px-3 pb-3 pt-3">
-          <p className="line-clamp-2 text-[14px] font-extrabold leading-4 break-words">{ticket.ticketTypeOverride || ticket.purchaseType}</p>
-          <p className="mt-0.5 truncate text-[13px] leading-5 text-white/70">{ticket.entryInfo || 'Reserved Seating'}</p>
-          <hr className="mx-auto mb-2 w-[80%] border-white/30" />
+        <div className="px-3 pb-5 pt-4">
+          <hr className="mx-auto mb-4 w-[92%] border-white/30" />
           <dl className="grid grid-cols-3">
             <div className="min-w-0">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Section</dt>
@@ -100,7 +98,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
           </dl>
           <button
             type="button"
-            className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[12px] font-extrabold uppercase tracking-wide"
+            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-tm-blue-light text-[13px] font-extrabold uppercase tracking-wide"
           >
             Mobile Entry
             <ArrowRight size={18} aria-hidden="true" />
@@ -141,14 +139,14 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         </div>
       </header>
 
-      <div className="min-h-0 flex-1">
+      <div className="min-h-0 flex-1 overflow-hidden">
         {total === 0 ? (
           <p className="px-8 pt-20 text-center text-lg text-white/60">There are no tickets in this order.</p>
         ) : (
           <div
             aria-label="Tickets"
             onScroll={updateIndex}
-            className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden pt-2"
+            className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-auto pt-2"
             style={{ touchAction: 'pan-x' }}
           >
             {ticket.seats.map((seat) => (
