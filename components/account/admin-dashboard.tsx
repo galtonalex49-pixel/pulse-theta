@@ -275,7 +275,14 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           <Field label="Policy notice" value={ticket.policyNotice ?? ''} onChange={(v) => patch({ policyNotice: v })} />
           <Field label="Venue location" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
           <Field label="Purchase date" type="datetime-local" value={ticket.purchaseDate ?? ''} onChange={(v) => patch({ purchaseDate: v })} />
-          <Field label="Ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
+          <label className="block min-w-0">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Ticket type</span>
+            <select value={ticket.ticketTypeOverride ? '__custom__' : ticket.purchaseType} onChange={(e) => e.target.value === '__custom__' ? patch({ ticketTypeOverride: ticket.purchaseType }) : patch({ purchaseType: e.target.value, ticketTypeOverride: '' })} className={inputCls}>
+              {['American Express® Presale', 'General Sale', 'Official Platinum', 'Artist Presale', 'VIP Nation Presale', 'Spotify Presale', 'Citi® Cardmember Presale'].map((type) => <option key={type} value={type}>{type}</option>)}
+              <option value="__custom__">Custom override</option>
+            </select>
+          </label>
+          <Field label="Custom ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
           <div className="grid grid-cols-2 gap-3">
             <NumberField label="Ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
             <NumberField label="Service fee" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />

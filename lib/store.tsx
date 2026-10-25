@@ -204,6 +204,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       orderNumber: '00-00000/XX',
       quantity: 1,
       purchaseType: 'General Sale',
+      purchaseDate: '2027-05-18T00:00',
       entryInfo: 'General Admission',
       presenter: 'LIVE NATION PRESENTS',
       policyNotice: 'NO BAGS PERMITTED',

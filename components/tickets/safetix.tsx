@@ -12,6 +12,8 @@ import { Barcode } from './barcode'
 function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () => void }) {
   const total = (ticket.ticketPrice ?? 0) + (ticket.serviceFee ?? 0)
   const lines = [ticket.presenter, ticket.artist, ticket.venue, ticket.policyNotice, dateLong(ticket.dateTime)].filter(Boolean)
+  const ticketType = ticket.ticketTypeOverride || ticket.purchaseType
+  const purchaseDate = ticket.purchaseDate ? new Date(ticket.purchaseDate).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' }) : 'Not provided'
   return (
     <div className="absolute inset-0 z-50 overflow-y-auto bg-white text-[#202124]" role="dialog" aria-modal="true" aria-labelledby="ticket-details-title">
       <header className="sticky top-0 flex items-center gap-4 bg-[#161923] px-5 py-4 text-white">
@@ -21,11 +23,11 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
       <div className="divide-y divide-black/10 text-[16px]">
         <section className="px-6 py-6"><h3 className="text-2xl font-extrabold uppercase">{ticket.artist}</h3><p className="mt-2 text-black/60">{dateLong(ticket.dateTime)} · {ticket.venue}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">Entry Info</h3><p className="mt-2">{ticket.entryInfo || 'General Admission'}</p></section>
-        <section className="px-6 py-6"><h3 className="font-bold">Ticket Info</h3><pre className="mt-3 whitespace-pre-wrap font-mono text-[14px] leading-6">{lines.join('\\n')}</pre></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Ticket Info</h3><pre className="mt-3 whitespace-pre-wrap font-mono text-[14px] leading-6">{lines.join('\n')}</pre></section>
         <section className="px-6 py-6"><h3 className="font-bold">Venue</h3><p className="mt-2">{ticket.venueLocation || ticket.venue}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">Order Number</h3><p className="mt-2 font-mono">{ticket.orderNumber || 'XXXXXXXXXX'}</p></section>
-        <section className="px-6 py-6"><h3 className="font-bold">Ticket Type</h3><p className="mt-2">{ticket.ticketTypeOverride || ticket.purchaseType}</p></section>
-        <section className="px-6 py-6"><h3 className="font-bold">Purchase Date</h3><p className="mt-2">{ticket.purchaseDate ? new Date(ticket.purchaseDate).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' }) : 'Not provided'}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Ticket Type</h3><p className="mt-2">{ticketType}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">Purchase Date</h3><p className="mt-2">{purchaseDate}</p></section>
         <section className="px-6 py-6"><div className="flex justify-between"><span>Ticket Price</span><span>${(ticket.ticketPrice ?? 0).toFixed(2)}</span></div><div className="mt-2 flex justify-between"><span>Service Fee</span><span>${(ticket.serviceFee ?? 0).toFixed(2)}</span></div><div className="mt-3 flex justify-between font-extrabold"><span>GRAND TOTAL</span><span>${total.toFixed(2)}</span></div></section>
         <section className="px-6 py-6 text-sm text-black/60">By using this ticket, you agree to Ticketmaster&apos;s <a className="text-blue-600 underline" href="https://www.ticketmaster.com/legal/terms-of-use" target="_blank" rel="noreferrer">Terms of Use</a>. Tickets are non-refundable except as required by law. For full terms, visit <a className="text-blue-600 underline" href="https://www.ticketmaster.com" target="_blank" rel="noreferrer">Ticketmaster.com</a>.</section>
       </div>
