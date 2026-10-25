@@ -2,10 +2,15 @@ import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 
 const sender = 'Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>'
+
+// These are the project variables already provisioned for this preview.
+// Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
 const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY ?? process.env.SUPABASE_KE ?? process.env.apikey
-const supabaseSecret = process.env.SUPABASE_SECRET ?? process.env.SUPABASE_SECRE
-const resendKey = process.env.RESEND_KEY ?? process.env.RESEND
+const supabaseKey = process.env.SUPABASE_KE
+const supabaseSecret = process.env.SUPABASE_SECRE ?? process.env.SUPABASE_KE
+const resendKey = process.env.RESEND
+
+export const runtime = 'nodejs'
 
 function supabaseHeaders() {
   const key = supabaseKey
@@ -18,7 +23,9 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { ticketId, recipientEmail, eventName, eventDate, venue, ticketDetails } = body
     if (!ticketId || !recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail)) return NextResponse.json({ error: 'Ticket and valid recipient email are required.' }, { status: 400 })
-    if (!supabaseUrl || !resendKey) return NextResponse.json({ error: 'Transfer service is not configured.' }, { status: 503 })
+    if (!supabaseUrl || !supabaseKey || !resendKey) {
+      return NextResponse.json({ error: 'Transfer service is not configured.' }, { status: 503 })
+    }
 
     const transferToken = randomUUID()
     const createdAt = new Date().toISOString()
