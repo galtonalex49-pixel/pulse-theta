@@ -1,7 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 
-const resendDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').replace(/^https?:\/\//, '').replace(/\/$/, '')
+const configuredEmailDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').trim()
+const resendDomain = configuredEmailDomain.includes('@')
+  ? configuredEmailDomain.split('@').pop()!.replace(/[\s/>]+$/, '')
+  : configuredEmailDomain.replace(/^https?:\/\//, '').replace(/\/$/, '')
 const sender = `Ticketmaster Transfer <transfers@${resendDomain}>`
 const publicAppUrl = (process.env.PUBLIC_APP_URL ?? 'https://ticketmaster.bbroot.com').replace(/\/$/, '')
 
@@ -41,8 +44,13 @@ export async function POST(request: Request) {
     const html = `<div style="margin:0;background:#f3f5f8;padding:32px 16px;font-family:Arial,sans-serif;color:#111827"><div style="max-width:600px;margin:auto;background:#fff"><div style="background:#071d49;padding:24px 32px"><div style="color:#fff;font-size:30px;font-weight:800;letter-spacing:-1px">ticketmaster</div></div><div style="padding:32px"><p style="font-size:16px">You have received a ticket transfer.</p><h1 style="font-size:26px;margin:24px 0 8px">${escapeHtml(eventName ?? 'Your event')}</h1><p style="font-size:16px;color:#4b5563;margin:0">${escapeHtml(eventDate ?? '')}<br>${escapeHtml(venue ?? '')}</p><a href="${claimUrl}" style="display:inline-block;margin-top:32px;background:#026cdf;color:#fff;text-decoration:none;padding:16px 28px;font-weight:700;font-size:17px">Accept Tickets</a><p style="font-size:12px;color:#6b7280;margin-top:28px">If you did not expect this transfer, you can ignore this email.</p></div></div></div>`
     const email = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': `ticket-transfer/${transferToken}` }, body: JSON.stringify({ from: sender, to: [recipientEmail.trim()], subject: `You have received tickets for ${eventName ?? 'an event'}`, html }) })
     if (!email.ok) {
-      console.error('[v0] Resend transfer email failed:', email.status, await email.text())
-      return NextResponse.json({ error: 'Transfer saved, but the email could not be sent. Check the sender domain in Resend.' }, { status: 502 })
+      const resendError = await email.text()
+      console.error('[v0] Resend transfer email failed:', email.status, resendError)
+      await fetch(`${supabaseUrl}/rest/v1/transfers?transfer_token=eq.${encodeURIComponent(transferToken)}`, {
+        method: 'DELETE',
+        headers: supabaseHeaders(),
+      }).catch((rollbackError) => console.error('[v0] Transfer rollback failed:', rollbackError))
+      return NextResponse.json({ error: `Email could not be sent from transfers@${resendDomain}. Verify ticketmaster.bbroot.com in Resend.` }, { status: 502 })
     }
     return NextResponse.json({ transferToken, claimUrl })
   } catch { return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 }) }
