@@ -47,7 +47,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
 
   return (
     <li className="flex w-full min-w-0 shrink-0 snap-center justify-center px-4">
-      <div className="w-full max-w-[340px] overflow-hidden rounded-xl bg-[#111] shadow-2xl">
+      <div className="w-full max-w-[320px] overflow-hidden rounded-xl bg-[#111] shadow-2xl">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
@@ -82,18 +82,18 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
         </div>
         <div className="px-3 pb-5 pt-4">
           <hr className="mx-auto mb-5 w-[90%] border-white/30" />
-          <dl className="grid grid-cols-3 gap-2">
+          <dl className="grid grid-cols-3 gap-3 px-1">
             <div className="min-w-0">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Section</dt>
-              <dd className="mt-1 truncate text-[26px] font-extrabold leading-8">{seat.section}</dd>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.section}</dd>
             </div>
             <div className="min-w-0">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Row</dt>
-              <dd className="mt-1 truncate text-[26px] font-extrabold leading-8">{seat.row}</dd>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.row}</dd>
             </div>
             <div className="min-w-0 text-right">
               <dt className="text-[9px] font-bold uppercase leading-3 tracking-[0.12em] text-white/60">Seat</dt>
-              <dd className="mt-1 truncate text-[26px] font-extrabold leading-8">{seat.seat}</dd>
+              <dd className="mt-1 truncate text-[24px] font-extrabold leading-8">{seat.seat}</dd>
             </div>
           </dl>
           <button
@@ -133,9 +133,17 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         >
           <ArrowLeft size={28} strokeWidth={2.4} />
         </button>
-        <div className="min-w-0 flex-1 text-center">
-          <h1 className="truncate text-[20px] font-extrabold leading-6">{ticket.artist}</h1>
-          <p className="mt-0.5 truncate text-[13px] leading-5 text-white/80">{dateLong(ticket.dateTime)} - {ticket.venue}</p>
+        <div className="min-w-0 flex-1 overflow-hidden text-center">
+          <div className="overflow-hidden whitespace-nowrap">
+            <div className="inline-flex min-w-full animate-marquee gap-8 text-[20px] font-extrabold leading-6">
+              <span>{ticket.artist}</span><span aria-hidden="true">{ticket.artist}</span>
+            </div>
+          </div>
+          <div className="overflow-hidden whitespace-nowrap">
+            <div className="inline-flex min-w-full animate-marquee-slow gap-8 text-[13px] leading-5 text-white/80">
+              <span>{dateLong(ticket.dateTime)} - {ticket.venue}</span><span aria-hidden="true">{dateLong(ticket.dateTime)} - {ticket.venue}</span>
+            </div>
+          </div>
         </div>
       </header>
 
