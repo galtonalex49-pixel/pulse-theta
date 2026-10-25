@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useNow } from '@/lib/store'
 import { ArrowLeft, ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { dateLong } from '@/lib/format'
@@ -37,39 +36,27 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
 
 function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][number] }) {
   const [refreshes, setRefreshes] = useState(0)
-  const now = useNow(1000)
-  const eventTime = new Date(ticket.dateTime).getTime()
-  const locked = now ? eventTime - now.getTime() > 3 * 24 * 60 * 60 * 1000 : true
-  const remaining = Math.max(0, eventTime - (now?.getTime() ?? Date.now()))
-  const days = Math.floor(remaining / 86400000)
-  const hours = Math.floor((remaining % 86400000) / 3600000)
-  const minutes = Math.floor((remaining % 3600000) / 60000)
-  const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
-    <li className="w-full min-w-0 shrink-0 snap-center px-4">
-      <div className="mx-auto max-w-[380px] overflow-hidden rounded-xl bg-[#111]">
+    <li className="w-[82%] min-w-0 shrink-0 snap-center px-1">
+      <div className="mx-auto overflow-hidden rounded-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={ticket.posterUrl} alt="" className="h-[168px] w-full object-cover object-top" />
-        <div className="mx-3 mt-3 rounded-xl bg-[#1c1c1c]/95 px-3 py-2.5 shadow-xl">
-          <div className="flex items-center justify-between gap-3">
-            <p className="min-w-0 flex-1 text-center text-[12px] font-semibold leading-4">Screenshots won&apos;t get you in</p>
-            <button type="button" aria-label="Refresh barcode" onClick={() => setRefreshes((r) => r + 1)} className="shrink-0 text-white">
-              <RefreshCw size={22} className="transition-transform duration-500" style={{ transform: `rotate(${refreshes * 360}deg)` }} />
-            </button>
-          </div>
-          <div className="relative mt-2 overflow-hidden px-1">
-            {locked ? (
-              <div className="flex min-h-[76px] flex-col items-center justify-center text-center text-white/80">
-                <span className="text-[10px] uppercase tracking-wide">Tickets barcode will be ready in:</span>
-                <div className="mt-1 grid grid-cols-4 gap-2 font-mono text-center text-xl font-bold text-white">
-                  {[['DAY', days], ['HOUR', hours], ['MIN', minutes], ['SEC', seconds]].map(([label, value]) => <span key={label as string}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] font-sans tracking-[0.12em] text-white/60">{label}</small></span>)}
-                </div>
-              </div>
-            ) : <><Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} /><span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" /></>}
+        <div className="relative">
+          <img src={ticket.posterUrl} alt="" className="h-[260px] w-full object-cover object-top" />
+          <div className="absolute inset-x-3 top-7 rounded-xl bg-[#1c1c1c]/95 px-3 py-5 shadow-xl">
+            <div className="flex items-center justify-between gap-3">
+              <p className="min-w-0 flex-1 text-center text-[14px] font-semibold leading-5">Screenshots won&apos;t get you in</p>
+              <button type="button" aria-label="Refresh barcode" onClick={() => setRefreshes((r) => r + 1)} className="shrink-0 text-white">
+                <RefreshCw size={30} className="transition-transform duration-500" style={{ transform: `rotate(${refreshes * 360}deg)` }} />
+              </button>
+            </div>
+            <div className="relative mt-5 overflow-hidden px-1">
+              <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
+              <span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" />
+            </div>
           </div>
         </div>
         <div className="px-3 pb-3 pt-3">
@@ -127,9 +114,9 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         >
           <ArrowLeft size={28} strokeWidth={2.4} />
         </button>
-        <div className="min-w-0 flex-1 overflow-hidden text-center">
-          <div className="overflow-hidden whitespace-nowrap"><div className="inline-block min-w-full animate-marquee text-[16px] font-extrabold">{ticket.artist} · {ticket.artist}</div></div>
-          <p className="mt-0.5 truncate text-[11px] leading-4 text-white/80">{dateLong(ticket.dateTime)} - {ticket.venue}</p>
+        <div className="min-w-0 flex-1 text-center">
+          <h1 className="truncate text-[20px] font-extrabold leading-6">{ticket.artist}</h1>
+          <p className="mt-0.5 truncate text-[13px] leading-5 text-white/80">{dateLong(ticket.dateTime)} - {ticket.venue}</p>
         </div>
       </header>
 
