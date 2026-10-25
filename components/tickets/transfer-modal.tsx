@@ -326,16 +326,16 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
             onClick={() => setStep('details')}
             className="mt-6 flex h-[64px] w-full items-center justify-center gap-5 rounded-md border-2 border-[#333] text-[21px] font-medium"
           >
-            Manually Enter A Recipient
+            Enter Email or Mobile Number
             <Plus size={34} strokeWidth={1.4} className="rounded-full border-2 border-[#333] p-1" aria-hidden="true" />
           </button>
           <div className="mt-8 flex flex-col items-center text-center">
             <span className="flex size-[110px] items-center justify-center rounded-full bg-[#eef0f5]">
               <Send size={56} strokeWidth={1.2} className="-ml-1 text-[#8a8f99]" aria-hidden="true" />
             </span>
-            <p className="mt-8 text-[20px] text-[#555]">Transfer Tickets Via Email or Text Message</p>
+            <p className="mt-8 text-[20px] text-[#555]">Transfer Tickets by Email or Text</p>
             <p className="mt-5 text-[18px] leading-snug text-[#666]">
-              Select Email or mobile number to transfer tickets to your recipient.
+              Enter an email address or mobile number to send the transfer.
             </p>
           </div>
         </div>
@@ -363,7 +363,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
             onClick={complete}
             className="h-[42px] min-w-[150px] rounded-[4px] bg-tm-blue px-4 text-[13px] font-medium text-white disabled:bg-[#b4c3ee]"
           >
-            {sending ? 'Sending…' : `Transfer ${n} ${n === 1 ? 'Ticket' : 'Tickets'}`}
+            {sending ? 'Sending…' : 'Send Transfer'}
           </button>
         </div>
       }
