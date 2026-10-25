@@ -51,13 +51,21 @@ function createTransferEmail(senderName: string, eventName: string) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as { recipientEmail?: unknown; senderName?: unknown; eventName?: unknown }
-    const recipientEmail = typeof body.recipientEmail === 'string' ? body.recipientEmail.trim() : ''
-    const senderName = typeof body.senderName === 'string' ? body.senderName.trim() : ''
-    const eventName = typeof body.eventName === 'string' ? body.eventName.trim() : ''
+    const body = await request.json() as { recipientEmail?: unknown; email?: unknown; senderName?: unknown; eventName?: unknown }
+    const recipientEmail = typeof body.recipientEmail === 'string'
+      ? body.recipientEmail.trim()
+      : typeof body.email === 'string'
+        ? body.email.trim()
+        : ''
+    const senderName = typeof body.senderName === 'string' && body.senderName.trim()
+      ? body.senderName.trim()
+      : 'Account Holder'
+    const eventName = typeof body.eventName === 'string' && body.eventName.trim()
+      ? body.eventName.trim()
+      : 'Selected Event'
 
-    if (!emailPattern.test(recipientEmail) || !senderName || !eventName) {
-      return NextResponse.json({ error: 'recipientEmail, senderName, and eventName are required.' }, { status: 400 })
+    if (!emailPattern.test(recipientEmail)) {
+      return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
     const resendKey = process.env.RESEND ?? process.env.RESEND_API_KEY
