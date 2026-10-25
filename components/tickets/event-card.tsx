@@ -34,6 +34,9 @@ export function EventCard({ ticket, onView, compact = false, past = false }: Eve
           {ticket.artist}
         </h2>
         <div className="my-5 h-1.5 w-[110px] shrink-0 bg-[#9a8f8b]" />
+        {ticket.seats.some((seat) => seat.transferStatus.toLowerCase().includes('pending')) && (
+          <p className="mb-3 rounded-md bg-[#172d58] px-3 py-2 text-sm font-bold text-blue-100">Digital Pass Processing — Ready in ~2 Hours</p>
+        )}
         <div className="flex items-center justify-between gap-3">
           <p className="min-w-0 truncate text-lg font-bold">{ticket.venue}</p>
           <span className="flex shrink-0 items-center gap-2 text-lg font-bold text-white/90">

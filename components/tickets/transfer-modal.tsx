@@ -110,6 +110,8 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
   const [last, setLast] = useState('')
   const [email, setEmail] = useState('')
   const [contactsNote, setContactsNote] = useState('')
+  const [sendError, setSendError] = useState('')
+  const [sending, setSending] = useState(false)
 
   const transferable = useMemo(() => ticket.seats.filter((s) => !s.transferStatus), [ticket.seats])
   const groups = useMemo(() => groupSeats(transferable), [transferable])
@@ -146,13 +148,15 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
     }
   }
 
-  const complete = () => {
+  const complete = async () => {
+    setSending(true)
+    setSendError('')
+    const response = await fetch('/api/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: ticket.id, recipientEmail: email.trim(), eventName: ticket.artist, eventDate: dateBadge(ticket.dateTime), venue: ticket.venue, ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber } }) })
+    const data = await response.json()
+    if (!response.ok) { setSendError(data.error || 'Unable to send transfer.'); setSending(false); return }
     const label = `${first.trim()} ${last.trim().charAt(0)}`.toUpperCase()
-    updateTicket(ticket.id, {
-      seats: ticket.seats.map((s) =>
-        selected.has(s.id) ? { ...s, transferStatus: `Transfer Pending: ${label}` } : s,
-      ),
-    })
+    updateTicket(ticket.id, { seats: ticket.seats.map((s) => selected.has(s.id) ? { ...s, transferStatus: `Transfer Pending: ${label}` } : s) })
+    setSending(false)
     onClose()
   }
 
@@ -349,11 +353,11 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
           </button>
           <button
             type="button"
-            disabled={!formValid}
+            disabled={!formValid || sending}
             onClick={complete}
             className="h-[42px] min-w-[150px] rounded-[4px] bg-tm-blue px-4 text-[13px] font-medium text-white disabled:bg-[#b4c3ee]"
           >
-            Transfer {n} {n === 1 ? 'Ticket' : 'Tickets'}
+            {sending ? 'Sending…' : `Transfer ${n} ${n === 1 ? 'Ticket' : 'Tickets'}`}
           </button>
         </div>
       }
@@ -374,6 +378,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
         <TextField label="First Name" value={first} onChange={setFirst} placeholder="Enter First Name" autoComplete="given-name" />
         <TextField label="Last Name" value={last} onChange={setLast} placeholder="Enter Last Name" autoComplete="family-name" />
         <TextField label="Email" type="email" value={email} onChange={setEmail} placeholder="Enter Email Address" autoComplete="email" />
+        {sendError && <p role="alert" className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{sendError}</p>}
       </div>
     </SheetFrame>
   )
