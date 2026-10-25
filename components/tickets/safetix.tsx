@@ -45,8 +45,8 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
-    <li className="w-full min-w-0 shrink-0 snap-start">
-      <div className="overflow-hidden rounded-xl bg-[#111]">
+    <li className="w-full min-w-0 shrink-0 px-4">
+      <div className="mx-auto max-w-[380px] overflow-hidden rounded-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
@@ -104,16 +104,28 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
 export function Safetix({ ticket }: { ticket: Ticket }) {
   const { backToLanding } = useApp()
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const scroller = useRef<HTMLUListElement>(null)
   const [index, setIndex] = useState(0)
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const startX = useRef(0)
   const total = ticket.seats.length
 
-  const onScroll = () => {
-    const el = scroller.current
-    const first = el?.firstElementChild as HTMLElement | null
-    if (!el || !first) return
-    const step = first.offsetWidth
-    setIndex(Math.min(total - 1, Math.max(0, Math.round(el.scrollLeft / step))))
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    startX.current = event.clientX
+    setDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return
+    setDragX(event.clientX - startX.current)
+  }
+  const finishSwipe = () => {
+    if (!dragging) return
+    if (Math.abs(dragX) > 56) {
+      setIndex((current) => Math.min(total - 1, Math.max(0, current + (dragX < 0 ? 1 : -1))))
+    }
+    setDragX(0)
+    setDragging(false)
   }
 
   return (
@@ -137,16 +149,28 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
         {total === 0 ? (
           <p className="px-8 pt-20 text-center text-lg text-white/60">There are no tickets in this order.</p>
         ) : (
-          <ul
-            ref={scroller}
-            onScroll={onScroll}
+          <div
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={finishSwipe}
+            onPointerCancel={finishSwipe}
             aria-label="Tickets"
-            className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-auto pt-2"
+            className={`no-scrollbar flex h-full overflow-hidden pt-2 ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            style={{ touchAction: 'pan-y' }}
           >
-            {ticket.seats.map((seat) => (
-              <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
-            ))}
-          </ul>
+            <div
+              className="flex h-full w-full shrink-0"
+              style={{
+                transform: `translate3d(calc(-${index * 100}% + ${dragX}px), 0, 0)`,
+                transition: dragging ? 'none' : 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
+                willChange: 'transform',
+              }}
+            >
+              {ticket.seats.map((seat) => (
+                <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
