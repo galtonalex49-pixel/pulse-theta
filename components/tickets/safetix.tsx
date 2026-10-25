@@ -45,46 +45,34 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const seconds = Math.floor((remaining % 60000) / 1000)
 
   return (
-    <li className="w-[82%] min-w-0 shrink-0 snap-center">
-      <div className="overflow-hidden rounded-t-xl bg-[#111]">
+    <li className="w-full min-w-0 shrink-0 snap-start">
+      <div className="overflow-hidden rounded-xl bg-[#111]">
         <div className="bg-tm-blue py-3 text-center">
           <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
         </div>
-        <div className="relative">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={ticket.posterUrl}
-            alt=""
-            className="h-[168px] w-full object-cover object-top"
-          />
-          <div className="absolute inset-x-3 top-3 rounded-xl bg-[#1c1c1c]/95 px-3 py-2.5 shadow-xl">
-            <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 text-center text-[12px] font-semibold leading-4">Screenshots won&apos;t get you in</p>
-              <button
-                type="button"
-                aria-label="Refresh barcode"
-                onClick={() => setRefreshes((r) => r + 1)}
-                className="shrink-0 text-white"
-              >
-                <RefreshCw
-                  size={22}
-                  className="transition-transform duration-500"
-                  style={{ transform: `rotate(${refreshes * 360}deg)` }}
-                />
-              </button>
-            </div>
-            <div className="relative mt-2 overflow-hidden px-1">
-              {locked ? (
-                <div className="flex min-h-[76px] flex-col items-center justify-center text-center text-white/80"><span className="text-[11px] uppercase tracking-wide">Tickets Barcode will be ready in:</span><strong className="mt-1 font-mono text-xl text-white">{String(days).padStart(2, '0')} : {String(hours).padStart(2, '0')} : {String(minutes).padStart(2, '0')} : {String(seconds).padStart(2, '0')}</strong></div>
-              ) : <><Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} /><span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" /></>}
-            </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={ticket.posterUrl} alt="" className="h-[168px] w-full object-cover object-top" />
+        <div className="mx-3 mt-3 rounded-xl bg-[#1c1c1c]/95 px-3 py-2.5 shadow-xl">
+          <div className="flex items-center justify-between gap-3">
+            <p className="min-w-0 flex-1 text-center text-[12px] font-semibold leading-4">Screenshots won&apos;t get you in</p>
+            <button type="button" aria-label="Refresh barcode" onClick={() => setRefreshes((r) => r + 1)} className="shrink-0 text-white">
+              <RefreshCw size={22} className="transition-transform duration-500" style={{ transform: `rotate(${refreshes * 360}deg)` }} />
+            </button>
           </div>
-          <div className="absolute bottom-0 left-0 max-w-[78%] bg-[#111] px-3 pb-2 pt-2">
-            <p className="line-clamp-2 text-[14px] font-extrabold leading-4 break-words">{ticket.purchaseType}</p>
-            <p className="mt-0.5 truncate text-[13px] leading-5 text-white/70">Reserved Seating</p>
+          <div className="relative mt-2 overflow-hidden px-1">
+            {locked ? (
+              <div className="flex min-h-[76px] flex-col items-center justify-center text-center text-white/80">
+                <span className="text-[10px] uppercase tracking-wide">Tickets barcode will be ready in:</span>
+                <div className="mt-1 grid grid-cols-4 gap-2 font-mono text-center text-xl font-bold text-white">
+                  {[['DAY', days], ['HOUR', hours], ['MIN', minutes], ['SEC', seconds]].map(([label, value]) => <span key={label as string}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] font-sans tracking-[0.12em] text-white/60">{label}</small></span>)}
+                </div>
+              </div>
+            ) : <><Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} /><span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" /></>}
           </div>
         </div>
-        <div className="px-3 pb-3 pt-2">
+        <div className="px-3 pb-3 pt-3">
+          <p className="line-clamp-2 text-[14px] font-extrabold leading-4 break-words">{ticket.ticketTypeOverride || ticket.purchaseType}</p>
+          <p className="mt-0.5 truncate text-[13px] leading-5 text-white/70">{ticket.entryInfo || 'Reserved Seating'}</p>
           <hr className="mx-auto mb-2 w-[80%] border-white/30" />
           <dl className="grid grid-cols-3">
             <div className="min-w-0">
@@ -124,7 +112,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
     const el = scroller.current
     const first = el?.firstElementChild as HTMLElement | null
     if (!el || !first) return
-    const step = first.offsetWidth + 16
+    const step = first.offsetWidth
     setIndex(Math.min(total - 1, Math.max(0, Math.round(el.scrollLeft / step))))
   }
 
@@ -153,7 +141,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
             ref={scroller}
             onScroll={onScroll}
             aria-label="Tickets"
-            className="no-scrollbar flex h-full snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-auto px-[9%] pt-2"
+            className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-auto pt-2"
           >
             {ticket.seats.map((seat) => (
               <SeatSlide key={seat.id} ticket={ticket} seat={seat} />
