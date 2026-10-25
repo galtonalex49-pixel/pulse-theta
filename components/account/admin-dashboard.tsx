@@ -196,6 +196,8 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
       venue: event.venue || ticket.venue,
       posterUrl: event.image ?? ticket.posterUrl,
       dateTime: event.dateTime ?? ticket.dateTime,
+      venueLocation: [event.venueLocation || event.venue, event.city, event.state, event.countryCode].filter(Boolean).join(', '),
+      presenter: event.promoter ? `${event.promoter.toUpperCase()} PRESENTS` : ticket.presenter,
       lat: event.lat ?? ticket.lat,
       lng: event.lng ?? ticket.lng,
     })
@@ -270,9 +272,10 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             <NumberField label="Venue longitude" value={ticket.lng} min={-180} max={180} step={0.0001} onCommit={(v) => patch({ lng: v })} />
           </div>
           <Field label="Order number" value={ticket.orderNumber} onChange={(v) => patch({ orderNumber: v })} />
-          <Field label="Entry info" value={ticket.entryInfo ?? ''} onChange={(v) => patch({ entryInfo: v })} />
-          <Field label="Presenter" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
-          <Field label="Policy notice" value={ticket.policyNotice ?? ''} onChange={(v) => patch({ policyNotice: v })} />
+          <label className="block min-w-0"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Entry info</span><select value={['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo ?? '') ? ticket.entryInfo : ticket.entryInfo ? '__custom__' : 'Upper Level'} onChange={(e) => patch({ entryInfo: e.target.value === '__custom__' ? (ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) ? ticket.entryInfo : '') : e.target.value })} className={inputCls}><option>Upper Level</option><option>Lower Level</option><option>Floor General Admission Pit</option><option value="__custom__">Custom</option></select></label>
+          {ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) && <Field label="Custom entry info" value={ticket.entryInfo} onChange={(v) => patch({ entryInfo: v })} />}
+          <Field label="Presenter override" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
+          <select aria-label="Policy notice" value={ticket.policyNotice ?? 'NO BAGS PERMITTED'} onChange={(e) => patch({ policyNotice: e.target.value })} className={inputCls}><option>NO BAGS PERMITTED</option><option>CLEAR BAG POLICY ONLY (MAX 12&quot; x 6&quot; x 12&quot;)</option><option>MOBILE ENTRY ONLY - NO PAPER TICKETS</option></select>
           <Field label="Venue location" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
           <Field label="Purchase date" type="datetime-local" value={ticket.purchaseDate ?? ''} onChange={(v) => patch({ purchaseDate: v })} />
           <label className="block min-w-0">

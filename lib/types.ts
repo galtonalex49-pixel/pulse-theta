@@ -15,6 +15,8 @@ export interface TMEvent {
   segment: string
   onSaleStart: string | null
   url: string
+  promoter?: string
+  venueLocation?: string
 }
 
 export interface Seat {
