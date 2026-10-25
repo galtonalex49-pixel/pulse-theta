@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 
 const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KE
-const supabaseSecret = process.env.SUPABASE_SECRE
+const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY
+const supabaseSecret = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
 function headers() { const key = supabaseKey; const secret = supabaseSecret; return { apikey: key ?? secret ?? '', Authorization: `Bearer ${secret ?? key ?? ''}`, 'Content-Type': 'application/json', Prefer: 'return=representation' } }
 
 export async function GET(request: Request) {
