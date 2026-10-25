@@ -7,7 +7,7 @@ const sender = 'Ticketmaster Transfer <transfers@ticketmaster.bbroot.com>'
 // Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_KE
-const supabaseSecret = process.env.SUPABASE_SECRE ?? process.env.SUPABASE_KE
+const supabaseSecret = process.env.SUPABASE_SECRE
 const resendKey = process.env.RESEND
 
 export const runtime = 'nodejs'
