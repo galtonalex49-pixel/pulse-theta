@@ -2,10 +2,13 @@ import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 
 const configuredEmailDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').trim()
-const resendDomain = configuredEmailDomain.includes('@')
-  ? configuredEmailDomain.split('@').pop()!.replace(/[\s/>]+$/, '')
-  : configuredEmailDomain.replace(/^https?:\/\//, '').replace(/\/$/, '')
-const sender = `Ticketmaster Transfer <transfers@${resendDomain}>`
+const resendDomain = configuredEmailDomain
+  .replace(/^https?:\/\//, '')
+  .replace(/^.*@/, '')
+  .replace(/[\s/>]+$/, '')
+  .replace(/\/$/, '')
+const senderAddress = `transfers@${resendDomain}`
+const sender = `Ticketmaster Transfer <${senderAddress}>`
 const publicAppUrl = (process.env.PUBLIC_APP_URL ?? 'https://ticketmaster.bbroot.com').replace(/\/$/, '')
 
 // Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
         method: 'DELETE',
         headers: supabaseHeaders(),
       }).catch((rollbackError) => console.error('[v0] Transfer rollback failed:', rollbackError))
-      return NextResponse.json({ error: `Email could not be sent from transfers@${resendDomain}. Verify ticketmaster.bbroot.com in Resend.` }, { status: 502 })
+      return NextResponse.json({ error: `Email could not be sent from ${senderAddress}. Verify ${resendDomain} in Resend.` }, { status: 502 })
     }
     return NextResponse.json({ transferToken, claimUrl })
   } catch { return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 }) }
