@@ -9,6 +9,7 @@ const OLIVIA_POSTER =
   'https://s1.ticketm.net/dam/a/4e1/ca96dd03-8def-46ae-b6d3-9441e992c4e1_TABLET_LANDSCAPE_3_2.jpg'
 const DEF_LEPPARD_POSTER =
   'https://s1.ticketm.net/dam/a/861/d7e41d08-4127-4710-b298-e566b30ac861_RETINA_LANDSCAPE_16_9.jpg'
+const HOME_CITY_STORAGE_KEY = 'ticketmaster_home_city'
 
 const SEED_TICKETS: Ticket[] = [
   {
@@ -159,6 +160,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
+      const savedCity = localStorage.getItem(HOME_CITY_STORAGE_KEY)
       const saved = localStorage.getItem('ticketmaster-app-state')
       if (saved) {
         const parsed = JSON.parse(saved) as Partial<{ tickets: Ticket[]; profile: Profile; location: City; recentLocations: City[] }>
@@ -166,6 +168,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (parsed.profile) setProfileState((prev) => ({ ...prev, ...parsed.profile }))
         if (parsed.location) setLocation(parsed.location)
         if (Array.isArray(parsed.recentLocations)) setRecentLocations(parsed.recentLocations)
+      }
+      if (savedCity) {
+        const city = JSON.parse(savedCity) as City
+        if (city?.name && city?.tmCity && city?.tmCountry) {
+          setLocation(city)
+          setLocationConfirmed(true)
+        }
       }
     } catch {
       // Ignore malformed device data and keep safe defaults.
@@ -177,6 +186,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!storageReady) return
     localStorage.setItem('ticketmaster-app-state', JSON.stringify({ tickets, profile, location, recentLocations }))
+    localStorage.setItem(HOME_CITY_STORAGE_KEY, JSON.stringify(location))
   }, [tickets, profile, location, recentLocations, storageReady])
 
   const setTab = useCallback((next: TabId) => {
@@ -188,6 +198,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const selectLocation = useCallback((city: City) => {
     setLocation(city)
     setLocationConfirmed(true)
+    try {
+      localStorage.setItem(HOME_CITY_STORAGE_KEY, JSON.stringify(city))
+    } catch {
+      // Keep the in-memory selection if device storage is unavailable.
+    }
     setRecentLocations((prev) => [city, ...prev.filter((c) => c.name !== city.name)].slice(0, 3))
     setLocationSheetOpen(false)
   }, [])
