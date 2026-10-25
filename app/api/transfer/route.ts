@@ -1,62 +1,87 @@
-import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-
-const configuredEmailDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').trim()
-const resendDomain = configuredEmailDomain
-  .replace(/^https?:\/\//, '')
-  .replace(/^.*@/, '')
-  .replace(/[\s/>]+$/, '')
-  .replace(/\/$/, '')
-const senderAddress = `transfers@${resendDomain}`
-const sender = `Ticketmaster Transfer <${senderAddress}>`
-const publicAppUrl = (process.env.PUBLIC_APP_URL ?? 'https://ticketmaster.bbroot.com').replace(/\/$/, '')
-
-// Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY
-const supabaseSecret = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
-const resendKey = process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
 
 export const runtime = 'nodejs'
 
-function supabaseHeaders() {
-  const key = supabaseSecret ?? supabaseKey ?? ''
-  return { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=representation' }
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const senderAddress = `transfers@${(process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').replace(/^https?:\/\//, '').replace(/\/$/, '')}`
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character] ?? character)
+}
+
+function createTransferEmail(senderName: string, eventName: string) {
+  const safeSenderName = escapeHtml(senderName)
+  const safeEventName = escapeHtml(eventName)
+
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;background:#f3f5f8;color:#182230;font-family:Arial,Helvetica,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5f8;padding:32px 12px">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
+          <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
+          <tr><td align="center" style="padding:28px 24px 22px;font-size:24px;font-weight:700;letter-spacing:.4px;color:#123b78">Event Transfer</td></tr>
+          <tr><td style="padding:12px 32px 8px;text-align:center;font-size:26px;line-height:1.3;font-weight:700">${safeSenderName} transferred tickets to you</td></tr>
+          <tr><td style="padding:0 32px 24px;text-align:center;font-size:18px;line-height:1.45;color:#344054">${safeEventName}</td></tr>
+          <tr><td style="padding:0 32px 28px">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+              <td align="center" width="33%"><div style="margin:auto;width:42px;height:42px;border-radius:50%;background:#1769e0;color:#fff;font-weight:700;line-height:42px">1</div><div style="padding-top:8px;font-size:13px;font-weight:700;color:#1769e0">Pending</div></td>
+              <td style="height:2px;background:#d8dee8;font-size:0">&nbsp;</td>
+              <td align="center" width="33%"><div style="margin:auto;width:40px;height:40px;border:2px solid #c7ced9;border-radius:50%;color:#7b8798;line-height:40px">2</div><div style="padding-top:8px;font-size:13px;color:#667085">Accepted</div></td>
+              <td style="height:2px;background:#d8dee8;font-size:0">&nbsp;</td>
+              <td align="center" width="33%"><div style="margin:auto;width:40px;height:40px;border:2px solid #c7ced9;color:#7b8798;line-height:40px">3</div><div style="padding-top:8px;font-size:13px;color:#667085">Complete</div></td>
+            </tr></table>
+          </td></tr>
+          <tr><td style="padding:0 32px 28px;font-size:16px;line-height:1.65"><p style="margin:0 0 18px">Hi there,</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
+          <tr><td style="padding:0 32px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7"><tr><td style="padding:26px"><div style="height:150px;background:#e7edf5;text-align:center;line-height:150px;color:#667085;font-size:18px">${safeEventName}</div><p style="margin:24px 0 8px;font-size:20px;font-weight:700">${safeEventName}</p><p style="margin:0;color:#667085;line-height:1.6">Event details will be available after accepting this transfer.</p><a href="#" style="display:block;margin-top:24px;background:#1769e0;color:#fff;text-align:center;text-decoration:none;padding:16px;font-weight:700;font-size:16px">ACCEPT TICKETS</a></td></tr></table></td></tr>
+          <tr><td style="padding:0 32px 28px;color:#667085;font-size:13px;line-height:1.6">By accepting, you agree to the applicable event terms. If you did not expect this transfer, you can ignore this email.<br><br><strong>This email is NOT your ticket.</strong></td></tr>
+          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:13px;line-height:1.5">Support: 707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { ticketId, recipientEmail, eventName, eventDate, venue, ticketDetails } = body
-    if (!ticketId || !recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail)) return NextResponse.json({ error: 'Ticket and valid recipient email are required.' }, { status: 400 })
-    if (!supabaseUrl || !supabaseKey || !resendKey) {
-      return NextResponse.json({ error: 'Transfer service is not configured.' }, { status: 503 })
+    const body = await request.json() as { recipientEmail?: unknown; senderName?: unknown; eventName?: unknown }
+    const recipientEmail = typeof body.recipientEmail === 'string' ? body.recipientEmail.trim() : ''
+    const senderName = typeof body.senderName === 'string' ? body.senderName.trim() : ''
+    const eventName = typeof body.eventName === 'string' ? body.eventName.trim() : ''
+
+    if (!emailPattern.test(recipientEmail) || !senderName || !eventName) {
+      return NextResponse.json({ error: 'recipientEmail, senderName, and eventName are required.' }, { status: 400 })
     }
 
-    const transferToken = randomUUID()
-    const createdAt = new Date().toISOString()
-    const insert = await fetch(`${supabaseUrl}/rest/v1/transfers`, {
-      method: 'POST', headers: supabaseHeaders(), body: JSON.stringify({ ticket_id: ticketId, recipient_email: recipientEmail.trim().toLowerCase(), status: 'pending', created_at: createdAt, transfer_token: transferToken, event_name: eventName, event_date: eventDate, venue, ticket_details: ticketDetails }),
+    const resendKey = process.env.RESEND ?? process.env.RESEND_API_KEY
+    if (!resendKey) return NextResponse.json({ error: 'RESEND is not configured.' }, { status: 503 })
+
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `${senderName} <${senderAddress}>`,
+        to: [recipientEmail],
+        subject: `${senderName} transferred tickets to you`,
+        html: createTransferEmail(senderName, eventName),
+      }),
     })
-    if (!insert.ok) {
-      console.error('[v0] Transfer insert failed:', insert.status, await insert.text())
-      return NextResponse.json({ error: 'Could not save transfer. Please try again.' }, { status: 502 })
+
+    if (!response.ok) {
+      const details = await response.text()
+      console.error('[v0] Resend transfer email failed:', response.status, details)
+      return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
-    const claimUrl = `${publicAppUrl}/claim?token=${encodeURIComponent(transferToken)}`
-    const html = `<div style="margin:0;background:#f3f5f8;padding:32px 16px;font-family:Arial,sans-serif;color:#111827"><div style="max-width:600px;margin:auto;background:#fff"><div style="background:#071d49;padding:24px 32px"><div style="color:#fff;font-size:30px;font-weight:800;letter-spacing:-1px">ticketmaster</div></div><div style="padding:32px"><p style="font-size:16px">You have received a ticket transfer.</p><h1 style="font-size:26px;margin:24px 0 8px">${escapeHtml(eventName ?? 'Your event')}</h1><p style="font-size:16px;color:#4b5563;margin:0">${escapeHtml(eventDate ?? '')}<br>${escapeHtml(venue ?? '')}</p><a href="${claimUrl}" style="display:inline-block;margin-top:32px;background:#026cdf;color:#fff;text-decoration:none;padding:16px 28px;font-weight:700;font-size:17px">Accept Tickets</a><p style="font-size:12px;color:#6b7280;margin-top:28px">If you did not expect this transfer, you can ignore this email.</p></div></div></div>`
-    const email = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': `ticket-transfer/${transferToken}` }, body: JSON.stringify({ from: sender, to: [recipientEmail.trim()], subject: `You have received tickets for ${eventName ?? 'an event'}`, html }) })
-    if (!email.ok) {
-      const resendError = await email.text()
-      console.error('[v0] Resend transfer email failed:', email.status, resendError)
-      await fetch(`${supabaseUrl}/rest/v1/transfers?transfer_token=eq.${encodeURIComponent(transferToken)}`, {
-        method: 'DELETE',
-        headers: supabaseHeaders(),
-      }).catch((rollbackError) => console.error('[v0] Transfer rollback failed:', rollbackError))
-      return NextResponse.json({ error: `Email could not be sent from ${senderAddress}. Verify ${resendDomain} in Resend.` }, { status: 502 })
-    }
-    return NextResponse.json({ transferToken, claimUrl })
-  } catch { return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 }) }
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 })
+  }
 }
-
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char] ?? char) }
