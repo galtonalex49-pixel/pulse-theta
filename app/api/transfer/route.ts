@@ -15,11 +15,6 @@ function escapeHtml(value: string) {
 }
 
 const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1252-n0x5vgWrRyLYww38dshxqYlSS5QpXh.png'
-const STATUS_ICONS = {
-  pending: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="20" fill="%231769e0"/%3E%3Cpath d="M13 29 29 13M17 13h12v12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E',
-  accepted: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="19" fill="none" stroke="%23aeb7c5" stroke-width="1.5" stroke-dasharray="3 3"/%3E%3Ccircle cx="21" cy="21" r="11" fill="none" stroke="%23667085" stroke-width="1.5"/%3E%3Cpath d="m15 21 4 4 8-9" fill="none" stroke="%23667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E',
-  complete: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="19" fill="none" stroke="%23aeb7c5" stroke-width="1.5" stroke-dasharray="3 3"/%3E%3Cpath d="M15 15h12v14H15zM18 12h9v14M18 19h6M18 23h6" fill="none" stroke="%23667085" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/%3E%3C/svg%3E',
-}
 
 function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage, ticketQuantity }: {
   senderName: string
@@ -58,11 +53,11 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
           <tr><td style="padding:0 32px 24px;text-align:center;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
           <tr><td style="padding:0 32px 28px">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-              <td align="center" width="33%"><div style="height:42px;line-height:42px"><img src="${STATUS_ICONS.pending}" width="42" height="42" alt="Transfer pending" style="display:block;margin:0 auto" /></div><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
+              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #1769e0;border-radius:50%;box-sizing:border-box;color:#1769e0;font-size:28px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">↗</div><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
               <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
-              <td align="center" width="33%"><div style="height:42px;line-height:42px"><img src="${STATUS_ICONS.accepted}" width="42" height="42" alt="Transfer accepted" style="display:block;margin:0 auto" /></div><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
+              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #aeb7c5;border-radius:50%;box-sizing:border-box;color:#667085;font-size:25px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">✓</div><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
               <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
-              <td align="center" width="33%"><div style="height:42px;line-height:42px"><img src="${STATUS_ICONS.complete}" width="42" height="42" alt="Transfer complete" style="display:block;margin:0 auto" /></div><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
+              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #aeb7c5;border-radius:50%;box-sizing:border-box;color:#667085;font-size:24px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">▤</div><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
             </tr></table>
           </td></tr>
           <tr><td style="padding:0 48px 28px;text-align:center;font-size:11px;line-height:1.7"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
