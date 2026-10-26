@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const ownerEmail = new URL(request.url).searchParams.get('ownerEmail')?.trim()
   if (!supabaseUrl || !supabaseKey || !ownerEmail) return NextResponse.json({ templates: [] })
-  const response = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(ownerEmail)}&select=id,ticket_id,event_name,template_name,sender_name,recipient_name,recipient_email,event_date,venue,seat_info,event_url,banner_image,subject,html,is_selected,created_at,updated_at&order=created_at.desc`), { headers, cache: 'no-store' })
+  const response = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(ownerEmail)}&select=id,ticket_id,event_name,template_name,sender_name,recipient_name,recipient_email,event_date,venue,seat_info,event_url,banner_image,logo_image,subject,html,is_selected,created_at,updated_at&order=created_at.desc`), { headers, cache: 'no-store' })
   if (!response.ok) return NextResponse.json({ error: 'Unable to load inbox.' }, { status: 502 })
   return NextResponse.json({ templates: await response.json() })
 }
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   const body = await request.json().catch(() => null)
   if (!supabaseUrl || !supabaseKey || !body?.id || !body?.ownerEmail) return NextResponse.json({ error: 'Invalid template.' }, { status: 400 })
-  const allowed = ['sender_name', 'recipient_name', 'recipient_email', 'event_date', 'venue', 'seat_info', 'event_url', 'subject', 'template_name', 'html']
+  const allowed = ['sender_name', 'recipient_name', 'recipient_email', 'event_date', 'venue', 'seat_info', 'event_url', 'banner_image', 'logo_image', 'subject', 'template_name', 'html']
   const patch = Object.fromEntries(Object.entries(body).filter(([key, value]) => allowed.includes(key) && typeof value === 'string'))
   patch.updated_at = new Date().toISOString()
   const response = await fetch(endpoint(`?id=eq.${encodeURIComponent(body.id)}&owner_email=eq.${encodeURIComponent(body.ownerEmail)}`), { method: 'PATCH', headers, body: JSON.stringify(patch) })

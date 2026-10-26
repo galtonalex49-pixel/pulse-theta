@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, Pencil, Save, Trash2 } from 'lucide-react'
 import { useApp } from '@/lib/store'
 
-type Template = { id: string; ticket_id: string; event_name: string; template_name: string; is_selected?: boolean; banner_image?: string; sender_name: string; recipient_name: string; recipient_email: string; event_date: string; venue: string; seat_info: string; event_url: string; subject: string; html: string }
+type Template = { id: string; ticket_id: string; event_name: string; template_name: string; is_selected?: boolean; banner_image?: string; logo_image?: string; sender_name: string; recipient_name: string; recipient_email: string; event_date: string; venue: string; seat_info: string; event_url: string; subject: string; html: string }
 
 export function MyInbox({ onBack }: { onBack: () => void }) {
   const { profile, tickets } = useApp()
@@ -12,6 +12,12 @@ export function MyInbox({ onBack }: { onBack: () => void }) {
   const [selected, setSelected] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState<Partial<Template>>({})
+  const uploadLogo = (file: File) => {
+    if (!file.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = () => setDraft((value) => ({ ...value, logo_image: typeof reader.result === 'string' ? reader.result : '' }))
+    reader.readAsDataURL(file)
+  }
 
   const load = async () => {
     const response = await fetch(`/api/transfer/templates?ownerEmail=${encodeURIComponent(profile.email)}`, { cache: 'no-store' })
@@ -28,7 +34,7 @@ export function MyInbox({ onBack }: { onBack: () => void }) {
     await load()
   }
   const selectTemplate = async (id: string) => {
-    const response = await fetch('/api/transfer/templates', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email }) })
+    const response = await fetch('/api/transfer/templates', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email, ticketId: templates.find((template) => template.id === id)?.ticket_id }) })
     if (response.ok) await load()
   }
 
@@ -50,7 +56,7 @@ export function MyInbox({ onBack }: { onBack: () => void }) {
         return <article key={template.id} className="overflow-hidden rounded-xl border border-white/15 bg-[#232323]">
           <button type="button" onClick={() => setSelected(open ? null : template.id)} className="flex w-full items-center gap-3 p-4 text-left"><span className="min-w-0 flex-1"><strong className="block truncate text-lg">{template.template_name}</strong><span className="block truncate text-sm text-white/60">To {template.recipient_name || 'future recipient'} · {template.recipient_email || 'selected at transfer'}</span></span>{open ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}</button>
           {open && <div className="border-t border-white/10 p-4">
-            {isEditing ? <div className="flex flex-col gap-3">{(['sender_name', 'recipient_name', 'recipient_email', 'event_date', 'venue', 'seat_info', 'event_url', 'subject'] as const).map((key) => <label key={key} className="flex flex-col gap-1 text-sm text-white/70"><span>{key.replaceAll('_', ' ')}</span><input value={(draft[key] as string) ?? template[key]} onChange={(event) => setDraft((value) => ({ ...value, [key]: event.target.value }))} className="rounded-md border border-white/20 bg-black/20 px-3 py-2 text-white outline-none focus:border-tm-blue" /></label>)}<div className="flex gap-2"><button type="button" onClick={() => void save(template)} className="flex items-center gap-2 rounded-md bg-tm-blue px-3 py-2 font-semibold"><Save aria-hidden="true" />Save</button><button type="button" onClick={() => setEditing(null)} className="rounded-md border border-white/20 px-3 py-2">Cancel</button></div></div> : <><div className="mb-3 flex flex-wrap gap-2"><button type="button" onClick={() => void selectTemplate(template.id)} disabled={template.is_selected} className="rounded-md bg-tm-blue px-3 py-2 text-sm font-semibold disabled:opacity-60">{template.is_selected ? 'Selected for all transfers' : 'Use for all transfers'}</button><button type="button" onClick={() => { setEditing(template.id); setDraft(template) }} className="flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm"><Pencil aria-hidden="true" />Edit</button><button type="button" onClick={() => void remove(template.id)} className="flex items-center gap-2 rounded-md border border-red-400/40 px-3 py-2 text-sm text-red-200"><Trash2 aria-hidden="true" />Delete</button></div><iframe title={`Preview of ${template.template_name}`} srcDoc={template.html} className="h-[560px] w-full rounded-lg bg-white" sandbox="allow-popups allow-popups-to-escape-sandbox" /></>}
+            {isEditing ? <div className="flex flex-col gap-3"><label className="flex flex-col gap-2 text-sm text-white/70"><span>Optional logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadLogo(file) }} className="block w-full rounded-md border border-white/20 bg-black/20 px-3 py-2 text-white file:mr-3 file:rounded file:border-0 file:bg-tm-blue file:px-2 file:py-1 file:text-white" />{(draft.logo_image ?? template.logo_image) ? <img src={(draft.logo_image ?? template.logo_image) as string} alt="Uploaded template logo" className="h-12 w-auto max-w-[180px] object-contain" /> : <span className="text-xs text-white/50">Logo area remains empty until you upload one.</span>}</label>{(['sender_name', 'recipient_name', 'recipient_email', 'event_date', 'venue', 'seat_info', 'event_url', 'subject'] as const).map((key) => <label key={key} className="flex flex-col gap-1 text-sm text-white/70"><span>{key.replaceAll('_', ' ')}</span><input value={(draft[key] as string) ?? template[key]} onChange={(event) => setDraft((value) => ({ ...value, [key]: event.target.value }))} className="rounded-md border border-white/20 bg-black/20 px-3 py-2 text-white outline-none focus:border-tm-blue" /></label>)}<div className="flex gap-2"><button type="button" onClick={() => void save(template)} className="flex items-center gap-2 rounded-md bg-tm-blue px-3 py-2 font-semibold"><Save aria-hidden="true" />Save</button><button type="button" onClick={() => setEditing(null)} className="rounded-md border border-white/20 px-3 py-2">Cancel</button></div></div> : <><div className="mb-3 flex flex-wrap gap-2"><button type="button" onClick={() => void selectTemplate(template.id)} disabled={template.is_selected} className="rounded-md bg-tm-blue px-3 py-2 text-sm font-semibold disabled:opacity-60">{template.is_selected ? 'Selected for all transfers' : 'Use for all transfers'}</button><button type="button" onClick={() => { setEditing(template.id); setDraft(template) }} className="flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm"><Pencil aria-hidden="true" />Edit</button><button type="button" onClick={() => void remove(template.id)} className="flex items-center gap-2 rounded-md border border-red-400/40 px-3 py-2 text-sm text-red-200"><Trash2 aria-hidden="true" />Delete</button></div><iframe title={`Preview of ${template.template_name}`} srcDoc={template.html} className="h-[560px] w-full rounded-lg bg-white" sandbox="allow-popups allow-popups-to-escape-sandbox" /></>}
           </div>}
         </article>
       })}
