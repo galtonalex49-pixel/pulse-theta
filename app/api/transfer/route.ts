@@ -3,6 +3,11 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PENDING_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="19" fill="none" stroke="%231769e0" stroke-width="2"/%3E%3Cpath d="M13 29 29 13M17 13h12v12" fill="none" stroke="%231769e0" stroke-width="2.5" stroke-linecap="round"/%3E%3C/svg%3E'
+const ACCEPTED_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="19" fill="none" stroke="%23667085" stroke-width="2" stroke-dasharray="3 3"/%3E%3Cpath d="m14 21 5 5 10-11" fill="none" stroke="%23667085" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E'
+const COMPLETE_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"%3E%3Ccircle cx="21" cy="21" r="19" fill="none" stroke="%23667085" stroke-width="2" stroke-dasharray="3 3"/%3E%3Crect x="13" y="14" width="16" height="18" rx="1" fill="none" stroke="%23667085" stroke-width="2"/%3E%3Cpath d="M17 19h8M17 24h8" stroke="%23667085" stroke-width="2" stroke-linecap="round"/%3E%3C/svg%3E'
+const DATE_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"%3E%3Crect x="2" y="3" width="14" height="13" rx="1" fill="none" stroke="%23667085" stroke-width="1.5"/%3E%3Cpath d="M5 1v4M13 1v4M2 7h14" stroke="%23667085" stroke-width="1.5"/%3E%3C/svg%3E'
+const SECTION_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"%3E%3Crect x="3" y="3" width="12" height="12" rx="1" fill="none" stroke="%23667085" stroke-width="1.5"/%3E%3Cpath d="M6 7h6M6 10h6" stroke="%23667085" stroke-width="1.5" stroke-linecap="round"/%3E%3C/svg%3E'
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => ({
@@ -14,12 +19,6 @@ function escapeHtml(value: string) {
   })[character] ?? character)
 }
 
-const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1264-5H9Jj1Qt2IhzrdxydrBJC8I3J3R5Yj.jpeg'
-const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1265-6OiaMB9om7Crs8LZ7ZJPpGZTSufj23.jpeg'
-const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1266-sYF3Bukcp3tjE6zsv4aNXuixVrfUOC.png'
-const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1267-LUCXcBFR1u3RRUQ79ZVtgw1QWLZCHQ.png'
-const DATE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1249-lRplr6EzrbHYyFyR5Lpft9YIsJhvWL.jpeg'
-const SECTION_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1250-rF7Ebz9FOisxpkiCTbCWg3DKwzrofx.jpeg'
 
 function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage, ticketQuantity }: {
   senderName: string
@@ -53,22 +52,22 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
       <tr><td align="center">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
           <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
-          <tr><td align="center" style="padding:18px 24px;background:#ffffff"><img src="${TICKET_E_TRANSFER_LOGO}" alt="Ticketmaster" width="420" height="90" style="display:block;margin:0 auto;width:100%;max-width:420px;height:90px;object-fit:contain;background:#ffffff" /></td></tr>
-          <tr><td style="padding:12px 32px 8px;text-align:center;font-size:18px;line-height:1.35;font-weight:700">${transferHeading}</td></tr>
-          <tr><td style="padding:0 32px 24px;text-align:center;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
+          <tr><td align="left" style="padding:28px 32px 20px;background:#ffffff"><div style="font-size:28px;line-height:1.1;font-weight:700;letter-spacing:-.6px;color:#123b78">Ticket eTransfer®</div><div style="margin-top:6px;font-size:11px;line-height:1.4;color:#667085">Secure ticket transfer notification</div></td></tr>
+          <tr><td style="padding:12px 32px 8px;text-align:left;font-size:18px;line-height:1.35;font-weight:700">${transferHeading}</td></tr>
+          <tr><td style="padding:0 32px 24px;text-align:left;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
           <tr><td style="padding:0 32px 28px">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
               <td align="center" width="33%"><img src="${PENDING_ICON}" width="42" height="42" alt="Pending" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
-              <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
+              <td align="center" style="width:8%;color:#b8c1cf;font-size:16px;line-height:42px">- -</td>
               <td align="center" width="33%"><img src="${ACCEPTED_ICON}" width="42" height="42" alt="Accepted" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
-              <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
+              <td align="center" style="width:8%;color:#b8c1cf;font-size:16px;line-height:42px">- -</td>
               <td align="center" width="33%"><img src="${COMPLETE_ICON}" width="42" height="42" alt="Complete" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
             </tr></table>
           </td></tr>
-          <tr><td style="padding:0 48px 28px;text-align:center;font-size:11px;line-height:1.7"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
+          <tr><td style="padding:0 32px 28px;text-align:left;font-size:11px;line-height:1.7"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
           <tr><td style="padding:0 48px 28px;text-align:center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7;background:#f7f8fb"><tr><td style="padding:0">${bannerMarkup}<div style="padding:26px"><p style="margin:0 0 12px;font-size:11px;line-height:1.6;font-weight:700;color:#182230">${safeEventName}</p><p style="margin:0;text-align:center;color:#667085;font-size:11px;line-height:1.7"><img src="${DATE_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeEventDate}<br>${safeVenue}</p><p style="margin:18px 0 0;text-align:center;color:#182230;font-weight:700;font-size:11px;line-height:1.6"><img src="${SECTION_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeSeats}<br><span style="font-weight:400;color:#667085">Transfer Pending</span></p><a href="${safeEventUrl}" style="display:block;margin:24px auto 0;max-width:300px;background:#1257d6;color:#fff;text-align:center;text-decoration:none;padding:12px;font-weight:700;font-size:11px;letter-spacing:.3px">ACCEPT TICKETS</a><p style="margin:20px 0 0;color:#667085;font-size:11px;line-height:1.7">By clicking &quot;ACCEPT TICKETS&quot;, you agree to the applicable event terms.</p></div></td></tr></table></td></tr>
           <tr><td style="padding:0 48px 28px;text-align:center;color:#667085;font-size:11px;line-height:1.7">If the tickets were obtained fraudulently by the person transferring them, they may be canceled at any time and removed from your account.<br><br><strong style="color:#182230">This email is NOT your ticket.</strong></td></tr>
-          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:11px;line-height:1.7;text-align:center">Ticket eTransfer®, Fan Support<br>707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
+          <tr><td align="center" style="background:#202832;color:#fff;padding:34px 24px;font-size:11px;line-height:1.7;text-align:center"><div style="font-size:18px;font-weight:700;margin-bottom:20px">Ticket eTransfer®</div><div style="font-size:11px;margin-bottom:20px">Fan Support<br>707 Virginia Street East, Suite 170, Charleston, WV 25301</div><div style="font-size:11px;color:#d9e2f2">Stay connected</div></td></tr>
         </table>
       </td></tr>
     </table>
