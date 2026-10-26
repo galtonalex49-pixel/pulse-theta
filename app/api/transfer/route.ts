@@ -14,7 +14,7 @@ function escapeHtml(value: string) {
   })[character] ?? character)
 }
 
-const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1252-n0x5vgWrRyLYww38dshxqYlSS5QpXh.png'
+const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1262-Sun2yYPJRFaxphkxBwNJacq52coK1a.png'
 
 function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage, ticketQuantity }: {
   senderName: string
