@@ -16,7 +16,7 @@ function escapeHtml(value: string) {
 
 const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1252-n0x5vgWrRyLYww38dshxqYlSS5QpXh.png'
 
-function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }: {
+function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage }: {
   senderName: string
   recipientName: string
   eventName: string
@@ -24,6 +24,7 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
   venue: string
   seats: string
   eventUrl: string
+  bannerImage: string
 }) {
   const safeSenderName = escapeHtml(senderName)
   const safeRecipientName = escapeHtml(recipientName)
@@ -32,6 +33,10 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
   const safeVenue = escapeHtml(venue)
   const safeSeats = escapeHtml(seats)
   const safeEventUrl = escapeHtml(eventUrl)
+  const safeBannerImage = escapeHtml(bannerImage)
+  const bannerMarkup = safeBannerImage
+    ? '<img src="' + safeBannerImage + '" alt="' + safeEventName + ' event banner" width="536" style="display:block;width:100%;height:auto;max-height:260px;object-fit:cover" />'
+    : '<div style="height:180px;background:#173b72;text-align:center;line-height:180px;color:#fff;font-size:18px;font-weight:700">' + safeEventName + '</div>'
 
   return `<!doctype html>
 <html lang="en">
@@ -53,8 +58,8 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
             </tr></table>
           </td></tr>
           <tr><td style="padding:0 32px 28px;font-size:16px;line-height:1.65"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
-          <tr><td style="padding:0 32px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7"><tr><td style="padding:26px"><div style="height:150px;background:linear-gradient(135deg,#173b72,#2d72c7);text-align:center;line-height:150px;color:#fff;font-size:18px;font-weight:700">${safeEventName}</div><p style="margin:24px 0 8px;font-size:20px;font-weight:700">${safeEventName}</p><p style="margin:0;color:#667085;line-height:1.6">${safeEventDate}<br>${safeVenue}<br>${safeSeats}</p><a href="${safeEventUrl}" style="display:block;margin-top:24px;background:#1769e0;color:#fff;text-align:center;text-decoration:none;padding:16px;font-weight:700;font-size:16px">ACCEPT TICKETS</a></td></tr></table></td></tr>
-          <tr><td style="padding:0 32px 28px;color:#667085;font-size:13px;line-height:1.6">By accepting, you agree to the applicable event terms. If you did not expect this transfer, you can ignore this email.<br><br><strong>This email is NOT your ticket.</strong></td></tr>
+          <tr><td style="padding:0 32px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7;background:#f7f8fb"><tr><td style="padding:0">${bannerMarkup}<div style="padding:26px"><p style="margin:0 0 12px;font-size:20px;line-height:1.35;font-weight:700;color:#182230">${safeEventName}</p><p style="margin:0;color:#667085;line-height:1.7">${safeEventDate}<br>${safeVenue}</p><p style="margin:18px 0 0;color:#182230;font-weight:700;line-height:1.6">${safeSeats}<br><span style="font-weight:400;color:#667085">Transfer Pending</span></p><a href="${safeEventUrl}" style="display:block;margin-top:24px;background:#1257d6;color:#fff;text-align:center;text-decoration:none;padding:16px;font-weight:700;font-size:16px;letter-spacing:.3px">ACCEPT TICKETS</a><p style="margin:20px 0 0;color:#667085;font-size:13px;line-height:1.6">By clicking &quot;ACCEPT TICKETS&quot;, you agree to the applicable event terms.</p></div></td></tr></table></td></tr>
+          <tr><td style="padding:0 32px 28px;color:#667085;font-size:13px;line-height:1.7">If the tickets were obtained fraudulently by the person transferring them, they may be canceled at any time and removed from your account.<br><br><strong style="color:#182230">This email is NOT your ticket.</strong></td></tr>
           <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:13px;line-height:1.5">Ticket eTransfer® Support<br>707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
         </table>
       </td></tr>
@@ -98,7 +103,7 @@ export async function POST(request: Request) {
           from: `Ticket eTransfer® <transfers@ticketmaster.bbroot.com>`,
           to: [recipientEmail],
           subject: `You received tickets from ${senderName}`,
-          html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl }),
+          html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '' }),
         }),
       })
     } catch (error) {
