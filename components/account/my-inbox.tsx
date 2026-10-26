@@ -20,29 +20,62 @@ export function MyInbox({ onBack }: { onBack: () => void }) {
   }
 
   const load = async () => {
-    const response = await fetch(`/api/transfer/templates?ownerEmail=${encodeURIComponent(profile.email)}`, { cache: 'no-store' })
-    if (response.ok) {
+    try {
+      const response = await fetch(`/api/transfer/templates?ownerEmail=${encodeURIComponent(profile.email)}`, { cache: 'no-store' })
+      if (!response.ok) return
       const activeIds = new Set(tickets.map((ticket) => ticket.id))
-      setTemplates(((await response.json()).templates ?? []).filter((template: Template) => activeIds.has(template.ticket_id)))
+      const payload = await response.json().catch(() => ({ templates: [] }))
+      setTemplates((payload.templates ?? []).filter((template: Template) => activeIds.has(template.ticket_id)))
+    } catch {
+      // Preview webviews can temporarily reject requests while reconnecting.
     }
   }
-  useEffect(() => { void load() }, [profile.email, tickets])
+  useEffect(() => {
+    let cancelled = false
+    const refresh = async () => {
+      try {
+        const response = await fetch(`/api/transfer/templates?ownerEmail=${encodeURIComponent(profile.email)}`, { cache: 'no-store' })
+        if (!response.ok || cancelled) return
+        const activeIds = new Set(tickets.map((ticket) => ticket.id))
+        const payload = await response.json().catch(() => ({ templates: [] }))
+        if (!cancelled) setTemplates((payload.templates ?? []).filter((template: Template) => activeIds.has(template.ticket_id)))
+      } catch {
+        // Keep the current inbox state when the preview connection drops.
+      }
+    }
+    void refresh()
+    return () => { cancelled = true }
+  }, [profile.email, tickets])
 
   const save = async (template: Template) => {
-    await fetch('/api/transfer/templates', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: template.id, ownerEmail: profile.email, ...draft }) })
-    setEditing(null)
-    await load()
+    try {
+      const response = await fetch('/api/transfer/templates', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: template.id, ownerEmail: profile.email, ...draft }) })
+      if (!response.ok) return
+      setEditing(null)
+      await load()
+    } catch {
+      // Surface-level save failures should not become unhandled rejections.
+    }
   }
   const selectTemplate = async (id: string) => {
-    const response = await fetch('/api/transfer/templates', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email, ticketId: templates.find((template) => template.id === id)?.ticket_id }) })
-    if (response.ok) await load()
+    try {
+      const response = await fetch('/api/transfer/templates', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email, ticketId: templates.find((template) => template.id === id)?.ticket_id }) })
+      if (response.ok) await load()
+    } catch {
+      // Selection can be retried after the preview reconnects.
+    }
   }
 
   const remove = async (id: string) => {
     if (!window.confirm('Delete this transfer template?')) return
-    await fetch('/api/transfer/templates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email }) })
-    setTemplates((items) => items.filter((item) => item.id !== id))
-    if (selected === id) setSelected(null)
+    try {
+      const response = await fetch('/api/transfer/templates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ownerEmail: profile.email }) })
+      if (!response.ok) return
+      setTemplates((items) => items.filter((item) => item.id !== id))
+      if (selected === id) setSelected(null)
+    } catch {
+      // Keep the template visible when the preview connection drops.
+    }
   }
 
   return <div className="compact-screen mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
