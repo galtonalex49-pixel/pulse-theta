@@ -52,7 +52,7 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
       <tr><td align="center">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
           <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
-          <tr><td align="left" style="padding:28px 32px 20px;background:#ffffff"><div style="font-size:28px;line-height:1.1;font-weight:700;letter-spacing:-.6px;color:#123b78">Ticket eTransfer®</div><div style="margin-top:6px;font-size:11px;line-height:1.4;color:#667085">Secure ticket transfer notification</div></td></tr>
+          <tr><td align="left" style="padding:22px 32px 18px;background:#ffffff"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ticket_eTransfer_final_transparent-SUL0qgI3AAwwj0cYgnJRzKJLfAND4o.png" alt="Ticket eTransfer®" width="320" height="80" style="display:block;width:320px;max-width:100%;height:80px;object-fit:contain;object-position:left center" /></td></tr>
           <tr><td style="padding:12px 32px 8px;text-align:left;font-size:18px;line-height:1.35;font-weight:700">${transferHeading}</td></tr>
           <tr><td style="padding:0 32px 24px;text-align:left;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
           <tr><td style="padding:0 32px 28px">
