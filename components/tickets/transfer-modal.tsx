@@ -161,7 +161,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
         body: JSON.stringify({
           ticketId: ticket.id,
           ownerEmail: profile.email,
-          eventUrl: `${window.location.origin}/tickets/${ticket.id}`,
+          eventUrl: `https://www.ticketmaster.com/search?q=${encodeURIComponent(ticket.artist)}`,
           bannerImage: ticket.posterUrl,
           recipientEmail: email.trim(),
           email: email.trim(),
