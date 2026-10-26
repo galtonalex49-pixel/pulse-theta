@@ -19,7 +19,6 @@ import {
 import { useApp } from '@/lib/store'
 import { initials } from '@/lib/format'
 import { AdminDashboard } from './admin-dashboard'
-import { MyInbox } from './my-inbox'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="mb-4 mt-10 px-4 text-[26px] font-extrabold">{children}</h2>
@@ -102,10 +101,8 @@ export function AccountTab() {
   const { profile, accountPage, setAccountPage, setTab, setLocationSheetOpen } = useApp()
   const [locationContent, setLocationContent] = useState(false)
   const [notifications, setNotifications] = useState(true)
-  const [showInbox, setShowInbox] = useState(false)
 
   if (accountPage === 'edit') return <AdminDashboard onBack={() => setAccountPage('main')} />
-  if (showInbox) return <MyInbox onBack={() => setShowInbox(false)} />
 
   return (
     <div className="compact-screen mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
@@ -124,8 +121,7 @@ export function AccountTab() {
 
       <SectionTitle>Personalization</SectionTitle>
       <div>
-        <Row icon={<Mail size={28} strokeWidth={1.5} />} label="My Inbox" onClick={() => setShowInbox(true)} />
-        <Row icon={<Heart size={28} strokeWidth={1.5} />} label="Favorites" onClick={() => setTab('watchlist')} />
+          <Row icon={<Heart size={28} strokeWidth={1.5} />} label="Favorites" onClick={() => setTab('watchlist')} />
         <Row
           icon={<MapPin size={28} strokeWidth={1.5} />}
           label="Location"

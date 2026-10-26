@@ -232,7 +232,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       seats: [{ id: uid(), section: '101', row: '1', seat: '1', transferStatus: '' }],
     }
     setTickets((prev) => [next, ...prev])
-    void fetch('/api/transfer/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerEmail: profile.email, ticketId: next.id, eventName: next.artist, eventDate: next.dateTime, venue: next.venue, seatInfo: next.seats.map((seat) => `Section ${seat.section}, Row ${seat.row}, Seat ${seat.seat}`).join('; '), bannerImage: next.posterUrl, eventUrl: `${window.location.origin}/tickets/${next.id}`, senderName: profile.name }) })
     return id
   }, [profile.email, profile.name])
 
@@ -253,7 +252,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const deleteTicket = useCallback((id: string) => {
     setTickets((prev) => prev.filter((t) => t.id !== id))
-    void fetch('/api/transfer/templates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerEmail: profile.email, ticketId: id }) })
     setTicketView((prev) => (prev.id === id ? { view: 'landing', id: null } : prev))
   }, [profile.email])
 
