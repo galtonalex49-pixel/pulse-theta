@@ -1,62 +1,132 @@
-import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-
-const configuredEmailDomain = (process.env.RESEND_EMAIL_DOMAIN ?? 'ticketmaster.bbroot.com').trim()
-const resendDomain = configuredEmailDomain
-  .replace(/^https?:\/\//, '')
-  .replace(/^.*@/, '')
-  .replace(/[\s/>]+$/, '')
-  .replace(/\/$/, '')
-const senderAddress = `transfers@${resendDomain}`
-const sender = `Ticketmaster Transfer <${senderAddress}>`
-const publicAppUrl = (process.env.PUBLIC_APP_URL ?? 'https://ticketmaster.bbroot.com').replace(/\/$/, '')
-
-// Keep credentials server-side; never expose them through NEXT_PUBLIC_* variables.
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY
-const supabaseSecret = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
-const resendKey = process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
 
 export const runtime = 'nodejs'
 
-function supabaseHeaders() {
-  const key = supabaseSecret ?? supabaseKey ?? ''
-  return { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=representation' }
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_1_transparent-uJqIkLKBvP9kvQs8iblV8NIASHZYGn.png'
+const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_2_transparent-pOlhMP4pZMC5p3IUPcF6Rv3KZwFkJM.png'
+const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_3_transparent-O9tSFrHyJ7MxfSnROxqDImrF398Sdk.png'
+const DATE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_5_transparent-CvuffgouCC3EPsaj4tcYUYK5c8genu.png'
+const SECTION_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_4_transparent-NsTtDvzZ2164RGRPz5e9lvnsFxeim9.png'
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character] ?? character)
+}
+
+
+function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage, ticketQuantity }: {
+  senderName: string
+  recipientName: string
+  eventName: string
+  eventDate: string
+  venue: string
+  seats: string
+  eventUrl: string
+  bannerImage: string
+  ticketQuantity: number
+}) {
+  const safeSenderName = escapeHtml(senderName)
+  const safeRecipientName = escapeHtml(recipientName)
+  const safeEventName = escapeHtml(eventName)
+  const safeEventDate = escapeHtml(eventDate)
+  const safeVenue = escapeHtml(venue)
+  const safeSeats = escapeHtml(seats)
+  const safeEventUrl = escapeHtml(eventUrl)
+  const safeBannerImage = escapeHtml(bannerImage)
+  const safeTicketQuantity = Math.max(1, ticketQuantity)
+  const transferHeading = `${safeSenderName} has transferred you ${safeTicketQuantity} ${safeTicketQuantity === 1 ? 'ticket' : 'tickets'} to ${safeEventName}`
+  const bannerMarkup = safeBannerImage
+    ? '<img src="' + safeBannerImage + '" alt="' + safeEventName + ' event banner" width="536" style="display:block;width:100%;height:auto;max-height:260px;object-fit:cover" />'
+    : '<div style="height:180px;background:#173b72;text-align:center;line-height:180px;color:#fff;font-size:18px;font-weight:700">' + safeEventName + '</div>'
+
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;background:#f3f5f8;color:#182230;font-family:Arial,Helvetica,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5f8;padding:32px 12px">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
+          <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
+          <tr><td align="left" style="padding:22px 32px 18px;background:#ffffff"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ticket_eTransfer_final_transparent-SUL0qgI3AAwwj0cYgnJRzKJLfAND4o.png" alt="Ticket eTransfer®" width="320" height="80" style="display:block;width:320px;max-width:100%;height:80px;object-fit:contain;object-position:left center" /></td></tr>
+          <tr><td style="padding:12px 32px 8px;text-align:left;font-size:18px;line-height:1.35;font-weight:700">${transferHeading}</td></tr>
+          <tr><td style="padding:0 32px 24px;text-align:left;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
+          <tr><td style="padding:0 32px 28px">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+              <td align="center" width="33%"><img src="${PENDING_ICON}" width="42" height="42" alt="Pending" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
+              <td align="center" style="width:8%;color:#b8c1cf;font-size:16px;line-height:42px">- -</td>
+              <td align="center" width="33%"><img src="${ACCEPTED_ICON}" width="42" height="42" alt="Accepted" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
+              <td align="center" style="width:8%;color:#b8c1cf;font-size:16px;line-height:42px">- -</td>
+              <td align="center" width="33%"><img src="${COMPLETE_ICON}" width="42" height="42" alt="Complete" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
+            </tr></table>
+          </td></tr>
+          <tr><td style="padding:0 32px 28px;text-align:left;font-size:11px;line-height:1.7"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
+          <tr><td style="padding:0 48px 28px;text-align:center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7;background:#f7f8fb"><tr><td style="padding:0">${bannerMarkup}<div style="padding:26px"><p style="margin:0 0 12px;font-size:11px;line-height:1.6;font-weight:700;color:#182230">${safeEventName}</p><p style="margin:0;text-align:center;color:#667085;font-size:11px;line-height:1.7"><img src="${DATE_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeEventDate}<br>${safeVenue}</p><p style="margin:18px 0 0;text-align:center;color:#182230;font-weight:700;font-size:11px;line-height:1.6"><img src="${SECTION_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeSeats}<br><span style="font-weight:400;color:#667085">Transfer Pending</span></p><a href="${safeEventUrl}" style="display:block;margin:24px auto 0;max-width:300px;background:#1257d6;color:#fff;text-align:center;text-decoration:none;padding:12px;font-weight:700;font-size:11px;letter-spacing:.3px">ACCEPT TICKETS</a><p style="margin:20px 0 0;color:#667085;font-size:11px;line-height:1.7">By clicking &quot;ACCEPT TICKETS&quot;, you agree to the applicable event terms.</p></div></td></tr></table></td></tr>
+          <tr><td style="padding:0 48px 28px;text-align:center;color:#667085;font-size:11px;line-height:1.7">If the tickets were obtained fraudulently by the person transferring them, they may be canceled at any time and removed from your account.<br><br><strong style="color:#182230">This email is NOT your ticket.</strong></td></tr>
+          <tr><td align="center" style="background:#202832;color:#fff;padding:48px 24px 42px;font-size:11px;line-height:1.7;text-align:center"><div style="font-size:15px;line-height:2.2;font-weight:700;margin-bottom:42px">Ticket eTransfer® &nbsp; | &nbsp; About &nbsp; | &nbsp; Terms of Use<br>Privacy</div><div style="font-size:15px;line-height:1.5;color:#5e9bff;text-decoration:underline;margin-bottom:22px">707 Virginia Street East, Suite 170, Charleston, WV 25301</div><div style="font-size:15px;line-height:1.5">© 2026 Ticket eTransfer®. All rights reserved.</div></td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { ticketId, recipientEmail, eventName, eventDate, venue, ticketDetails } = body
-    if (!ticketId || !recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail)) return NextResponse.json({ error: 'Ticket and valid recipient email are required.' }, { status: 400 })
-    if (!supabaseUrl || !supabaseKey || !resendKey) {
-      return NextResponse.json({ error: 'Transfer service is not configured.' }, { status: 503 })
+    const body = await request.json() as { ticketId?: unknown; ownerEmail?: unknown; recipientEmail?: unknown; email?: unknown; senderName?: unknown; recipientName?: unknown; eventName?: unknown; eventDate?: unknown; venue?: unknown; seats?: unknown; ticketDetails?: { seats?: Array<{ section?: string; row?: string; seat?: string }> }; bannerImage?: unknown; eventUrl?: unknown; ticketQuantity?: unknown }
+    const recipientEmail = typeof body.recipientEmail === 'string'
+      ? body.recipientEmail.trim()
+      : typeof body.email === 'string'
+        ? body.email.trim()
+        : ''
+    const senderName = typeof body.senderName === 'string' && body.senderName.trim()
+      ? body.senderName.trim()
+      : 'Account Holder'
+    const recipientName = typeof body.recipientName === 'string' && body.recipientName.trim() ? body.recipientName.trim() : 'Ticket Recipient'
+    const eventName = typeof body.eventName === 'string' && body.eventName.trim() ? body.eventName.trim() : 'Selected Event'
+    const eventDate = typeof body.eventDate === 'string' && body.eventDate.trim() ? body.eventDate.trim() : 'Event date and time to be confirmed'
+    const venue = typeof body.venue === 'string' && body.venue.trim() ? body.venue.trim() : 'Venue to be confirmed'
+    const seats = typeof body.seats === 'string' && body.seats.trim() ? body.seats.trim() : body.ticketDetails?.seats?.map((seat) => `Section ${seat.section ?? '—'}, Row ${seat.row ?? '—'}, Seat ${seat.seat ?? '—'}`).join('; ') || 'Seat details to be confirmed'
+    const ticketQuantity = body.ticketDetails?.seats?.length ?? (typeof body.ticketQuantity === 'number' && Number.isFinite(body.ticketQuantity) ? Math.max(1, Math.floor(body.ticketQuantity)) : 1)
+    const eventUrl = typeof body.eventUrl === 'string' && /^https?:\/\//i.test(body.eventUrl.trim()) ? body.eventUrl.trim() : ''
+
+    if (!emailPattern.test(recipientEmail)) {
+      return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const transferToken = randomUUID()
-    const createdAt = new Date().toISOString()
-    const insert = await fetch(`${supabaseUrl}/rest/v1/transfers`, {
-      method: 'POST', headers: supabaseHeaders(), body: JSON.stringify({ ticket_id: ticketId, recipient_email: recipientEmail.trim().toLowerCase(), status: 'pending', created_at: createdAt, transfer_token: transferToken, event_name: eventName, event_date: eventDate, venue, ticket_details: ticketDetails }),
-    })
-    if (!insert.ok) {
-      console.error('[v0] Transfer insert failed:', insert.status, await insert.text())
-      return NextResponse.json({ error: 'Could not save transfer. Please try again.' }, { status: 502 })
+    // Prefer the verified Resend account key; RESEND may point to an older account.
+    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
+    if (!resendKey) return NextResponse.json({ error: 'RESEND is not configured.' }, { status: 503 })
+
+    let response: Response
+    try {
+      response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: `Ticket eTransfer® <transfers@ticketmaster.bbroot.com>`,
+          to: [recipientEmail],
+          subject: `You received tickets from ${senderName}`,
+          html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
+        }),
+      })
+    } catch (error) {
+      console.error('Resend error:', error)
+      return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
-    const claimUrl = `${publicAppUrl}/claim?token=${encodeURIComponent(transferToken)}`
-    const html = `<div style="margin:0;background:#f3f5f8;padding:32px 16px;font-family:Arial,sans-serif;color:#111827"><div style="max-width:600px;margin:auto;background:#fff"><div style="background:#071d49;padding:24px 32px"><div style="color:#fff;font-size:30px;font-weight:800;letter-spacing:-1px">ticketmaster</div></div><div style="padding:32px"><p style="font-size:16px">You have received a ticket transfer.</p><h1 style="font-size:26px;margin:24px 0 8px">${escapeHtml(eventName ?? 'Your event')}</h1><p style="font-size:16px;color:#4b5563;margin:0">${escapeHtml(eventDate ?? '')}<br>${escapeHtml(venue ?? '')}</p><a href="${claimUrl}" style="display:inline-block;margin-top:32px;background:#026cdf;color:#fff;text-decoration:none;padding:16px 28px;font-weight:700;font-size:17px">Accept Tickets</a><p style="font-size:12px;color:#6b7280;margin-top:28px">If you did not expect this transfer, you can ignore this email.</p></div></div></div>`
-    const email = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': `ticket-transfer/${transferToken}` }, body: JSON.stringify({ from: sender, to: [recipientEmail.trim()], subject: `You have received tickets for ${eventName ?? 'an event'}`, html }) })
-    if (!email.ok) {
-      const resendError = await email.text()
-      console.error('[v0] Resend transfer email failed:', email.status, resendError)
-      await fetch(`${supabaseUrl}/rest/v1/transfers?transfer_token=eq.${encodeURIComponent(transferToken)}`, {
-        method: 'DELETE',
-        headers: supabaseHeaders(),
-      }).catch((rollbackError) => console.error('[v0] Transfer rollback failed:', rollbackError))
-      return NextResponse.json({ error: `Email could not be sent from ${senderAddress}. Verify ${resendDomain} in Resend.` }, { status: 502 })
+    if (!response.ok) {
+      const details = await response.text()
+      console.error('[v0] Resend transfer email failed:', response.status, details)
+      return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
-    return NextResponse.json({ transferToken, claimUrl })
-  } catch { return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 }) }
+
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ error: 'Invalid transfer request.' }, { status: 400 })
+  }
 }
-
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char] ?? char) }

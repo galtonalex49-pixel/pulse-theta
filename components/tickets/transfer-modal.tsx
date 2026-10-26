@@ -102,7 +102,7 @@ function TextField({
 }
 
 export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: () => void }) {
-  const { updateTicket } = useApp()
+  const { updateTicket, profile } = useApp()
   const [step, setStep] = useState<Step>('auth')
   const [code, setCode] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -152,7 +152,27 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
     setSending(true)
     setSendError('')
     try {
-      const response = await fetch('/api/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: ticket.id, recipientEmail: email.trim(), eventName: ticket.artist, eventDate: dateBadge(ticket.dateTime), venue: ticket.venue, ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber } }) })
+      const senderName = profile.name?.trim() || 'Account Holder'
+      const eventName = ticket.artist?.trim() || 'Selected Event'
+      const recipientName = `${first.trim()} ${last.trim()}`.trim()
+      const response = await fetch('/api/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: ticket.id,
+          ownerEmail: profile.email,
+          eventUrl: `https://www.ticketmaster.com/search?q=${encodeURIComponent(ticket.artist)}`,
+          bannerImage: ticket.posterUrl,
+          recipientEmail: email.trim(),
+          email: email.trim(),
+          senderName,
+          eventName,
+          recipientName,
+          eventDate: dateBadge(ticket.dateTime),
+          venue: ticket.venue,
+          ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber },
+        }),
+      })
       const data = await response.json().catch(() => ({}))
       if (!response.ok) { setSendError(data.error || 'Unable to send transfer.'); setSending(false); return }
     } catch {

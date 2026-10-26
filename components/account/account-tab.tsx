@@ -121,8 +121,7 @@ export function AccountTab() {
 
       <SectionTitle>Personalization</SectionTitle>
       <div>
-        <Row icon={<Mail size={28} strokeWidth={1.5} />} label="My Inbox" />
-        <Row icon={<Heart size={28} strokeWidth={1.5} />} label="Favorites" onClick={() => setTab('watchlist')} />
+          <Row icon={<Heart size={28} strokeWidth={1.5} />} label="Favorites" onClick={() => setTab('watchlist')} />
         <Row
           icon={<MapPin size={28} strokeWidth={1.5} />}
           label="Location"

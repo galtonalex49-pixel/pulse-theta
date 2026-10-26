@@ -233,7 +233,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     setTickets((prev) => [next, ...prev])
     return id
-  }, [])
+  }, [profile.email, profile.name])
 
   const updateTicket = useCallback((id: string, patch: Partial<Ticket>) => {
     setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)))
@@ -253,7 +253,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const deleteTicket = useCallback((id: string) => {
     setTickets((prev) => prev.filter((t) => t.id !== id))
     setTicketView((prev) => (prev.id === id ? { view: 'landing', id: null } : prev))
-  }, [])
+  }, [profile.email])
 
   const openDetails = useCallback((id: string) => setTicketView({ view: 'details', id }), [])
   const openSafetix = useCallback((id: string) => setTicketView({ view: 'safetix', id }), [])
