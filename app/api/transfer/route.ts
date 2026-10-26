@@ -14,7 +14,12 @@ function escapeHtml(value: string) {
   })[character] ?? character)
 }
 
-const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1262-Sun2yYPJRFaxphkxBwNJacq52coK1a.png'
+const TICKET_E_TRANSFER_LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1264-5H9Jj1Qt2IhzrdxydrBJC8I3J3R5Yj.jpeg'
+const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1265-6OiaMB9om7Crs8LZ7ZJPpGZTSufj23.jpeg'
+const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1266-sYF3Bukcp3tjE6zsv4aNXuixVrfUOC.png'
+const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1267-LUCXcBFR1u3RRUQ79ZVtgw1QWLZCHQ.png'
+const DATE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1249-lRplr6EzrbHYyFyR5Lpft9YIsJhvWL.jpeg'
+const SECTION_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_1250-rF7Ebz9FOisxpkiCTbCWg3DKwzrofx.jpeg'
 
 function createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage, ticketQuantity }: {
   senderName: string
@@ -48,22 +53,22 @@ function createTransferEmail({ senderName, recipientName, eventName, eventDate, 
       <tr><td align="center">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
           <tr><td style="height:6px;background:#123b78;font-size:0;line-height:0">&nbsp;</td></tr>
-          <tr><td align="center" style="padding:24px 24px 10px;background:#0b2f6b"><img src="${TICKET_E_TRANSFER_LOGO}" alt="Ticket eTransfer logo" width="88" height="88" style="display:block;margin:0 auto 10px;width:88px;height:88px;object-fit:cover;filter:hue-rotate(190deg) saturate(1.8) brightness(.72)" /><div style="font-size:24px;font-weight:700;letter-spacing:.4px;color:#ffffff">Ticket eTransfer®</div></td></tr>
+          <tr><td align="center" style="padding:18px 24px;background:#ffffff"><img src="${TICKET_E_TRANSFER_LOGO}" alt="Ticketmaster" width="420" height="90" style="display:block;margin:0 auto;width:100%;max-width:420px;height:90px;object-fit:contain;background:#ffffff" /></td></tr>
           <tr><td style="padding:12px 32px 8px;text-align:center;font-size:18px;line-height:1.35;font-weight:700">${transferHeading}</td></tr>
           <tr><td style="padding:0 32px 24px;text-align:center;font-size:11px;line-height:1.5;color:#344054">${safeEventName}</td></tr>
           <tr><td style="padding:0 32px 28px">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #1769e0;border-radius:50%;box-sizing:border-box;color:#1769e0;font-size:28px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">↗</div><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
+              <td align="center" width="33%"><img src="${PENDING_ICON}" width="42" height="42" alt="Pending" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;font-weight:700;color:#1769e0">Pending</div></td>
               <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
-              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #aeb7c5;border-radius:50%;box-sizing:border-box;color:#667085;font-size:25px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">✓</div><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
+              <td align="center" width="33%"><img src="${ACCEPTED_ICON}" width="42" height="42" alt="Accepted" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Accepted</div></td>
               <td style="height:1px;background:#d8dee8;font-size:0">&nbsp;</td>
-              <td align="center" width="33%"><div style="margin:0 auto;width:42px;height:42px;border:2px solid #aeb7c5;border-radius:50%;box-sizing:border-box;color:#667085;font-size:24px;line-height:37px;text-align:center;font-family:Arial,Helvetica,sans-serif">▤</div><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
+              <td align="center" width="33%"><img src="${COMPLETE_ICON}" width="42" height="42" alt="Complete" style="display:block;margin:0 auto;object-fit:contain" /><div style="padding-top:4px;font-size:11px;color:#667085">Complete</div></td>
             </tr></table>
           </td></tr>
           <tr><td style="padding:0 48px 28px;text-align:center;font-size:11px;line-height:1.7"><p style="margin:0 0 18px">Hi ${safeRecipientName},</p><p style="margin:0">There are ticket(s) waiting to be accepted in your account. Accepting the ticket(s) will allow you to enter the event easily, using your own phone.</p></td></tr>
-          <tr><td style="padding:0 48px 28px;text-align:center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7;background:#f7f8fb"><tr><td style="padding:0">${bannerMarkup}<div style="padding:26px"><p style="margin:0 0 12px;font-size:11px;line-height:1.6;font-weight:700;color:#182230">${safeEventName}</p><p style="margin:0;text-align:center;color:#667085;font-size:11px;line-height:1.7">${safeEventDate}<br>${safeVenue}</p><p style="margin:18px 0 0;text-align:center;color:#182230;font-weight:700;font-size:11px;line-height:1.6">${safeSeats}<br><span style="font-weight:400;color:#667085">Transfer Pending</span></p><a href="${safeEventUrl}" style="display:block;margin:24px auto 0;max-width:300px;background:#1257d6;color:#fff;text-align:center;text-decoration:none;padding:12px;font-weight:700;font-size:11px;letter-spacing:.3px">ACCEPT TICKETS</a><p style="margin:20px 0 0;color:#667085;font-size:11px;line-height:1.7">By clicking &quot;ACCEPT TICKETS&quot;, you agree to the applicable event terms.</p></div></td></tr></table></td></tr>
+          <tr><td style="padding:0 48px 28px;text-align:center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dee7;background:#f7f8fb"><tr><td style="padding:0">${bannerMarkup}<div style="padding:26px"><p style="margin:0 0 12px;font-size:11px;line-height:1.6;font-weight:700;color:#182230">${safeEventName}</p><p style="margin:0;text-align:center;color:#667085;font-size:11px;line-height:1.7"><img src="${DATE_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeEventDate}<br>${safeVenue}</p><p style="margin:18px 0 0;text-align:center;color:#182230;font-weight:700;font-size:11px;line-height:1.6"><img src="${SECTION_ICON}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:6px;object-fit:contain" />${safeSeats}<br><span style="font-weight:400;color:#667085">Transfer Pending</span></p><a href="${safeEventUrl}" style="display:block;margin:24px auto 0;max-width:300px;background:#1257d6;color:#fff;text-align:center;text-decoration:none;padding:12px;font-weight:700;font-size:11px;letter-spacing:.3px">ACCEPT TICKETS</a><p style="margin:20px 0 0;color:#667085;font-size:11px;line-height:1.7">By clicking &quot;ACCEPT TICKETS&quot;, you agree to the applicable event terms.</p></div></td></tr></table></td></tr>
           <tr><td style="padding:0 48px 28px;text-align:center;color:#667085;font-size:11px;line-height:1.7">If the tickets were obtained fraudulently by the person transferring them, they may be canceled at any time and removed from your account.<br><br><strong style="color:#182230">This email is NOT your ticket.</strong></td></tr>
-          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:11px;line-height:1.7;text-align:center">Ticket eTransfer®, Fan Support<br>707 Virginia Street East, Suite 170, Charleston, WV<br>25301</td></tr>
+          <tr><td align="center" style="background:#123b78;color:#fff;padding:24px;font-size:11px;line-height:1.7;text-align:center">Ticket eTransfer®, Fan Support<br>707 Virginia Street East, Suite 170, Charleston, WV 25301</td></tr>
         </table>
       </td></tr>
     </table>
