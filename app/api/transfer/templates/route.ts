@@ -21,7 +21,9 @@ export async function POST(request: Request) {
   }
   const existingResponse = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(values.owner_email)}&ticket_id=eq.${encodeURIComponent(values.ticket_id)}&select=id&limit=1`), { headers, cache: 'no-store' })
   const existing = existingResponse.ok ? (await existingResponse.json() as Array<{ id: string }>)[0] : undefined
-  const response = await fetch(endpoint(existing ? `?id=eq.${encodeURIComponent(existing.id)}` : ''), { method: existing ? 'PATCH' : 'POST', headers, body: JSON.stringify({ ...values, updated_at: new Date().toISOString() }) })
+  const selectedResponse = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(values.owner_email)}&is_selected=eq.true&select=id&limit=1`), { headers, cache: 'no-store' })
+  const hasSelected = selectedResponse.ok && (await selectedResponse.json() as Array<{ id: string }>).length > 0
+  const response = await fetch(endpoint(existing ? `?id=eq.${encodeURIComponent(existing.id)}` : ''), { method: existing ? 'PATCH' : 'POST', headers, body: JSON.stringify({ ...values, is_selected: existing ? undefined : !hasSelected, updated_at: new Date().toISOString() }) })
   if (!response.ok) return NextResponse.json({ error: 'Unable to create template.' }, { status: 502 })
   return NextResponse.json({ template: existing ? { ...values, id: existing.id } : (await response.json())[0] })
 }
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const ownerEmail = new URL(request.url).searchParams.get('ownerEmail')?.trim()
   if (!supabaseUrl || !supabaseKey || !ownerEmail) return NextResponse.json({ templates: [] })
-  const response = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(ownerEmail)}&select=id,ticket_id,event_name,template_name,sender_name,recipient_name,recipient_email,event_date,venue,seat_info,event_url,banner_image,subject,html,created_at,updated_at&order=created_at.desc`), { headers, cache: 'no-store' })
+  const response = await fetch(endpoint(`?owner_email=eq.${encodeURIComponent(ownerEmail)}&select=id,ticket_id,event_name,template_name,sender_name,recipient_name,recipient_email,event_date,venue,seat_info,event_url,banner_image,subject,html,is_selected,created_at,updated_at&order=created_at.desc`), { headers, cache: 'no-store' })
   if (!response.ok) return NextResponse.json({ error: 'Unable to load inbox.' }, { status: 502 })
   return NextResponse.json({ templates: await response.json() })
 }
@@ -42,6 +44,16 @@ export async function PATCH(request: Request) {
   patch.updated_at = new Date().toISOString()
   const response = await fetch(endpoint(`?id=eq.${encodeURIComponent(body.id)}&owner_email=eq.${encodeURIComponent(body.ownerEmail)}`), { method: 'PATCH', headers, body: JSON.stringify(patch) })
   if (!response.ok) return NextResponse.json({ error: 'Unable to save template.' }, { status: 502 })
+  return NextResponse.json({ ok: true })
+}
+
+export async function PUT(request: Request) {
+  const body = await request.json().catch(() => null)
+  if (!supabaseUrl || !supabaseKey || !body?.id || !body?.ownerEmail) return NextResponse.json({ error: 'Invalid template selection.' }, { status: 400 })
+  const owner = encodeURIComponent(String(body.ownerEmail))
+  await fetch(endpoint(`?owner_email=eq.${owner}`), { method: 'PATCH', headers, body: JSON.stringify({ is_selected: false, updated_at: new Date().toISOString() }) })
+  const response = await fetch(endpoint(`?id=eq.${encodeURIComponent(String(body.id))}&owner_email=eq.${owner}`), { method: 'PATCH', headers, body: JSON.stringify({ is_selected: true, updated_at: new Date().toISOString() }) })
+  if (!response.ok) return NextResponse.json({ error: 'Unable to select template.' }, { status: 502 })
   return NextResponse.json({ ok: true })
 }
 
