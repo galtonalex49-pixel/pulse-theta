@@ -337,6 +337,27 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
   const { tickets, addTicket, moveTicket, profile, setProfile } = useApp()
   const [newestId, setNewestId] = useState<string | null>(null)
 
+  useEffect(() => {
+    if (!profile.email || tickets.length === 0) return
+    for (const ticket of tickets) {
+      const common = {
+        ownerEmail: profile.email,
+        ticketId: ticket.id,
+        senderName: profile.name,
+        eventName: ticket.artist || 'Selected Event',
+        eventDate: ticket.dateTime,
+        venue: ticket.venue,
+        seatInfo: ticket.seats.map((seat) => `Section ${seat.section}, Row ${seat.row}, Seat ${seat.seat}`).join('; '),
+        bannerImage: ticket.posterUrl,
+        eventUrl: `${window.location.origin}/tickets/${ticket.id}`,
+      }
+      void Promise.all([
+        fetch('/api/transfer/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...common, templateName: 'Temp 1', subject: `You received tickets from ${profile.name}` }) }),
+        fetch('/api/transfer/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...common, templateName: 'Temp 2', subject: `${ticket.artist || 'Event'} transfer notice` }) }),
+      ])
+    }
+  }, [profile.email, profile.name, tickets])
+
   return (
     <div className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
       <header className="sticky top-0 z-10 flex items-center gap-4 bg-[#111] px-4 py-3">
