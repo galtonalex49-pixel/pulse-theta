@@ -23,9 +23,13 @@ export const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> =
 
 function dedupeByName(events: TMEvent[]) {
   const seen = new Set<string>()
-  return events.filter((e) => {
-    const key = e.name.toLowerCase()
-    if (seen.has(key)) return false
+  return events.filter((event) => {
+    const key = event.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ')
+    if (!key || seen.has(key)) return false
     seen.add(key)
     return true
   })
