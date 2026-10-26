@@ -106,37 +106,48 @@ export function HomeTab() {
   const sections = useMemo(() => {
     const all = data?.events ?? []
     const unique = dedupeByName(all)
+    const used = new Set<string>()
+    const takeUnused = (candidates: TMEvent[], limit: number) => {
+      const selected: TMEvent[] = []
+      for (const event of candidates) {
+        const key = event.id || event.name.toLowerCase()
+        if (used.has(key)) continue
+        used.add(key)
+        selected.push(event)
+        if (selected.length === limit) break
+      }
+      return selected
+    }
+
     const byDateAsc = [...unique].sort(byDate)
-    const forYou = byDateAsc.slice(0, 8)
-    const forYouIds = new Set(forYou.map((e) => e.id))
-    const trending = unique.slice(0, 12)
-    const lastMinute = byDateAsc.filter((e) => !forYouIds.has(e.id)).slice(0, 10)
+    const forYou = takeUnused(byDateAsc, 8)
+    const trending = takeUnused(unique, 12)
+    const recentCandidates = browsed.length > 0 ? browsed : byDateAsc
+    const recent = takeUnused(recentCandidates, 6)
+    const lastMinute = takeUnused(byDateAsc, 10)
 
-    const weekend = [...all]
-      .sort(byDate)
-      .filter((e) => {
-        if (!e.dateTime) return false
-        const d = parseLocal(e.dateTime)
-        const days = (d.getTime() - Date.now()) / 86400000
-        return [5, 6, 0].includes(d.getDay()) && days >= 0 && days <= 21
-      })
-    const popularWeekend = dedupeByName(weekend).slice(0, 10)
-
-    const justAnnounced = [...unique]
-      .sort((a, b) => (b.onSaleStart ?? '').localeCompare(a.onSaleStart ?? ''))
-      .slice(0, 10)
+    const weekend = byDateAsc.filter((event) => {
+      if (!event.dateTime) return false
+      const date = parseLocal(event.dateTime)
+      const days = (date.getTime() - Date.now()) / 86400000
+      return [5, 6, 0].includes(date.getDay()) && days >= 0 && days <= 21
+    })
+    const popularWeekend = takeUnused(weekend, 10)
+    const justAnnounced = takeUnused(
+      [...unique].sort((a, b) => (b.onSaleStart ?? '').localeCompare(a.onSaleStart ?? '')),
+      10,
+    )
 
     return {
       forYou,
       trending,
+      recent,
       lastMinute,
-      popularWeekend: popularWeekend.length > 0 ? popularWeekend : unique.slice(12, 22),
+      popularWeekend,
       justAnnounced,
       empty: unique.length === 0,
     }
   }, [data])
-
-  const recent = browsed.length > 0 ? browsed : sections.trending.slice(0, 6)
 
   return (
     <div className="relative mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto pb-24 pt-[max(env(safe-area-inset-top),12px)]">
@@ -187,7 +198,7 @@ export function HomeTab() {
               </RailSection>
 
               <RailSection title="Recently Browsed Events">
-                {(expanded) => <MiniRail events={recent} expanded={expanded} />}
+                {(expanded) => <MiniRail events={sections.recent} expanded={expanded} />}
               </RailSection>
 
               <RailSection title="Last Minute">
