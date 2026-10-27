@@ -8,7 +8,7 @@ function headers() { const key = supabaseKey; const secret = supabaseSecret; ret
 export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get('token')
   if (!token || !supabaseUrl) return NextResponse.json({ error: 'Invalid transfer link.' }, { status: 400 })
-  const response = await fetch(`${supabaseUrl}/rest/v1/transfers?transfer_token=eq.${encodeURIComponent(token)}&select=id,ticket_id,status,unlocks_at,event_name,event_date,venue,ticket_details`, { headers: headers(), cache: 'no-store' })
+  const response = await fetch(`${supabaseUrl}/rest/v1/transfers?transfer_token=eq.${encodeURIComponent(token)}&select=id,ticket_id,status,unlocks_at,event_name,event_date,venue,recipient_name,sender_name,ticket_count,section,row,seat,ticket_type,ticket_details`, { headers: headers(), cache: 'no-store' })
   if (!response.ok) return NextResponse.json({ error: 'Unable to load transfer.' }, { status: 502 })
   const rows = await response.json()
   if (!rows[0]) return NextResponse.json({ error: 'Transfer not found.' }, { status: 404 })

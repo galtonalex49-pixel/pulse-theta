@@ -47,6 +47,10 @@ export interface Ticket {
   ticketPrice?: number
   serviceFee?: number
   currency?: string
+  barcodeMode?: 'active' | 'countdown'
+  barcodeCountdownHours?: number
+  barcodeCountdownMinutes?: number
+  barcodeCountdownSeconds?: number
   seats: Seat[]
   lat: number
   lng: number
