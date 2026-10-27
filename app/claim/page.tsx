@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 
 type Transfer = {
   status: string
@@ -19,7 +19,8 @@ type Transfer = {
 
 function ClaimContent() {
   const params = useSearchParams()
-  const token = params.get('token')
+  const routeParams = useParams<{ token?: string }>()
+  const token = params.get('token') || routeParams.token
   const [transfer, setTransfer] = useState<Transfer | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -28,14 +29,15 @@ function ClaimContent() {
 
   useEffect(() => {
     if (!token) return
+    const timer = window.setTimeout(() => setLoading(false), 2000)
     fetch(`/api/transfer/claim?token=${encodeURIComponent(token)}`)
       .then(async (response) => {
         const data = await response.json()
         if (!response.ok) throw new Error(data.error)
         setTransfer(data)
-        window.setTimeout(() => setLoading(false), 2000)
       })
       .catch((reason) => { setError(reason.message); setLoading(false) })
+    return () => window.clearTimeout(timer)
   }, [token])
 
   const accept = async () => {
