@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { CalendarPlus } from 'lucide-react'
 import { useApp, useNow } from '@/lib/store'
-import { countdownText, isPast, parseLocal } from '@/lib/format'
+import { countdownText, isPast } from '@/lib/format'
 import { FlagBadge } from '../icons'
 import { EventCard } from './event-card'
 
@@ -16,11 +16,11 @@ export function TicketsLanding() {
 
   const { upcoming, past } = useMemo(() => {
     const reference = now ?? new Date(0)
+    // Preserve the order set in Admin Dashboard so the My Events tab mirrors the configured arrangement.
     const visible = tickets.filter((t) => t.visible)
-    const time = (t: { dateTime: string }) => parseLocal(t.dateTime).getTime()
     return {
-      upcoming: visible.filter((t) => !isPast(t.dateTime, reference)).sort((a, b) => time(a) - time(b)),
-      past: visible.filter((t) => isPast(t.dateTime, reference)).sort((a, b) => time(b) - time(a)),
+      upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
+      past: visible.filter((t) => isPast(t.dateTime, reference)),
     }
   }, [tickets, now])
 
