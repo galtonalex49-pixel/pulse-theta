@@ -41,7 +41,12 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
   const now = useNow(1000)
   const eventTime = new Date(ticket.dateTime).getTime()
   const remaining = Math.max(0, eventTime - (now?.getTime() ?? Date.now()))
-  const locked = remaining > 3 * 24 * 60 * 60 * 1000
+  const configuredCountdown =
+    ((ticket.barcodeCountdownHours ?? 72) * 60 * 60 +
+      (ticket.barcodeCountdownMinutes ?? 0) * 60 +
+      (ticket.barcodeCountdownSeconds ?? 0)) *
+    1000
+  const locked = ticket.barcodeMode !== 'active' && remaining > configuredCountdown
   const days = Math.floor(remaining / 86400000)
   const hours = Math.floor((remaining % 86400000) / 3600000)
   const minutes = Math.floor((remaining % 3600000) / 60000)

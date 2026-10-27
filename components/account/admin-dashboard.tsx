@@ -282,6 +282,24 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           <Field label="Presenter override" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
           <select aria-label="Policy notice" value={ticket.policyNotice ?? 'NO BAGS PERMITTED'} onChange={(e) => patch({ policyNotice: e.target.value })} className={inputCls}><option>NO BAGS PERMITTED</option><option>CLEAR BAG POLICY ONLY (MAX 12&quot; x 6&quot; x 12&quot;)</option><option>MOBILE ENTRY ONLY - NO PAPER TICKETS</option></select>
           <Field label="Venue location" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
+          <fieldset className="space-y-3 rounded-lg border border-tm-blue/40 bg-[#141b33] p-3">
+            <legend className="px-1 text-xs font-bold uppercase tracking-wider text-white/70">Barcode behavior</legend>
+            <label className="block min-w-0">
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Barcode mode</span>
+              <select value={ticket.barcodeMode ?? 'countdown'} onChange={(e) => patch({ barcodeMode: e.target.value as Ticket['barcodeMode'] })} className={inputCls}>
+                <option value="active">Active immediately</option>
+                <option value="countdown">Countdown until active</option>
+              </select>
+            </label>
+            {(ticket.barcodeMode ?? 'countdown') === 'countdown' && (
+              <div className="grid grid-cols-3 gap-2">
+                <NumberField label="Hours" value={ticket.barcodeCountdownHours ?? 72} min={0} max={8760} onCommit={(v) => patch({ barcodeCountdownHours: v })} />
+                <NumberField label="Minutes" value={ticket.barcodeCountdownMinutes ?? 0} min={0} max={59} onCommit={(v) => patch({ barcodeCountdownMinutes: v })} />
+                <NumberField label="Seconds" value={ticket.barcodeCountdownSeconds ?? 0} min={0} max={59} onCommit={(v) => patch({ barcodeCountdownSeconds: v })} />
+              </div>
+            )}
+            <p className="text-xs leading-5 text-white/55">The barcode becomes active when the event is within the configured countdown window.</p>
+          </fieldset>
           <Field label="Purchase date" type="datetime-local" value={ticket.purchaseDate ?? ''} onChange={(v) => patch({ purchaseDate: v })} />
           <label className="block min-w-0">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Ticket type</span>
