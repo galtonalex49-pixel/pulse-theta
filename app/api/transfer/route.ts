@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_1_transparent-uJqIkLKBvP9kvQs8iblV8NIASHZYGn.png'
-const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_2_transparent-pOlhMP4pZMC5p3IUPcF6Rv3KZwFkJM.png'
-const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_3_transparent-O9tSFrHyJ7MxfSnROxqDImrF398Sdk.png'
+const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pending_icon-pqTUKZyoXYe8lflGZ9hF3Y20RhILPl.png'
+const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/accepted_icon-5MwtZoegNrVz96yFSPEWptBPfAz67L.png'
+const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/complete_icon-Lm6tVxRsNvyntxQ5bcfeHIHSzGZeVe.png'
 const DATE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_5_transparent-CvuffgouCC3EPsaj4tcYUYK5c8genu.png'
 const SECTION_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_4_transparent-NsTtDvzZ2164RGRPz5e9lvnsFxeim9.png'
 
