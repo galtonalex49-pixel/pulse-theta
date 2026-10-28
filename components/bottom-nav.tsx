@@ -14,7 +14,13 @@ const TABS: { id: TabId; label: string }[] = [
 
 function TabIcon({ id, active }: { id: TabId; active: boolean }) {
   if (id === 'home') return <HomeNavIcon active={active} />
-  if (id === 'tickets') return <TicketsNavIcon active={active} />
+  if (id === 'tickets') {
+    return (
+      <span className="flex size-7 shrink-0 items-center justify-center" aria-hidden="true">
+        <TicketsNavIcon active={active} />
+      </span>
+    )
+  }
   if (id === 'watchlist') {
     return (
       <Bookmark
