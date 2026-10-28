@@ -90,9 +90,9 @@ export function TicketsNavIcon({ active }: { active: boolean }) {
           : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_gray_outline-urtqLzQiQ22d9kymIIQujPvQMbfSrC.png'
       }
       alt=""
-      width={24}
-      height={24}
-      className="size-6 object-contain"
+      width={28}
+      height={28}
+      className="block size-7 object-contain"
       draggable={false}
     />
   )
