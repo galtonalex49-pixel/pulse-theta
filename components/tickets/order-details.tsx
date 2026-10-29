@@ -247,7 +247,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </ul>
 
             <h2 className="mb-5 mt-14 text-[30px] font-extrabold uppercase">More Options</h2>
-            <div className="isolate relative h-[220px] w-full overflow-hidden bg-[#1a1a1a]">
+            <div className="isolate relative h-[290px] w-full overflow-hidden bg-[#1a1a1a]">
               <TicketMap lat={ticket.lat} lng={ticket.lng} name={ticket.venue} />
               <p className="pointer-events-none absolute left-4 top-3 z-[500] max-w-[85%] truncate text-[34px] font-extrabold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">
                 {ticket.venue}
@@ -271,19 +271,19 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
                   className="absolute inset-0 h-full w-full object-cover object-top"
                 />
                 <div className="absolute inset-y-0 right-0 w-1/2 bg-black/55" />
-                <p className="absolute right-5 top-14 w-[42%] text-[34px] font-extrabold uppercase leading-[1.1]">
+                <p className="absolute right-4 top-10 w-[44%] text-[clamp(24px,8vw,34px)] font-extrabold uppercase leading-[1.05]">
                   You Got
                   <br />
                   <span className="inline-block border-b-4 border-white pb-1">Tickets!</span>
                 </p>
-                <div className="absolute bottom-0 left-0 w-[66%] bg-[#1a1a1a]/95 px-5 pb-5 pt-4">
-                  <p className="truncate text-[13px] font-extrabold uppercase tracking-wide">
+                <div className="absolute bottom-0 left-0 min-h-[38%] w-[68%] bg-[#1a1a1a]/95 px-4 pb-4 pt-3 sm:px-5 sm:pb-5 sm:pt-4">
+                  <p className="truncate text-[clamp(11px,3.5vw,13px)] font-extrabold uppercase tracking-wide">
                     {dateBadge(ticket.dateTime)}
                   </p>
-                  <p className="mt-2 line-clamp-2 text-xl font-extrabold uppercase leading-tight">
+                  <p className="mt-2 line-clamp-2 text-[clamp(16px,5.5vw,20px)] font-extrabold uppercase leading-tight">
                     {ticket.artist}
                   </p>
-                  <p className="mt-1 truncate text-base text-white/70">{ticket.venue}</p>
+                  <p className="mt-1 truncate text-[clamp(13px,4.5vw,16px)] text-white/70">{ticket.venue}</p>
                 </div>
               </div>
               <div className="bg-[#1a1a1a] px-6 py-8">

@@ -46,7 +46,7 @@ export function TicketsLanding() {
           {(
             [
               ['upcoming', `UPCOMING(${upcoming.length})`],
-              ['past', `PAST(${pastToShow.length})`],
+              ['past', `PAST(${profile.pastEventsToShow})`],
             ] as const
           ).map(([id, label]) => {
             const active = sub === id
