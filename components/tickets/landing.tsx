@@ -10,7 +10,7 @@ import { EventCard } from './event-card'
 type Sub = 'upcoming' | 'past'
 
 export function TicketsLanding() {
-  const { tickets, location, openDetails } = useApp()
+  const { tickets, location, openDetails, profile } = useApp()
   const now = useNow()
   const [sub, setSub] = useState<Sub>('upcoming')
 
@@ -25,6 +25,7 @@ export function TicketsLanding() {
   }, [tickets, now])
 
   const next = upcoming[0]
+  const pastToShow = past.slice(0, Math.max(0, profile.pastEventsToShow))
 
   return (
     <div className="relative h-full overflow-y-auto pb-6">
@@ -45,7 +46,7 @@ export function TicketsLanding() {
           {(
             [
               ['upcoming', `UPCOMING(${upcoming.length})`],
-              ['past', `PAST(${past.length})`],
+              ['past', `PAST(${pastToShow.length})`],
             ] as const
           ).map(([id, label]) => {
             const active = sub === id
@@ -110,13 +111,13 @@ export function TicketsLanding() {
             </section>
           </>
         )
-      ) : past.length === 0 ? (
+      ) : pastToShow.length === 0 ? (
         <p className="mx-8 mt-20 text-center text-lg text-white/60">
           Events you have attended will move here automatically.
         </p>
       ) : (
         <ul className="mt-6 flex flex-col gap-6 px-4">
-          {past.map((t) => (
+          {pastToShow.map((t) => (
             <li key={t.id}>
               <EventCard ticket={t} compact past onView={() => openDetails(t.id)} />
             </li>

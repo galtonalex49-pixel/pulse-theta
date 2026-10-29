@@ -247,7 +247,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </ul>
 
             <h2 className="mb-5 mt-14 text-[30px] font-extrabold uppercase">More Options</h2>
-            <div className="isolate relative h-[160px] w-full overflow-hidden bg-[#1a1a1a]">
+            <div className="isolate relative h-[220px] w-full overflow-hidden bg-[#1a1a1a]">
               <TicketMap lat={ticket.lat} lng={ticket.lng} name={ticket.venue} />
               <p className="pointer-events-none absolute left-4 top-3 z-[500] max-w-[85%] truncate text-[34px] font-extrabold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">
                 {ticket.venue}
@@ -263,7 +263,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </a>
 
             <section className="mt-14" aria-label="Share your tickets">
-              <div className="relative h-[290px] overflow-hidden bg-[#1a1a1a]">
+              <div className="relative aspect-square w-full overflow-hidden bg-[#1a1a1a]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={ticket.posterUrl}
