@@ -10,7 +10,7 @@ import { EventCard } from './event-card'
 type Sub = 'upcoming' | 'past'
 
 export function TicketsLanding() {
-  const { tickets, location, openDetails } = useApp()
+  const { tickets, location, openDetails, profile } = useApp()
   const now = useNow()
   const [sub, setSub] = useState<Sub>('upcoming')
 
@@ -20,9 +20,9 @@ export function TicketsLanding() {
     const visible = tickets.filter((t) => t.visible)
     return {
       upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
-      past: visible.filter((t) => isPast(t.dateTime, reference)),
+      past: visible.filter((t) => isPast(t.dateTime, reference)).slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
     }
-  }, [tickets, now])
+  }, [tickets, now, profile.pastEventsToShow])
 
   const next = upcoming[0]
 
@@ -45,7 +45,7 @@ export function TicketsLanding() {
           {(
             [
               ['upcoming', `UPCOMING(${upcoming.length})`],
-              ['past', `PAST(${past.length})`],
+              ['past', `PAST(${Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))})`],
             ] as const
           ).map(([id, label]) => {
             const active = sub === id

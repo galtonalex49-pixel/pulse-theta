@@ -232,7 +232,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
           <div className="px-4 pb-44 pt-10">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <h2 className="truncate text-[28px] font-extrabold">Order #{ticket.orderNumber}</h2>
+                <h2 className="truncate text-[20px] font-semibold">Order #{ticket.orderNumber}</h2>
                 <p className="mt-2 text-xl text-white/70">
                   x{count} {count === 1 ? 'Ticket' : 'Tickets'}
                 </p>
@@ -247,7 +247,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </ul>
 
             <h2 className="mb-5 mt-14 text-[30px] font-extrabold uppercase">More Options</h2>
-            <div className="isolate relative h-[160px] w-full overflow-hidden bg-[#1a1a1a]">
+            <div className="isolate relative h-[280px] w-full overflow-hidden bg-[#1a1a1a]">
               <TicketMap lat={ticket.lat} lng={ticket.lng} name={ticket.venue} />
               <p className="pointer-events-none absolute left-4 top-3 z-[500] max-w-[85%] truncate text-[34px] font-extrabold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">
                 {ticket.venue}
@@ -263,7 +263,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </a>
 
             <section className="mt-14" aria-label="Share your tickets">
-              <div className="relative h-[290px] overflow-hidden bg-[#1a1a1a]">
+              <div className="relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden bg-[#1a1a1a]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={ticket.posterUrl}
@@ -286,7 +286,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
                   <p className="mt-1 truncate text-base text-white/70">{ticket.venue}</p>
                 </div>
               </div>
-              <div className="bg-[#1a1a1a] px-6 py-8">
+              <div className="mx-auto max-w-[360px] bg-[#1a1a1a] px-6 py-8">
                 <h3 className="text-[30px] font-extrabold">Post on Social Media</h3>
                 <p className="mt-4 text-xl leading-snug text-white/60">
                   Build hype for the event, and share that you got tickets with your friends and family.

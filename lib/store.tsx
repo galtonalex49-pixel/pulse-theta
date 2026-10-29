@@ -78,6 +78,7 @@ interface Profile {
   name: string
   email: string
   initials: string
+  pastEventsToShow: number
 }
 
 interface AppState {
@@ -154,6 +155,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     name: 'Lonnie Brew',
     email: 'galtonalex88@gmail.com',
     initials: 'LB',
+    pastEventsToShow: 10,
   })
   const [accountPage, setAccountPage] = useState<'main' | 'edit'>('main')
   const [storageReady, setStorageReady] = useState(false)

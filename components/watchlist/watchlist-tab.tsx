@@ -98,8 +98,8 @@ export function WatchlistTab() {
   return (
     <div className="compact-screen relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
       <header className="shrink-0 text-center">
-        <h1 className="text-[18px] font-extrabold uppercase leading-[22px] tracking-[-0.01em]">Watchlist</h1>
-        <p className="mt-2 text-xl text-white/80">Keep track of what&apos;s important</p>
+        <h1 className="text-[30px] font-extrabold uppercase leading-[34px] tracking-[-0.02em]">Watchlist</h1>
+        <p className="mt-2 text-[22px] leading-7 text-white/80">Keep track of what&apos;s important</p>
       </header>
 
       <div
@@ -112,11 +112,11 @@ export function WatchlistTab() {
           role="tab"
           aria-selected={isEvents}
           onClick={() => setMode('events')}
-          className={`flex h-[52px] items-center justify-center gap-3 rounded-full text-xl font-extrabold transition-colors ${
+          className={`flex h-[56px] min-w-0 items-center justify-center gap-2 rounded-full text-[20px] font-extrabold transition-colors ${
             isEvents ? 'bg-tm-purple text-black' : 'font-medium text-white'
           }`}
         >
-          <Bookmark size={24} className={isEvents ? 'fill-black' : ''} aria-hidden="true" />
+          <Bookmark size={22} className={isEvents ? 'fill-black' : ''} aria-hidden="true" />
           Events
         </button>
         <button
@@ -124,11 +124,11 @@ export function WatchlistTab() {
           role="tab"
           aria-selected={!isEvents}
           onClick={() => setMode('favorites')}
-          className={`flex h-[52px] items-center justify-center gap-3 rounded-full text-xl transition-colors ${
+          className={`flex h-[56px] min-w-0 items-center justify-center gap-2 rounded-full text-[20px] transition-colors ${
             !isEvents ? 'bg-tm-pink font-extrabold text-black' : 'font-medium text-white'
           }`}
         >
-          <Heart size={24} className={!isEvents ? 'fill-black' : ''} aria-hidden="true" />
+          <Heart size={22} className={!isEvents ? 'fill-black' : ''} aria-hidden="true" />
           Favorites
         </button>
       </div>

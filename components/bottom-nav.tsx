@@ -14,11 +14,17 @@ const TABS: { id: TabId; label: string }[] = [
 
 function TabIcon({ id, active }: { id: TabId; active: boolean }) {
   if (id === 'home') return <HomeNavIcon active={active} />
-  if (id === 'tickets') return <TicketsNavIcon active={active} />
+  if (id === 'tickets') {
+    return (
+      <span className="flex size-7 shrink-0 items-center justify-center" aria-hidden="true">
+        <TicketsNavIcon active={active} />
+      </span>
+    )
+  }
   if (id === 'watchlist') {
     return (
       <Bookmark
-        size={20}
+        size={28}
         strokeWidth={1.8}
         className={active ? 'fill-tm-purple text-tm-purple' : ''}
         aria-hidden="true"
@@ -26,11 +32,11 @@ function TabIcon({ id, active }: { id: TabId; active: boolean }) {
     )
   }
   return active ? (
-    <span className="flex size-5 items-center justify-center rounded-full bg-tm-blue-light">
-      <UserRound size={20} className="fill-white text-white" aria-hidden="true" />
+    <span className="flex size-7 items-center justify-center rounded-full bg-tm-blue-light">
+      <UserRound size={24} className="fill-white text-white" aria-hidden="true" />
     </span>
   ) : (
-    <CircleUser size={20} strokeWidth={1.6} aria-hidden="true" />
+    <CircleUser size={28} strokeWidth={1.6} aria-hidden="true" />
   )
 }
 
@@ -39,7 +45,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed bottom-0 left-1/2 z-[9999] flex h-14 w-full max-w-[430px] -translate-x-1/2 items-center justify-around border-t border-[#222] bg-[#0A0A0A] pb-[max(env(safe-area-inset-bottom),2px)] pt-0.5"
+      className="fixed bottom-0 left-1/2 z-[9999] grid h-[76px] w-full max-w-[430px] -translate-x-1/2 grid-cols-4 items-stretch border-t border-[#222] bg-[#0A0A0A] pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
     >
       {TABS.map((t) => {
         const active = tab === t.id
@@ -49,7 +55,7 @@ export function BottomNav() {
             type="button"
             onClick={() => setTab(t.id)}
             aria-current={active ? 'page' : undefined}
-            className={`flex flex-1 shrink-0 flex-col items-center gap-0.5 py-0.5 text-[10px] ${
+            className={`flex min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-1 py-1 text-[14px] leading-tight ${
               active ? 'font-extrabold text-white' : 'font-medium text-[#8a8a8a]'
             }`}
           >

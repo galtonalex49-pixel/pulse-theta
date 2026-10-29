@@ -81,39 +81,20 @@ export function HomeNavIcon({ active }: { active: boolean }) {
 }
 
 export function TicketsNavIcon({ active }: { active: boolean }) {
-  const stroke = active ? '#2d62ea' : 'currentColor'
   return (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-      <rect
-        x="6"
-        y="6"
-        width="15"
-        height="19"
-        rx="2"
-        transform="rotate(-8 6 6)"
-        fill={active ? '#1f4fd8' : 'none'}
-        stroke={stroke}
-        strokeWidth="1.8"
-      />
-      <rect
-        x="10"
-        y="5"
-        width="15"
-        height="19"
-        rx="2"
-        transform="rotate(6 10 5)"
-        fill={active ? '#ffffff' : 'none'}
-        stroke={active ? '#ffffff' : 'currentColor'}
-        strokeWidth="1.8"
-      />
-      <path
-        d="M13.5 12h7M13.5 16h5"
-        stroke={active ? '#1f4fd8' : 'currentColor'}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        transform="rotate(6 16 14)"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={
+        active
+          ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_blue_solid-3SgPq7or9eKxXgRpz2hBnrbRurEAwT.png'
+          : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_gray_outline-urtqLzQiQ22d9kymIIQujPvQMbfSrC.png'
+      }
+      alt=""
+      width={28}
+      height={28}
+      className="block size-7 object-contain"
+      draggable={false}
+    />
   )
 }
 

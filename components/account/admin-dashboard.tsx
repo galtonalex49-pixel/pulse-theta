@@ -369,6 +369,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
         <Field label="Full name" value={profile.name} onChange={(v) => setProfile({ name: v })} />
         <Field label="Email" type="email" value={profile.email} onChange={(v) => setProfile({ email: v })} />
         <Field label="Avatar initials" value={profile.initials} onChange={(v) => setProfile({ initials: v.toUpperCase().slice(0, 3) })} />
+        <NumberField label="Past events to show in My Tickets" value={profile.pastEventsToShow} min={0} max={50} onCommit={(v) => setProfile({ pastEventsToShow: Math.max(0, Math.min(50, Math.round(v))) })} />
       </section>
 
       <section className="mt-10 px-4" aria-label="Master admin dashboard">
