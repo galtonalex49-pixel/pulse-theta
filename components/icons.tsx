@@ -52,7 +52,7 @@ export function FlagBadge({ code, size = 22 }: { code: string; size?: number }) 
 
 export function HomeNavIcon({ active }: { active: boolean }) {
   return (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 30 30" fill="none" className="size-5" aria-hidden="true">
       <circle
         cx="14"
         cy="16"
@@ -81,20 +81,15 @@ export function HomeNavIcon({ active }: { active: boolean }) {
 }
 
 export function TicketsNavIcon({ active }: { active: boolean }) {
+  const stroke = active ? '#2f66f6' : '#a4a4a4'
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={
-        active
-          ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_blue_solid-3SgPq7or9eKxXgRpz2hBnrbRurEAwT.png'
-          : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_gray_outline-urtqLzQiQ22d9kymIIQujPvQMbfSrC.png'
-      }
-      alt=""
-      width={28}
-      height={28}
-      className="block size-7 object-contain"
-      draggable={false}
-    />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden="true">
+      <path d="m7.4 5.1 10.7-2.2a1.2 1.2 0 0 1 1.4.9l2.1 10.2a1.2 1.2 0 0 1-.4 1.1l-2.8 2.5-9.4 1.9a1.2 1.2 0 0 1-1.4-.9L5.5 6.6a1.2 1.2 0 0 1 1.9-1.5Z" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
+      <path d="m4.8 7.5-2.1.4a1.2 1.2 0 0 0-.9 1.4l2.2 10.5a1.2 1.2 0 0 0 1.4.9l10.2-2.1" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
+      <rect x="8.4" y="7.6" width="7.6" height="5.2" rx=".7" transform="rotate(-11.5 8.4 7.6)" stroke={stroke} strokeWidth="1.45" />
+      <path d="m9.6 15.7 6.2-1.3M10.1 17.7l3.8-.8" stroke={stroke} strokeWidth="1.45" strokeLinecap="round" />
+    </svg>
   )
 }
 
