@@ -20,7 +20,7 @@ export function TicketsLanding() {
     const visible = tickets.filter((t) => t.visible)
     return {
       upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
-      past: visible.filter((t) => isPast(t.dateTime, reference)).slice(0, Math.max(0, profile.pastEventsToShow ?? 10)),
+      past: visible.filter((t) => isPast(t.dateTime, reference)).slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
     }
   }, [tickets, now, profile.pastEventsToShow])
 
