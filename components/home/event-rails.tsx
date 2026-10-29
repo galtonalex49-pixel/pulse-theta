@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { EllipsisVertical, Heart, MapPin, MicVocal } from 'lucide-react'
+import { CircleDot, Drama, EllipsisVertical, Goal, Heart, Laugh, MapPin, MicVocal, Music2, Ticket, Volleyball } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { monthDay, weekdayTime, yearOf } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
@@ -58,6 +58,27 @@ function EventMenu({ event }: { event: TMEvent }) {
 function locationLine(event: TMEvent) {
   const place = [event.city, event.countryCode].filter(Boolean).join(', ')
   return [place, event.venue].filter(Boolean).join(' - ')
+}
+
+function CategoryIcon({ event }: { event: TMEvent }) {
+  const category = `${event.genre} ${event.segment}`.toLowerCase()
+  const Icon = category.includes('basketball')
+    ? CircleDot
+    : category.includes('soccer')
+      ? Goal
+      : category.includes('volleyball')
+        ? Volleyball
+        : category.includes('football')
+          ? Ticket
+          : category.includes('comedy') || category.includes('stand-up')
+            ? Laugh
+            : category.includes('theatre') || category.includes('theater')
+              ? Drama
+              : category.includes('music') || category.includes('concert')
+                ? Music2
+                : MicVocal
+
+  return <Icon size={18} className="shrink-0" aria-hidden="true" />
 }
 
 export function ForYouRail({ events }: { events: TMEvent[] }) {
@@ -140,7 +161,7 @@ export function TrendingRail({ events, expanded }: { events: TMEvent[]; expanded
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5 px-2">
                   <span className="truncate text-[13px] font-bold leading-4">{event.name}</span>
                   <span className="flex items-center gap-1 text-[11px] leading-[14px] text-white/60">
-                    <MicVocal size={18} className="shrink-0" aria-hidden="true" />
+                    <CategoryIcon event={event} />
                     <span className="truncate">{event.genre}</span>
                   </span>
                 </span>

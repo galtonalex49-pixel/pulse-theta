@@ -52,7 +52,7 @@ export function FlagBadge({ code, size = 22 }: { code: string; size?: number }) 
 
 export function HomeNavIcon({ active }: { active: boolean }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 30 30" fill="none" className="size-7" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 30 30" fill="none" className="size-5" aria-hidden="true">
       <circle
         cx="14"
         cy="16"
@@ -90,9 +90,9 @@ export function TicketsNavIcon({ active }: { active: boolean }) {
           : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/doc_gray_outline-urtqLzQiQ22d9kymIIQujPvQMbfSrC.png'
       }
       alt=""
-      width={28}
-      height={28}
-      className="block size-7 object-contain"
+      width={20}
+      height={20}
+      className="block size-5 object-contain"
       draggable={false}
     />
   )
