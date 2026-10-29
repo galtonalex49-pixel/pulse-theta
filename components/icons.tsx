@@ -52,7 +52,7 @@ export function FlagBadge({ code, size = 22 }: { code: string; size?: number }) 
 
 export function HomeNavIcon({ active }: { active: boolean }) {
   return (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+    <svg width="28" height="28" viewBox="0 0 30 30" fill="none" className="size-7" aria-hidden="true">
       <circle
         cx="14"
         cy="16"
