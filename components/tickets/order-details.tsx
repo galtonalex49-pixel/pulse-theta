@@ -232,7 +232,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
           <div className="px-4 pb-44 pt-10">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <h2 className="truncate text-[28px] font-extrabold">Order #{ticket.orderNumber}</h2>
+                <h2 className="truncate text-[19px] font-bold tracking-tight">Order #{ticket.orderNumber}</h2>
                 <p className="mt-2 text-xl text-white/70">
                   x{count} {count === 1 ? 'Ticket' : 'Tickets'}
                 </p>
@@ -262,8 +262,8 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
               Get Directions
             </a>
 
-            <section className="mt-14" aria-label="Share your tickets">
-              <div className="relative aspect-square w-full overflow-hidden bg-[#1a1a1a]">
+            <section className="mt-14 overflow-hidden bg-[#1a1a1a]" aria-label="Share your tickets">
+              <div className="relative aspect-square w-full overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={ticket.posterUrl}
