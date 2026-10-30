@@ -9,7 +9,11 @@ export function MyTicketsTab() {
   const { ticketView, tickets } = useApp()
   const ticket = tickets.find((t) => t.id === ticketView.id && t.visible)
 
-  if (ticket && ticketView.view === 'details') return <OrderDetails key={ticket.id} ticket={ticket} />
-  if (ticket && ticketView.view === 'safetix') return <Safetix ticket={ticket} />
-  return <TicketsLanding />
+  return (
+    <div className="font-mono">
+      {ticket && ticketView.view === 'details' ? <OrderDetails key={ticket.id} ticket={ticket} /> : null}
+      {ticket && ticketView.view === 'safetix' ? <Safetix ticket={ticket} /> : null}
+      {!ticket || ticketView.view === 'landing' ? <TicketsLanding /> : null}
+    </div>
+  )
 }
