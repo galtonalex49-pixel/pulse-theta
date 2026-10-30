@@ -74,7 +74,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
                   <span className="text-[10px] uppercase tracking-[0.12em] text-white/75">Tickets barcode will be ready in:</span>
                   <div className="mt-2 grid grid-cols-4 gap-2 font-mono text-xl font-bold">
                     {([['DAY', days], ['HOUR', hours], ['MIN', minutes], ['SEC', seconds]] as const).map(([label, value]) => (
-                      <span key={label}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] tracking-[0.12em] text-white/60">{label}</small></span>
+                      <span key={label}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] font-sans tracking-[0.12em] text-white/60">{label}</small></span>
                     ))}
                   </div>
                 </div>
