@@ -188,6 +188,11 @@ body {
   font-family: 'Averta', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif !important;
 }
 
+.ticket-tab-font,
+.ticket-tab-font * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

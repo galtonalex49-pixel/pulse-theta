@@ -10,7 +10,7 @@ export function MyTicketsTab() {
   const ticket = tickets.find((t) => t.id === ticketView.id && t.visible)
 
   return (
-    <div className="font-mono">
+    <div className="ticket-tab-font">
       {ticket && ticketView.view === 'details' ? <OrderDetails key={ticket.id} ticket={ticket} /> : null}
       {ticket && ticketView.view === 'safetix' ? <Safetix ticket={ticket} /> : null}
       {!ticket || ticketView.view === 'landing' ? <TicketsLanding /> : null}
