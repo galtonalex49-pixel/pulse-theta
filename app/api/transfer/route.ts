@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const resendApiKey = process.env.RESEND_EMAIL_RESEND_API_KEY ?? process.env.RESEND_API_KEY
+    const resendApiKey = process.env.RESEND_API_KEY ?? process.env.RESEND_EMAIL_RESEND_API_KEY
     const resendDomain = process.env.RESEND_EMAIL_DOMAIN?.trim().toLowerCase()
     if (!resendApiKey || !resendDomain || !domainPattern.test(resendDomain)) {
       return NextResponse.json({ error: 'Resend email is not configured with a valid sending domain.' }, { status: 503 })
