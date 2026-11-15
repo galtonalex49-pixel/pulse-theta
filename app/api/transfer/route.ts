@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const domainPattern = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i
 const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pending_icon-pqTUKZyoXYe8lflGZ9hF3Y20RhILPl.png'
 const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/accepted_icon-5MwtZoegNrVz96yFSPEWptBPfAz67L.png'
 const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/complete_icon-Lm6tVxRsNvyntxQ5bcfeHIHSzGZeVe.png'
@@ -98,17 +99,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    // Prefer the verified Resend account key; RESEND may point to an older account.
-    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
-    if (!resendKey) return NextResponse.json({ error: 'RESEND is not configured.' }, { status: 503 })
+    const resendApiKey = process.env.RESEND_EMAIL_RESEND_API_KEY ?? process.env.RESEND_API_KEY
+    const resendDomain = process.env.RESEND_EMAIL_DOMAIN?.trim().toLowerCase()
+    if (!resendApiKey || !resendDomain || !domainPattern.test(resendDomain)) {
+      return NextResponse.json({ error: 'Resend email is not configured with a valid sending domain.' }, { status: 503 })
+    }
 
     let response: Response
     try {
       response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: `Ticket eTransfer® <transfers@ticketmaster.bbroot.com>`,
+          from: `Ticket eTransfer® <transfers@${resendDomain}>`,
           to: [recipientEmail],
           subject: `You received tickets from ${senderName}`,
           html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
