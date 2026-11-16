@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
@@ -99,32 +100,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY ?? process.env.RESEND_EMAIL_RESEND_API_KEY
-    const resendDomain = process.env.RESEND_EMAIL_DOMAIN?.trim().toLowerCase()
-    if (!resendApiKey || !resendDomain || !domainPattern.test(resendDomain)) {
-      return NextResponse.json({ error: 'Resend email is not configured with a valid sending domain.' }, { status: 503 })
+    const sequenzyApiKey = process.env.SEQUENZY_API_KEY
+    const sequenzyDomain = process.env.SEQUENZY_FROM_DOMAIN?.trim().toLowerCase()
+    if (!sequenzyApiKey || !sequenzyDomain || !domainPattern.test(sequenzyDomain)) {
+      return NextResponse.json({ error: 'Sequenzy email is not configured with a valid sending domain.' }, { status: 503 })
     }
+
+    const ticketId = typeof body.ticketId === 'string' ? body.ticketId.trim() : ''
+    const idempotencyKey = ticketId
+      ? `transfer-${createHash('sha256').update(`${ticketId}|${recipientEmail.toLowerCase()}`).digest('hex')}`
+      : `transfer-${randomUUID()}`
 
     let response: Response
     try {
-      response = await fetch('https://api.resend.com/emails', {
+      response = await fetch('https://api.sequenzy.com/api/v1/transactional/send', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: `Bearer ${sequenzyApiKey}`,
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
+        },
         body: JSON.stringify({
-          from: `Ticket eTransfer® <transfers@${resendDomain}>`,
-          to: [recipientEmail],
+          from: `Ticket eTransfer® <transfers@${sequenzyDomain}>`,
+          to: recipientEmail,
           subject: `You received tickets from ${senderName}`,
-          html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
+          body: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
         }),
+        signal: AbortSignal.timeout(10_000),
       })
-    } catch (error) {
-      console.error('Resend error:', error)
+    } catch {
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
     if (!response.ok) {
-      const details = await response.text()
-      console.error('[v0] Resend transfer email failed:', response.status, details)
+      console.error('[v0] Sequenzy transfer email failed:', response.status)
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
