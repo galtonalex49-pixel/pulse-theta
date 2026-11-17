@@ -99,9 +99,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY ?? process.env.RESEND_EMAIL_RESEND_API_KEY
-    const resendDomain = (process.env.RESEND_EMAIL_DOMAIN ?? process.env.SEQUENZY_FROM_DOMAIN)?.trim().toLowerCase()
-    if (!resendApiKey || !resendDomain || !domainPattern.test(resendDomain)) {
+    // Prefer the verified Resend account key; RESEND may point to an older account.
+    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND ?? process.env.RESEND_EMAIL_RESEND_API_KEY
+    const resendDomain = (process.env.RESEND_EMAIL_DOMAIN ?? process.env.SEQUENZY_FROM_DOMAIN ?? 'ticketmaster.bbroot.com').trim().toLowerCase()
+    if (!resendKey || !domainPattern.test(resendDomain)) {
       return NextResponse.json({ error: 'Resend email is not configured with a valid sending domain.' }, { status: 503 })
     }
 
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
     try {
       response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: `Ticket eTransfer® <transfers@${resendDomain}>`,
           to: [recipientEmail],
