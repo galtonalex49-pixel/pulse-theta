@@ -245,3 +245,57 @@ body {
 .compact-screen h3 {
   line-height: 22px;
 }
+
+@keyframes transfer-spinner-forward {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes transfer-spinner-backward {
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+.transfer-spinner-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-style: solid;
+  border-radius: 9999px;
+}
+
+.transfer-spinner-ring-outer {
+  width: 88px;
+  height: 88px;
+  border-width: 4px;
+  border-color: rgb(31 79 216 / 15%);
+  border-top-color: #1f4fd8;
+  border-right-color: #1f4fd8;
+  animation: transfer-spinner-forward 1.5s linear infinite;
+}
+
+.transfer-spinner-ring-middle {
+  width: 62px;
+  height: 62px;
+  border-width: 4px;
+  border-color: rgb(232 63 168 / 16%);
+  border-bottom-color: #e83fa8;
+  border-left-color: #e83fa8;
+  animation: transfer-spinner-backward 1.05s linear infinite;
+}
+
+.transfer-spinner-ring-inner {
+  width: 36px;
+  height: 36px;
+  border-width: 3px;
+  border-color: rgb(31 79 216 / 15%);
+  border-top-color: #5fe6d9;
+  border-right-color: #5fe6d9;
+  animation: transfer-spinner-forward 0.72s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transfer-spinner-ring-outer,
+  .transfer-spinner-ring-middle,
+  .transfer-spinner-ring-inner {
+    animation-duration: 3s;
+  }
+}
