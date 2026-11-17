@@ -260,6 +260,8 @@ body {
   left: 50%;
   border-style: solid;
   border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
 }
 
 .transfer-spinner-ring-outer {
