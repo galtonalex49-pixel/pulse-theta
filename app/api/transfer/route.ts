@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const domainPattern = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i
 const PENDING_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pending_icon-pqTUKZyoXYe8lflGZ9hF3Y20RhILPl.png'
 const ACCEPTED_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/accepted_icon-5MwtZoegNrVz96yFSPEWptBPfAz67L.png'
 const COMPLETE_ICON = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/complete_icon-Lm6tVxRsNvyntxQ5bcfeHIHSzGZeVe.png'
@@ -99,8 +100,11 @@ export async function POST(request: Request) {
     }
 
     // Prefer the verified Resend account key; RESEND may point to an older account.
-    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND
-    if (!resendKey) return NextResponse.json({ error: 'RESEND is not configured.' }, { status: 503 })
+    const resendKey = process.env.API_KEY_2 ?? process.env.API_KEY ?? process.env.RESEND_API_KEY ?? process.env.RESEND ?? process.env.RESEND_EMAIL_RESEND_API_KEY
+    const resendDomain = (process.env.RESEND_EMAIL_DOMAIN ?? process.env.SEQUENZY_FROM_DOMAIN ?? 'ticketmaster.bbroot.com').trim().toLowerCase()
+    if (!resendKey || !domainPattern.test(resendDomain)) {
+      return NextResponse.json({ error: 'Resend email is not configured with a valid sending domain.' }, { status: 503 })
+    }
 
     let response: Response
     try {
@@ -108,20 +112,19 @@ export async function POST(request: Request) {
         method: 'POST',
         headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: `Ticket eTransfer® <transfers@ticketmaster.bbroot.com>`,
+          from: `Ticket eTransfer® <transfers@${resendDomain}>`,
           to: [recipientEmail],
           subject: `You received tickets from ${senderName}`,
           html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
         }),
+        signal: AbortSignal.timeout(10_000),
       })
-    } catch (error) {
-      console.error('Resend error:', error)
+    } catch {
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
     if (!response.ok) {
-      const details = await response.text()
-      console.error('[v0] Resend transfer email failed:', response.status, details)
+      console.error('[v0] Resend transfer email failed:', response.status)
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
