@@ -1,12 +1,12 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Check, ChevronLeft, ChevronRight, Contact, FileText, Plus, Send } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { dateBadge } from '@/lib/format'
 import type { Seat, Ticket } from '@/lib/types'
 
-type Step = 'auth' | 'select' | 'method' | 'details'
+type Step = 'loading' | 'auth' | 'select' | 'method' | 'details'
 
 interface Group {
   key: string
@@ -103,7 +103,7 @@ function TextField({
 
 export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: () => void }) {
   const { updateTicket, profile } = useApp()
-  const [step, setStep] = useState<Step>('auth')
+  const [step, setStep] = useState<Step>('loading')
   const [code, setCode] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [first, setFirst] = useState('')
@@ -112,6 +112,11 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
   const [contactsNote, setContactsNote] = useState('')
   const [sendError, setSendError] = useState('')
   const [sending, setSending] = useState(false)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setStep('auth'), 2600)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const transferable = useMemo(() => ticket.seats.filter((s) => !s.transferStatus), [ticket.seats])
   const groups = useMemo(() => groupSeats(transferable), [transferable])
@@ -187,6 +192,39 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
   }
 
   const formValid = first.trim() !== '' && last.trim() !== '' && /^\S+@\S+\.\S+$/.test(email.trim())
+
+  if (step === 'loading') {
+    return (
+      <div
+        className="absolute inset-0 z-50 flex flex-col bg-[#f7f8fc] text-[#222]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="transfer-loading-title"
+      >
+        <div className="relative h-[20%] min-h-[150px] shrink-0 overflow-hidden bg-black">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top opacity-50" />
+        </div>
+        <header className="relative flex h-[76px] shrink-0 items-center justify-center bg-[#2a5bdc] text-white">
+          <button type="button" onClick={onClose} className="absolute left-5 text-[20px] font-medium">
+            Cancel
+          </button>
+          <h2 id="transfer-loading-title" className="text-[20px] font-medium">Preparing Transfer</h2>
+        </header>
+        <div className="flex flex-1 flex-col items-center justify-center gap-7 px-6 pb-12 text-center">
+          <div className="relative size-[88px]" aria-hidden="true">
+            <span className="transfer-spinner-ring transfer-spinner-ring-outer" />
+            <span className="transfer-spinner-ring transfer-spinner-ring-middle" />
+            <span className="transfer-spinner-ring transfer-spinner-ring-inner" />
+          </div>
+          <div role="status" aria-live="polite">
+            <p className="text-[19px] font-semibold">Getting your tickets ready</p>
+            <p className="mt-2 text-[15px] text-[#666]">Just a moment…</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (step === 'auth') {
     return (

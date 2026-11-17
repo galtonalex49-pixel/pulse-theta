@@ -3,13 +3,27 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { City, Seat, TMEvent, TabId, Ticket, TicketView } from './types'
 import { DEFAULT_CITY, DEFAULT_RECENT } from './locations'
-import { uid } from './format'
+import { generateOrderNumber, uid } from './format'
 
 const OLIVIA_POSTER =
   'https://s1.ticketm.net/dam/a/4e1/ca96dd03-8def-46ae-b6d3-9441e992c4e1_TABLET_LANDSCAPE_3_2.jpg'
 const DEF_LEPPARD_POSTER =
   'https://s1.ticketm.net/dam/a/861/d7e41d08-4127-4710-b298-e566b30ac861_RETINA_LANDSCAPE_16_9.jpg'
 const HOME_CITY_STORAGE_KEY = 'ticketmaster_home_city'
+const LEGACY_ORDER_NUMBER_PATTERN = /^(?:\d{2}-\d{5}\/[A-Z0-9]{2,3}|\d{5}\/[A-Z]{3})$/
+
+function migrateLegacyOrderNumbers(tickets: Ticket[]) {
+  const reserved = new Set(tickets.map((ticket) => ticket.orderNumber))
+  const used = new Set<string>()
+
+  return tickets.map((ticket) => {
+    const needsNewNumber = LEGACY_ORDER_NUMBER_PATTERN.test(ticket.orderNumber) || used.has(ticket.orderNumber)
+    const orderNumber = needsNewNumber ? generateOrderNumber(reserved) : ticket.orderNumber
+    reserved.add(orderNumber)
+    used.add(orderNumber)
+    return orderNumber === ticket.orderNumber ? ticket : { ...ticket, orderNumber }
+  })
+}
 
 const SEED_TICKETS: Ticket[] = [
   {
@@ -19,7 +33,7 @@ const SEED_TICKETS: Ticket[] = [
     venue: 'Xfinity Mobile Arena',
     posterUrl: OLIVIA_POSTER,
     dateTime: '2026-11-07T19:00',
-    orderNumber: '41-22907/PHL',
+    orderNumber: '#4-62727/IR6',
     quantity: 2,
     purchaseType: 'General Sale',
     entryInfo: 'Reserved Seating',
@@ -43,7 +57,7 @@ const SEED_TICKETS: Ticket[] = [
     venue: 'Intuit Dome',
     posterUrl: OLIVIA_POSTER,
     dateTime: '2027-01-12T19:00',
-    orderNumber: '12-30884/NY2',
+    orderNumber: '#8-19042/CM9',
     quantity: 3,
     purchaseType: 'American Express® Presale',
     lat: 33.9958,
@@ -61,7 +75,7 @@ const SEED_TICKETS: Ticket[] = [
     venue: 'Scotiabank Arena',
     posterUrl: DEF_LEPPARD_POSTER,
     dateTime: '2027-03-09T19:00',
-    orderNumber: '35-70054/LLP',
+    orderNumber: '#2-71563/TP4',
     quantity: 3,
     purchaseType: 'General Sale',
     lat: 43.6435,
@@ -166,7 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem('ticketmaster-app-state')
       if (saved) {
         const parsed = JSON.parse(saved) as Partial<{ tickets: Ticket[]; profile: Profile; location: City; recentLocations: City[] }>
-        if (Array.isArray(parsed.tickets)) setTickets(parsed.tickets)
+        if (Array.isArray(parsed.tickets)) setTickets(migrateLegacyOrderNumbers(parsed.tickets))
         if (parsed.profile) setProfileState((prev) => ({ ...prev, ...parsed.profile }))
         if (parsed.location) setLocation(parsed.location)
         if (Array.isArray(parsed.recentLocations)) setRecentLocations(parsed.recentLocations)
@@ -218,7 +232,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       venue: 'Venue Name',
       posterUrl: OLIVIA_POSTER,
       dateTime: '2027-06-01T19:00',
-      orderNumber: '00-00000/XX',
+      orderNumber: generateOrderNumber(tickets.map((ticket) => ticket.orderNumber)),
       quantity: 1,
       purchaseType: 'General Sale',
       purchaseDate: '2027-05-25T14:41',
@@ -239,7 +253,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     setTickets((prev) => [next, ...prev])
     return id
-  }, [profile.email, profile.name])
+  }, [tickets])
 
   const updateTicket = useCallback((id: string, patch: Partial<Ticket>) => {
     setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)))

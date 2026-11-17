@@ -133,6 +133,59 @@ function ExtraCard({
   )
 }
 
+function EventShareCard({ ticket, shape }: { ticket: Ticket; shape: 'square' | 'story' }) {
+  const isSquare = shape === 'square'
+
+  return (
+    <div
+      className={`relative mx-auto overflow-hidden bg-[#111] ${
+        isSquare ? 'aspect-square w-full max-w-[360px]' : 'aspect-[9/16] w-full max-w-[320px]'
+      }`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={ticket.posterUrl}
+        alt=""
+        className="absolute inset-0 h-full w-full scale-110 object-cover object-top opacity-60 blur-2xl"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/15 to-black/80" />
+      <div className="absolute inset-x-4 top-[9%] text-center">
+        <p
+          className={`font-black uppercase tracking-wide text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.55)] ${
+            isSquare ? 'text-xl' : 'text-[clamp(22px,6vw,34px)]'
+          }`}
+        >
+          I GOT TICKETS!
+        </p>
+        <div className="mx-auto mt-2 h-[5px] w-[64%] bg-tm-blue" />
+      </div>
+      <div
+        className={`absolute inset-x-[8%] overflow-hidden bg-[#e6e6e6] ${
+          isSquare ? 'top-[25%] h-[36%]' : 'top-[27%] h-[39%]'
+        }`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top" />
+      </div>
+      <div
+        className={`absolute inset-x-[8%] bg-[#101010] text-white ${
+          isSquare ? 'bottom-[8%] min-h-[27%] px-4 py-3' : 'bottom-[8%] min-h-[29%] px-5 py-4'
+        }`}
+      >
+        <p className={`truncate font-semibold tracking-wide text-white/75 ${isSquare ? 'text-[10px]' : 'text-xs'}`}>
+          {dateBadge(ticket.dateTime)}
+        </p>
+        <h2 className={`mt-2 line-clamp-2 font-extrabold uppercase leading-tight ${isSquare ? 'text-base' : 'text-xl'}`}>
+          {ticket.artist}
+        </h2>
+        <p className={`mt-2 truncate text-white/75 ${isSquare ? 'text-xs' : 'text-sm'}`}>
+          {ticket.venueLocation || ticket.venue}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function OrderDetails({ ticket }: { ticket: Ticket }) {
   const { openSafetix } = useApp()
   const [scrolled, setScrolled] = useState(false)
@@ -232,7 +285,9 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
           <div className="px-4 pb-44 pt-10">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <h2 className="truncate text-[20px] font-semibold">Order #{ticket.orderNumber}</h2>
+                <h2 className="truncate text-[20px] font-semibold">
+                  Order {ticket.orderNumber.startsWith('#') ? ticket.orderNumber : `#${ticket.orderNumber}`}
+                </h2>
                 <p className="mt-2 text-xl text-white/70">
                   x{count} {count === 1 ? 'Ticket' : 'Tickets'}
                 </p>
@@ -263,29 +318,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </a>
 
             <section className="mt-14" aria-label="Share your tickets">
-              <div className="relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden bg-[#1a1a1a]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={ticket.posterUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover object-top"
-                />
-                <div className="absolute inset-y-0 right-0 w-1/2 bg-black/55" />
-                <p className="absolute right-5 top-14 w-[42%] text-[34px] font-extrabold uppercase leading-[1.1]">
-                  You Got
-                  <br />
-                  <span className="inline-block border-b-4 border-white pb-1">Tickets!</span>
-                </p>
-                <div className="absolute bottom-0 left-0 w-[66%] bg-[#1a1a1a]/95 px-5 pb-5 pt-4">
-                  <p className="truncate text-[13px] font-extrabold uppercase tracking-wide">
-                    {dateBadge(ticket.dateTime)}
-                  </p>
-                  <p className="mt-2 line-clamp-2 text-xl font-extrabold uppercase leading-tight">
-                    {ticket.artist}
-                  </p>
-                  <p className="mt-1 truncate text-base text-white/70">{ticket.venue}</p>
-                </div>
-              </div>
+              <EventShareCard ticket={ticket} shape="square" />
               <div className="mx-auto max-w-[360px] bg-[#1a1a1a] px-6 py-8">
                 <h3 className="text-[30px] font-extrabold">Post on Social Media</h3>
                 <p className="mt-4 text-xl leading-snug text-white/60">
@@ -312,52 +345,58 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
         )}
       </div>
 
-      <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-stretch rounded-full bg-white px-3 py-3 text-black shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+      <div className="absolute bottom-5 left-1/2 z-30 flex h-[68px] w-[calc(100%-32px)] max-w-[360px] -translate-x-1/2 items-center rounded-full bg-white px-2 text-black shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
         <button
           type="button"
           disabled
-          className="flex w-[84px] flex-col items-center gap-1 px-2 text-black/35"
+          className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 px-2 text-black/35"
         >
-          <ArrowUp size={30} aria-hidden="true" />
-          <span className="text-lg">Upgrade</span>
+          <ArrowUp size={23} aria-hidden="true" />
+          <span className="text-[15px]">Upgrade</span>
         </button>
-        <span className="my-1 w-px bg-black/15" />
+        <span className="h-10 w-px bg-black/15" />
         <button
           type="button"
           onClick={() => setTransferOpen(true)}
           disabled={count === 0}
-          className="flex w-[96px] flex-col items-center gap-1 px-2 text-tm-blue disabled:opacity-40"
+          className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 px-2 text-tm-blue disabled:opacity-40"
         >
-          <ArrowUpRight size={30} aria-hidden="true" />
-          <span className="text-lg text-black/70">Transfer</span>
+          <ArrowUpRight size={23} aria-hidden="true" />
+          <span className="text-[15px] text-black/70">Transfer</span>
         </button>
-        <span className="my-1 w-px bg-black/15" />
-        <button type="button" className="flex w-[84px] flex-col items-center gap-1 px-2 text-tm-blue">
-          <RefreshCw size={30} aria-hidden="true" />
-          <span className="text-lg text-black/70">Sell</span>
+        <span className="h-10 w-px bg-black/15" />
+        <button type="button" className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 px-2 text-black/55">
+          <RefreshCw size={23} aria-hidden="true" />
+          <span className="text-[15px]">Sell</span>
         </button>
       </div>
 
       {transferOpen && <TransferModal ticket={ticket} onClose={() => setTransferOpen(false)} />}
 
       {shareOpen && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 p-5" role="dialog" aria-modal="true" aria-labelledby="share-card-title">
-          <div className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-white/15 bg-[#151515] p-4 shadow-2xl">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-[#090909]">
-              <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top opacity-75" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/95" />
-              <div className="absolute inset-x-5 top-6 text-center">
-                <p className="text-2xl font-extrabold uppercase tracking-wide">I Got Tickets!</p>
-                <div className="mx-auto mt-3 h-0.5 w-2/3 bg-white/70" />
-              </div>
-              <div className="absolute inset-x-5 bottom-6">
-                <p className="text-xs font-extrabold uppercase tracking-wide text-white/70">{dateBadge(ticket.dateTime)}</p>
-                <h2 id="share-card-title" className="mt-3 text-2xl font-extrabold uppercase leading-tight">{ticket.artist}</h2>
-                <p className="mt-2 text-base text-white/70">{ticket.venue}</p>
-              </div>
-            </div>
-            <button type="button" onClick={saveShareCard} className="mt-4 h-14 w-full rounded-lg bg-tm-blue text-lg font-extrabold">{shareSaved ? 'Saved to Photos ✓' : 'Save to Photos'}</button>
-            <button type="button" onClick={() => setShareOpen(false)} className="mt-2 h-12 w-full text-base font-bold text-white/60">Close</button>
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="share-card-title"
+        >
+          <div className="max-h-[calc(100dvh-40px)] w-full max-w-md overflow-y-auto rounded-2xl border border-white/15 bg-[#151515] p-4 shadow-2xl">
+            <h2 id="share-card-title" className="sr-only">Share {ticket.artist} tickets</h2>
+            <EventShareCard ticket={ticket} shape="story" />
+            <button
+              type="button"
+              onClick={saveShareCard}
+              className="mt-4 h-14 w-full rounded-lg bg-tm-blue text-lg font-extrabold"
+            >
+              {shareSaved ? 'Saved to Photos ✓' : 'Save to Photos'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShareOpen(false)}
+              className="mt-2 h-12 w-full text-base font-bold text-white/60"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

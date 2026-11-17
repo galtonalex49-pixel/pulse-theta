@@ -71,3 +71,20 @@ export function initials(name: string) {
 export function uid() {
   return Math.random().toString(36).slice(2, 10)
 }
+
+export function generateOrderNumber(existing: Iterable<string> = []) {
+  const used = new Set(existing)
+  const digits = '0123456789'
+  const lettersAndDigits = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const randomCharacter = (characters: string) => characters[Math.floor(Math.random() * characters.length)]
+  let candidate = ''
+
+  do {
+    const leadingDigit = String(1 + Math.floor(Math.random() * 9))
+    const numberPart = Array.from({ length: 5 }, () => randomCharacter(digits)).join('')
+    const eventCode = Array.from({ length: 3 }, () => randomCharacter(lettersAndDigits)).join('')
+    candidate = `#${leadingDigit}-${numberPart}/${eventCode}`
+  } while (used.has(candidate))
+
+  return candidate
+}
