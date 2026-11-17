@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Search, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Plus, RefreshCw, Search, Trash2 } from 'lucide-react'
 import { resizeSeats, useApp } from '@/lib/store'
-import { dateBadge } from '@/lib/format'
+import { dateBadge, generateOrderNumber } from '@/lib/format'
 import type { Seat, TMEvent, Ticket } from '@/lib/types'
 import { DualTicketIcon } from '../icons'
 
@@ -46,6 +46,46 @@ function Field({
         className={inputCls}
       />
     </label>
+  )
+}
+
+function OrderNumberField({
+  value,
+  onChange,
+  onRefresh,
+  eventName,
+}: {
+  value: string
+  onChange: (value: string) => void
+  onRefresh: () => void
+  eventName: string
+}) {
+  const inputId = useId()
+
+  return (
+    <div className="block min-w-0">
+      <label htmlFor={inputId} className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">
+        Order number
+      </label>
+      <div className="flex min-w-0">
+        <input
+          id={inputId}
+          type="text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className={`${inputCls} rounded-r-none border-r-0`}
+        />
+        <button
+          type="button"
+          onClick={onRefresh}
+          aria-label={`Generate a new order number for ${eventName || 'this event'}`}
+          title="Generate a new order number"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-r-md border border-white/15 bg-[#1a1a1a] text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tm-blue-light"
+        >
+          <RefreshCw size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -186,13 +226,12 @@ function SeatEditor({
 }
 
 function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: boolean }) {
-  const { updateTicket, deleteTicket } = useApp()
+  const { updateTicket, deleteTicket, tickets } = useApp()
   const [open, setOpen] = useState(defaultOpen)
   const patch = (p: Partial<Ticket>) => updateTicket(ticket.id, p)
+  const newOrderNumber = () => generateOrderNumber(tickets.map((item) => item.orderNumber))
 
   const applyEvent = (event: TMEvent) => {
-    const cityCode = (event.city || 'CITY').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase().padEnd(3, 'X')
-    const eventCode = Array.from(event.id).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 100000
     patch({
       artist: event.name,
       venue: event.venue || ticket.venue,
@@ -201,7 +240,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
       purchaseDate: event.dateTime ? new Date(new Date(event.dateTime).getTime() - 7 * 86400000).toISOString().slice(0, 16) : ticket.purchaseDate,
       venueLocation: [event.city, event.countryCode].filter(Boolean).join(', '),
       presenter: event.promoter ? `${event.promoter.toUpperCase()} PRESENTS` : ticket.presenter,
-      orderNumber: `${String(eventCode).padStart(5, '0')}/${cityCode}`,
+      orderNumber: newOrderNumber(),
       lat: event.lat ?? ticket.lat,
       lng: event.lng ?? ticket.lng,
     })
@@ -276,7 +315,12 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             <NumberField label="Venue latitude" value={ticket.lat} min={-90} max={90} step={0.0001} onCommit={(v) => patch({ lat: v })} />
             <NumberField label="Venue longitude" value={ticket.lng} min={-180} max={180} step={0.0001} onCommit={(v) => patch({ lng: v })} />
           </div>
-          <Field label="Order number" value={ticket.orderNumber} onChange={(v) => patch({ orderNumber: v })} />
+          <OrderNumberField
+            value={ticket.orderNumber}
+            onChange={(value) => patch({ orderNumber: value })}
+            onRefresh={() => patch({ orderNumber: newOrderNumber() })}
+            eventName={ticket.artist}
+          />
           <label className="block min-w-0"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Entry info</span><select value={['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo ?? '') ? ticket.entryInfo : ticket.entryInfo ? '__custom__' : 'Upper Level'} onChange={(e) => patch({ entryInfo: e.target.value === '__custom__' ? (ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) ? ticket.entryInfo : '') : e.target.value })} className={inputCls}><option>Upper Level</option><option>Lower Level</option><option>Floor General Admission Pit</option><option value="__custom__">Custom</option></select></label>
           {ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) && <Field label="Custom entry info" value={ticket.entryInfo} onChange={(v) => patch({ entryInfo: v })} />}
           <Field label="Presenter override" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
