@@ -64,6 +64,8 @@ export interface City {
   flag: string
   /** Country code passed to the Ticketmaster Discovery API */
   tmCountry: string
+  /** Primary UI locale for this predefined city. */
+  locale?: string
   tmCity: string
   /** Text appended to "Trending In" */
   trendingLabel: string

@@ -1,4 +1,5 @@
 @import url('https://fonts.cdnfonts.com/css/averta');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
@@ -6,6 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --font-sans: 'Averta', 'Calibri', sans-serif;
   --color-tm-black: #0a0a0a;
   --color-tm-surface: #111111;
   --color-tm-card: #1a1a1a;
@@ -173,6 +175,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-weight: 400;
   }
 }
 
@@ -185,7 +189,54 @@ body {
 }
 
 * {
-  font-family: 'Averta', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif !important;
+  font-family: var(--font-sans) !important;
+}
+
+:lang(ar) {
+  font-family: 'Noto Sans Arabic', 'Averta', 'Calibri', sans-serif !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 800;
+}
+
+button,
+[role='button'],
+nav a {
+  font-weight: 600;
+}
+
+label > span {
+  font-weight: 500;
+}
+
+input,
+textarea,
+select,
+p,
+li,
+dd,
+dt,
+small {
+  font-weight: 400;
+}
+
+time,
+.type-metadata {
+  font-weight: 500;
+}
+
+.type-event-title {
+  font-weight: 600;
+}
+
+[class~='uppercase'] {
+  letter-spacing: 0.04em;
 }
 
 .no-scrollbar::-webkit-scrollbar {

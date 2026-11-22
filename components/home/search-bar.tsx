@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
+import { useTranslation } from '@/lib/use-translation'
 
-const KEYWORDS = ['Festivals', 'Shows', 'Comedy', 'Venues', 'Artists', 'Teams', 'Performers']
+const KEYWORD_KEYS = ['festivals', 'shows', 'comedy', 'venues', 'artists', 'teams', 'performers'] as const
 
 export function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation()
+  const keywords = KEYWORD_KEYS.map((key) => t(key))
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => setIndex((i) => (i + 1) % KEYWORDS.length), 2400)
+    const t = setInterval(() => setIndex((i) => (i + 1) % KEYWORD_KEYS.length), 2400)
     return () => clearInterval(t)
   }, [])
 
@@ -24,9 +27,9 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 flex items-center gap-1 text-[13px] text-white/45"
           >
-            <span>Search for</span>
-            <span key={KEYWORDS[index]} className="animate-placeholder font-extrabold text-white/90">
-              {KEYWORDS[index]}
+            <span>{t('searchFor')}</span>
+            <span key={keywords[index]} className="animate-placeholder font-extrabold text-white/90">
+              {keywords[index]}
             </span>
           </p>
         )}
@@ -34,7 +37,7 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
           type="search"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-label={`Search for ${KEYWORDS[index]}`}
+          aria-label={`${t('searchFor')} ${keywords[index]}`}
           className="h-8 w-full bg-transparent text-[13px] font-bold text-white outline-none [&::-webkit-search-cancel-button]:appearance-none"
         />
       </div>

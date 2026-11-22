@@ -17,6 +17,7 @@ import {
   UserPen,
 } from 'lucide-react'
 import { useApp } from '@/lib/store'
+import { useTranslation } from '@/lib/use-translation'
 import { initials } from '@/lib/format'
 import { AdminDashboard } from './admin-dashboard'
 
@@ -99,6 +100,7 @@ function ToggleRow({
 
 export function AccountTab() {
   const { profile, accountPage, setAccountPage, setTab, setLocationSheetOpen } = useApp()
+  const { t } = useTranslation()
   const [locationContent, setLocationContent] = useState(false)
   const [notifications, setNotifications] = useState(true)
 
@@ -119,12 +121,12 @@ export function AccountTab() {
         </div>
       </header>
 
-      <SectionTitle>Personalization</SectionTitle>
+      <SectionTitle>{t('personalization')}</SectionTitle>
       <div>
-          <Row icon={<Heart size={28} strokeWidth={1.5} />} label="Favorites" onClick={() => setTab('watchlist')} />
+          <Row icon={<Heart size={28} strokeWidth={1.5} />} label={t('favorites')} onClick={() => setTab('watchlist')} />
         <Row
           icon={<MapPin size={28} strokeWidth={1.5} />}
-          label="Location"
+          label={t('location')}
           onClick={() => {
             setTab('home')
             setLocationSheetOpen(true)
@@ -132,43 +134,43 @@ export function AccountTab() {
         />
       </div>
 
-      <SectionTitle>Permissions</SectionTitle>
+      <SectionTitle>{t('permissions')}</SectionTitle>
       <div>
         <ToggleRow
           icon={<Navigation size={26} className="fill-white" />}
-          label="Location Content"
+          label={t('locationContent')}
           checked={locationContent}
           onChange={setLocationContent}
         />
         <ToggleRow
           icon={<Bell size={26} strokeWidth={1.5} />}
-          label="Notifications"
+          label={t('notifications')}
           checked={notifications}
           onChange={setNotifications}
         />
       </div>
 
-      <SectionTitle>Account</SectionTitle>
+      <SectionTitle>{t('accountSection')}</SectionTitle>
       <div>
         <Row
           icon={<UserPen size={28} strokeWidth={1.5} />}
-          label="Edit Details"
+          label={t('editDetails')}
           onClick={() => setAccountPage('edit')}
         />
-        <Row icon={<ShieldCheck size={28} strokeWidth={1.5} />} label="Security" />
-        <Row icon={<CreditCard size={28} strokeWidth={1.5} />} label="Saved Payment Methods" />
+        <Row icon={<ShieldCheck size={28} strokeWidth={1.5} />} label={t('security')} />
+        <Row icon={<CreditCard size={28} strokeWidth={1.5} />} label={t('savedPaymentMethods')} />
       </div>
 
-      <SectionTitle>Help &amp; Guidance</SectionTitle>
+      <SectionTitle>{t('helpGuidance')}</SectionTitle>
       <div>
         <Row
           icon={<CircleHelp size={28} strokeWidth={1.5} />}
-          label="Need Help?"
+          label={t('needHelp')}
           href="https://help.ticketmaster.com"
         />
-        <Row icon={<MessageSquareText size={28} strokeWidth={1.5} />} label="Give Us Feedback" />
-        <Row icon={<Eye size={28} strokeWidth={1.5} />} label="Privacy" />
-        <Row icon={<FileText size={28} strokeWidth={1.5} />} label="Legal" />
+        <Row icon={<MessageSquareText size={28} strokeWidth={1.5} />} label={t('feedback')} />
+        <Row icon={<Eye size={28} strokeWidth={1.5} />} label={t('privacy')} />
+        <Row icon={<FileText size={28} strokeWidth={1.5} />} label={t('legal')} />
       </div>
     </div>
   )

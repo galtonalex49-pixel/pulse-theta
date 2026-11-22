@@ -182,7 +182,7 @@ function TicketmasterSearch({ onPick }: { onPick: (e: TMEvent) => void }) {
                   <span className="h-14 w-20 shrink-0 rounded-l-md bg-[#2a2a2a]" />
                 )}
                 <span className="min-w-0 flex-1 py-1.5 pr-3">
-                  <span className="block truncate text-sm font-extrabold">{event.name}</span>
+                  <span className="type-event-title block truncate text-sm font-extrabold">{event.name}</span>
                   <span className="block truncate text-xs text-white/60">
                     {event.dateTime?.slice(0, 10)} • {event.venue}
                   </span>
@@ -264,7 +264,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
       </div>
       <div className="flex items-center gap-3 px-4 py-4">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
+          <h3 className="type-event-title truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
           <p className="flex items-center gap-2 truncate text-sm text-white/60">
             <span className="truncate">{ticket.venue}</span>
             <DualTicketIcon size={16} className="shrink-0" />
@@ -400,7 +400,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
   const [newestId, setNewestId] = useState<string | null>(null)
 
   return (
-    <div className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
+    <div lang="en" dir="ltr" className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
       <header className="sticky top-0 z-10 flex items-center gap-4 bg-[#111] px-4 py-3">
         <button type="button" onClick={onBack} aria-label="Back to Account" className="shrink-0">
           <ArrowLeft size={30} strokeWidth={2.4} />

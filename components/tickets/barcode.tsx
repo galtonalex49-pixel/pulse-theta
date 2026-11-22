@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useTranslation } from '@/lib/use-translation'
 
 function hash(input: string) {
   let h = 2166136261
@@ -27,6 +28,7 @@ const MATRIX_COLS = 66
 const ROWS = H / CELL
 
 export function Barcode({ seed }: { seed: string }) {
+  const { t } = useTranslation()
   const rects = useMemo(() => {
     const rand = rng(hash(seed))
     const out: { x: number; y: number; w: number; h: number }[] = []
@@ -61,7 +63,7 @@ export function Barcode({ seed }: { seed: string }) {
       viewBox={`0 0 ${W} ${H}`}
       className="h-[72px] w-full"
       role="img"
-      aria-label="SafeTix barcode"
+      aria-label={t('safeTixBarcode')}
       shapeRendering="crispEdges"
     >
       {rects.map((r, i) => (

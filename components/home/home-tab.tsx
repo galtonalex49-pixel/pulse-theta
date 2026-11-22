@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChevronRight, MapPin, ArrowRight } from 'lucide-react'
 import { useApp } from '@/lib/store'
-import { cityLine } from '@/lib/locations'
+import { cityCountryLabel, cityLine } from '@/lib/locations'
+import { useTranslation } from '@/lib/use-translation'
 import { parseLocal, monthDay } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
 import { SearchBar } from './search-bar'
@@ -49,6 +50,7 @@ function useDebounced<T>(value: T, delay = 350) {
 }
 
 function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) => void }) {
+  const { locale, t } = useTranslation()
   const debounced = useDebounced(query)
   const { data, isLoading } = useSWR(
     debounced.length >= 2 ? `/api/ticketmaster?keyword=${encodeURIComponent(debounced)}&size=20` : null,
@@ -58,14 +60,14 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
   const events = data?.events ?? []
 
   return (
-    <section aria-label="Search results" className="mt-6 px-4">
-      {isLoading && <p className="py-6 text-center text-white/60">Searching…</p>}
+    <section aria-label={t('searchResults')} className="mt-6 px-4">
+      {isLoading && <p className="py-6 text-center text-white/60">{t('searching')}</p>}
       {!isLoading && debounced.length >= 2 && events.length === 0 && (
-        <p className="py-6 text-center text-white/60">No results for “{debounced}”.</p>
+        <p className="py-6 text-center text-white/60">{t('noSearchResults', { query: debounced })}</p>
       )}
       <ul className="flex flex-col gap-2">
         {events.map((event) => {
-          const date = event.dateTime ? monthDay(event.dateTime) : null
+          const date = event.dateTime ? monthDay(event.dateTime, locale) : null
           return (
             <li key={event.id}>
               <button
@@ -78,7 +80,7 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
                   <img src={event.image} alt="" className="h-[72px] w-[96px] shrink-0 object-cover" />
                 )}
                 <span className="flex min-w-0 flex-1 flex-col py-2 pr-3">
-                  <span className="truncate text-base font-extrabold">{event.name}</span>
+                  <span className="type-event-title truncate text-base font-extrabold">{event.name}</span>
                   <span className="truncate text-sm text-white/60">
                     {date ? `${date.month} ${date.day} • ` : ''}
                     {event.venue}
@@ -95,6 +97,7 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
 
 export function HomeTab() {
   const { location, locationConfirmed, setLocationSheetOpen, browsed, browse } = useApp()
+  const { locale, t } = useTranslation()
   const [query, setQuery] = useState('')
 
   const { data, isLoading } = useSWR(
@@ -155,7 +158,7 @@ export function HomeTab() {
         type="button"
         onClick={() => setLocationSheetOpen(true)}
         className="mb-4 flex w-full items-center gap-2 px-4 py-1.5 text-left"
-        aria-label={`Current location ${cityLine(location)}. Change location`}
+        aria-label={t('currentLocationChange', { location: cityLine(location) })}
       >
         <MapPin size={18} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
         <span className="min-w-0 truncate text-[14px] font-bold leading-[18px] text-white/90">{cityLine(location)}</span>
@@ -176,40 +179,40 @@ export function HomeTab() {
         <>
           {isLoading && (
             <p role="status" className="mt-12 text-center text-white/60">
-              Loading events in {location.name}…
+              {t('loadingEvents', { city: location.name })}
             </p>
           )}
 
           {!isLoading && sections.empty && (
             <p className="mx-6 mt-12 text-center text-white/60">
-              No events found in {location.name} right now. Try another city.
+              {t('noEventsHere', { city: location.name })} {t('tryAnotherCity')}
             </p>
           )}
 
           {!sections.empty && (
             <>
-              <section className="mt-4" aria-label="For You">
-                <h2 className="mb-2.5 px-4 text-base font-bold tracking-[-0.01em]">For You</h2>
+              <section className="mt-4" aria-label={t('forYou')}>
+                <h2 className="mb-2.5 px-4 text-base font-bold tracking-[-0.01em]">{t('forYou')}</h2>
                 <ForYouRail events={sections.forYou} />
               </section>
 
-              <RailSection title={`Trending In ${location.trendingLabel}`}>
+              <RailSection title={t('trendingIn', { place: cityCountryLabel(location, locale) })}>
                 {(expanded) => <TrendingRail events={sections.trending} expanded={expanded} />}
               </RailSection>
 
-              <RailSection title="Recently Browsed Events">
+              <RailSection title={t('recentlyBrowsed')}>
                 {(expanded) => <MiniRail events={sections.recent} expanded={expanded} />}
               </RailSection>
 
-              <RailSection title="Last Minute">
+              <RailSection title={t('lastMinute')}>
                 {(expanded) => <MiniRail events={sections.lastMinute} expanded={expanded} />}
               </RailSection>
 
-              <RailSection title="Popular This Weekend">
+              <RailSection title={t('popularWeekend')}>
                 {(expanded) => <MiniRail events={sections.popularWeekend} expanded={expanded} />}
               </RailSection>
 
-              <RailSection title="Just Announced">
+              <RailSection title={t('justAnnounced')}>
                 {(expanded) => <MiniRail events={sections.justAnnounced} expanded={expanded} />}
               </RailSection>
             </>
@@ -227,8 +230,8 @@ export function HomeTab() {
             <MapPin size={18} className="fill-[#111] text-[#111]" aria-hidden="true" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="text-xs font-bold leading-tight">Find Events Near You</span>
-            <span className="text-[10px] leading-tight text-black/70">Set your location</span>
+            <span className="text-xs font-bold leading-tight">{t('findEvents')}</span>
+            <span className="text-[10px] leading-tight text-black/70">{t('setLocation')}</span>
           </span>
           <ArrowRight size={18} aria-hidden="true" />
         </button>

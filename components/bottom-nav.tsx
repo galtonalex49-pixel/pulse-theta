@@ -2,14 +2,15 @@
 
 import { Bookmark, CircleUser, UserRound } from 'lucide-react'
 import { useApp } from '@/lib/store'
+import { useTranslation } from '@/lib/use-translation'
 import type { TabId } from '@/lib/types'
 import { HomeNavIcon, TicketsNavIcon } from './icons'
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: 'home', label: 'Home' },
-  { id: 'watchlist', label: 'Watchlist' },
-  { id: 'tickets', label: 'My Tickets' },
-  { id: 'account', label: 'Account' },
+const TABS: { id: TabId }[] = [
+  { id: 'home' },
+  { id: 'watchlist' },
+  { id: 'tickets' },
+  { id: 'account' },
 ]
 
 function TabIcon({ id, active }: { id: TabId; active: boolean }) {
@@ -36,10 +37,17 @@ function TabIcon({ id, active }: { id: TabId; active: boolean }) {
 
 export function BottomNav() {
   const { tab, setTab } = useApp()
+  const { t } = useTranslation()
+  const labels: Record<TabId, string> = {
+    home: t('home'),
+    watchlist: t('watchlist'),
+    tickets: t('myTickets'),
+    account: t('account'),
+  }
   return (
     <nav
-      aria-label="Primary"
-      className="fixed bottom-0 left-0 z-[9999] flex h-[76px] w-full items-stretch justify-between border-t border-[#222] bg-[#0A0A0A] px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
+      aria-label={t('primaryNavigation')}
+      className="fixed bottom-0 left-0 z-30 flex h-[76px] w-full items-stretch justify-between border-t border-[#222] bg-[#0A0A0A] px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
     >
       {TABS.map((t) => {
         const active = tab === t.id
@@ -56,7 +64,7 @@ export function BottomNav() {
             <span className="flex size-5 shrink-0 items-center justify-center" aria-hidden="true">
               <TabIcon id={t.id} active={active} />
             </span>
-            <span className="mt-1 leading-[18px]">{t.label}</span>
+            <span className="mt-1 leading-[18px]">{labels[t.id]}</span>
           </button>
         )
       })}

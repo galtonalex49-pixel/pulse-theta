@@ -1,6 +1,7 @@
 'use client'
 
 import { AppProvider, useApp } from '@/lib/store'
+import { useTranslation } from '@/lib/use-translation'
 import { BottomNav } from './bottom-nav'
 import { HomeTab } from './home/home-tab'
 import { LocationSheet } from './home/location-sheet'
@@ -23,8 +24,9 @@ function ActiveTab() {
 }
 
 function AppContent() {
+  const { locale } = useTranslation()
   return (
-    <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-surface">
+    <div lang={locale} dir={locale.startsWith('ar') ? 'rtl' : 'ltr'} className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-surface">
       <main className="relative min-h-0 flex-1 pb-[76px]">
         <ActiveTab />
       </main>

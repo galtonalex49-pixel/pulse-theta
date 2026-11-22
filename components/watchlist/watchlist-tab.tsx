@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react'
 import { useApp } from '@/lib/store'
+import { useTranslation } from '@/lib/use-translation'
 import { monthDay } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
 
@@ -47,16 +48,18 @@ function SavedList({
   onRemove,
   label,
   color,
+  locale,
 }: {
   events: TMEvent[]
   onRemove: (e: TMEvent) => void
   label: string
   color: string
+  locale: string
 }) {
   return (
     <ul className="mt-8 flex flex-col gap-3 px-4">
       {events.map((event) => {
-        const date = event.dateTime ? monthDay(event.dateTime) : null
+        const date = event.dateTime ? monthDay(event.dateTime, locale) : null
         return (
           <li key={event.id} className="flex items-center gap-3 border border-white/10 bg-[#161616]">
             {event.image && (
@@ -64,7 +67,7 @@ function SavedList({
               <img src={event.image} alt="" className="h-[84px] w-[110px] shrink-0 object-cover" />
             )}
             <div className="flex min-w-0 flex-1 flex-col py-2">
-              <span className="truncate text-base font-extrabold uppercase">{event.name}</span>
+              <span className="type-event-title truncate text-base font-extrabold uppercase">{event.name}</span>
               <span className="flex items-center gap-1.5 truncate text-sm text-white/60">
                 <MapPin size={14} className="shrink-0" style={{ color }} aria-hidden="true" />
                 <span className="truncate">
@@ -90,6 +93,7 @@ function SavedList({
 
 export function WatchlistTab() {
   const { watchlist, toggleWatchlist, favorites, toggleFavorite, setTab } = useApp()
+  const { locale, t } = useTranslation()
   const [mode, setMode] = useState<Mode>('events')
 
   const isEvents = mode === 'events'
@@ -98,13 +102,13 @@ export function WatchlistTab() {
   return (
     <div className="compact-screen relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-x-hidden overflow-y-auto px-4 pb-20 pt-[max(env(safe-area-inset-top),12px)]">
       <header className="shrink-0 text-center">
-        <h1 className="text-[30px] font-extrabold uppercase leading-[34px] tracking-[-0.02em]">Watchlist</h1>
-        <p className="mt-2 text-[22px] leading-7 text-white/80">Keep track of what&apos;s important</p>
+        <h1 className="text-[30px] font-extrabold uppercase leading-[34px] tracking-[-0.02em]">{t('watchlist')}</h1>
+        <p className="mt-2 text-[22px] leading-7 text-white/80">{t('watchlistSubtitle')}</p>
       </header>
 
       <div
         role="tablist"
-        aria-label="Watchlist sections"
+        aria-label={t('watchlistSections')}
         className="mx-4 mt-8 grid shrink-0 grid-cols-2 rounded-full border border-white/10 bg-[#161616] p-1.5"
       >
         <button
@@ -117,7 +121,7 @@ export function WatchlistTab() {
           }`}
         >
           <Bookmark size={22} className={isEvents ? 'fill-black' : ''} aria-hidden="true" />
-          Events
+          {t('events')}
         </button>
         <button
           type="button"
@@ -129,64 +133,64 @@ export function WatchlistTab() {
           }`}
         >
           <Heart size={22} className={!isEvents ? 'fill-black' : ''} aria-hidden="true" />
-          Favorites
+          {t('favorites')}
         </button>
       </div>
 
       {isEvents ? (
         watchlist.length > 0 ? (
-          <SavedList events={watchlist} onRemove={toggleWatchlist} label="watchlist" color="#b95cff" />
+          <SavedList events={watchlist} onRemove={toggleWatchlist} label={t('watchlist')} color="#b95cff" locale={locale} />
         ) : (
-          <section aria-label="No events added" className="flex flex-col items-center">
+          <section aria-label={t('emptyEventsLabel')} className="flex flex-col items-center">
             <Bookmark size={64} strokeWidth={0} className="mt-14 fill-tm-purple" aria-hidden="true" />
             <span className="mt-8 h-[3px] w-[188px] bg-tm-purple" />
-            <h2 className="mt-12 text-xl font-extrabold text-white/70">No Events Added</h2>
+            <h2 className="mt-12 text-xl font-extrabold text-white/70">{t('noEventsAdded')}</h2>
             <InfoList
               color="#b95cff"
               rows={[
                 {
                   icon: <Landmark size={34} strokeWidth={1.6} aria-hidden="true" />,
-                  title: 'Save Events',
-                  body: 'Easily jump back into events that you have an interest in going to',
+                  title: t('saveEvents'),
+                  body: t('saveEventsBody'),
                 },
                 {
                   icon: <Bell size={34} strokeWidth={1.6} aria-hidden="true" />,
-                  title: 'Never Miss A Presale',
-                  body: 'Set alerts so you never miss out on those presale tickets',
+                  title: t('neverMissPresale'),
+                  body: t('presaleBody'),
                 },
                 {
                   icon: <Info size={34} strokeWidth={1.6} aria-hidden="true" />,
-                  title: 'Stay Informed',
-                  body: 'Receive alerts and updates about key event information',
+                  title: t('stayInformed'),
+                  body: t('stayInformedBody'),
                 },
               ]}
             />
           </section>
         )
       ) : favorites.length > 0 ? (
-        <SavedList events={favorites} onRemove={toggleFavorite} label="favorites" color="#e83fa8" />
+        <SavedList events={favorites} onRemove={toggleFavorite} label={t('favorites')} color="#e83fa8" locale={locale} />
       ) : (
-        <section aria-label="Find your favorites" className="flex flex-col items-center">
+        <section aria-label={t('findYourFavorites')} className="flex flex-col items-center">
           <Heart size={64} strokeWidth={0} className="mt-14 fill-tm-pink" aria-hidden="true" />
           <span className="mt-8 h-[3px] w-[188px] bg-tm-pink" />
-          <h2 className="mt-12 text-xl font-extrabold text-white/70">Find Your Favorites</h2>
+          <h2 className="mt-12 text-xl font-extrabold text-white/70">{t('findYourFavorites')}</h2>
           <InfoList
             color="#e83fa8"
             rows={[
               {
                 icon: <Bell size={34} strokeWidth={1.6} aria-hidden="true" />,
-                title: 'Know When They’re Nearby',
-                body: 'We will let you know when your favorites have events on in your location',
+                title: t('knowWhenNearby'),
+                body: t('nearbyBody'),
               },
               {
                 icon: <MapPin size={34} strokeWidth={1.6} aria-hidden="true" />,
-                title: 'See Who’s Active',
-                body: 'We’ll show you which of your favorites currently have events on',
+                title: t('seeWhosActive'),
+                body: t('activeBody'),
               },
               {
                 icon: <Smartphone size={34} strokeWidth={1.6} aria-hidden="true" />,
-                title: 'Personalised Suggestions',
-                body: 'Find similar artists and events to your selected favorites',
+                title: t('personalizedSuggestions'),
+                body: t('personalizedBody'),
               },
             ]}
           />
@@ -200,7 +204,7 @@ export function WatchlistTab() {
             onClick={() => setTab('home')}
             className="pointer-events-auto flex h-[64px] items-center gap-3 rounded-full bg-tm-pink px-9 text-2xl font-extrabold text-black shadow-[0_10px_30px_rgba(232,63,168,0.35)]"
           >
-            Add Favorites
+            {t('addFavorites')}
             <ArrowRight size={28} strokeWidth={2.6} aria-hidden="true" />
           </button>
         </div>

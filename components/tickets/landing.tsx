@@ -5,12 +5,14 @@ import { CalendarPlus } from 'lucide-react'
 import { useApp, useNow } from '@/lib/store'
 import { countdownText, isPast } from '@/lib/format'
 import { FlagBadge } from '../icons'
+import { useTranslation } from '@/lib/use-translation'
 import { EventCard } from './event-card'
 
 type Sub = 'upcoming' | 'past'
 
 export function TicketsLanding() {
   const { tickets, location, openDetails, profile } = useApp()
+  const { locale, t } = useTranslation()
   const now = useNow()
   const [sub, setSub] = useState<Sub>('upcoming')
 
@@ -30,7 +32,7 @@ export function TicketsLanding() {
     <div className="relative h-full overflow-y-auto pb-6">
       <header className="sticky top-0 z-20 bg-[#111] pt-[max(env(safe-area-inset-top),16px)]">
         <div className="relative flex h-12 items-center justify-center gap-2 px-16">
-          <h1 className="min-w-0 truncate text-[22px] font-extrabold leading-none">My Events</h1>
+          <h1 className="min-w-0 truncate text-[22px] font-extrabold leading-none">{t('myEvents')}</h1>
           <FlagBadge code={location.flag} size={22} />
           <a
             href="https://help.ticketmaster.com"
@@ -38,14 +40,14 @@ export function TicketsLanding() {
             rel="noopener noreferrer"
             className="absolute right-4 text-[22px] font-extrabold leading-none"
           >
-            Help
+            {t('help')}
           </a>
         </div>
-        <div role="tablist" aria-label="Event timeframe" className="mt-3 grid grid-cols-2">
+        <div role="tablist" aria-label={t('eventTimeframe')} className="mt-3 grid grid-cols-2">
           {(
             [
-              ['upcoming', `UPCOMING(${upcoming.length})`],
-              ['past', `PAST(${Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))})`],
+              ['upcoming', `${t('upcoming').toLocaleUpperCase(locale)}(${upcoming.length})`],
+              ['past', `${t('past').toLocaleUpperCase(locale)}(${Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))})`],
             ] as const
           ).map(([id, label]) => {
             const active = sub === id
@@ -73,7 +75,7 @@ export function TicketsLanding() {
       {sub === 'upcoming' ? (
         upcoming.length === 0 ? (
           <p className="mx-8 mt-20 text-center text-lg text-white/60">
-            You have no upcoming events. Tickets you add will appear here.
+            {t('noUpcomingEvents')} {t('noUpcomingTickets')}
           </p>
         ) : (
           <>
@@ -88,7 +90,7 @@ export function TicketsLanding() {
               <div className="relative">
                 <div className="flex items-center justify-between px-6 py-5">
                   <p className="text-[28px] font-extrabold drop-shadow">
-                    Next Event: {now ? countdownText(next.dateTime, now) : ''}
+                    {t('nextEvent', { countdown: now ? countdownText(next.dateTime, now, locale) : '' })}
                   </p>
                   <CalendarPlus size={40} strokeWidth={1.6} className="shrink-0" aria-hidden="true" />
                 </div>
@@ -98,8 +100,8 @@ export function TicketsLanding() {
               </div>
             </section>
 
-            <section aria-label="All upcoming events" className="mt-8 px-4">
-              <h2 className="mb-5 text-[26px] font-extrabold">All Upcoming Events</h2>
+            <section aria-label={t('allUpcomingEvents')} className="mt-8 px-4">
+              <h2 className="mb-5 text-[26px] font-extrabold">{t('allUpcomingEvents')}</h2>
               <ul className="flex flex-col gap-6">
                 {upcoming.map((t) => (
                   <li key={t.id}>
@@ -112,7 +114,7 @@ export function TicketsLanding() {
         )
       ) : past.length === 0 ? (
         <p className="mx-8 mt-20 text-center text-lg text-white/60">
-          Events you have attended will move here automatically.
+          {t('pastEventsDescription')}
         </p>
       ) : (
         <ul className="mt-6 flex flex-col gap-6 px-4">
