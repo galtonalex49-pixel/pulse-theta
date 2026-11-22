@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { AppProvider, useApp } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import { BottomNav } from './bottom-nav'
@@ -9,11 +10,11 @@ import { WatchlistTab } from './watchlist/watchlist-tab'
 import { MyTicketsTab } from './tickets/my-tickets-tab'
 import { AccountTab } from './account/account-tab'
 
-function ActiveTab() {
+function ActiveTab({ isHomeLoading }: { isHomeLoading: boolean }) {
   const { tab } = useApp()
   switch (tab) {
     case 'home':
-      return <HomeTab />
+      return <HomeTab isHomeLoading={isHomeLoading} />
     case 'watchlist':
       return <WatchlistTab />
     case 'tickets':
@@ -25,10 +26,20 @@ function ActiveTab() {
 
 function AppContent() {
   const { locale } = useTranslation()
+  const { location } = useApp()
+  const [isHomeLoading, setIsHomeLoading] = useState(true)
+  const locationKey = `${location.tmCountry}:${location.tmCity}`
+
+  useEffect(() => {
+    setIsHomeLoading(true)
+    const timer = window.setTimeout(() => setIsHomeLoading(false), 2400)
+    return () => window.clearTimeout(timer)
+  }, [locationKey])
+
   return (
     <div lang={locale} dir={locale.startsWith('ar') ? 'rtl' : 'ltr'} className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-surface">
       <main className="relative min-h-0 flex-1 pb-[76px]">
-        <ActiveTab />
+        <ActiveTab isHomeLoading={isHomeLoading} />
       </main>
       <BottomNav />
       <LocationSheet />

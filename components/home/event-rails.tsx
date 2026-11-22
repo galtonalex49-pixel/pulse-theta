@@ -83,51 +83,54 @@ function CategoryIcon({ event }: { event: TMEvent }) {
   return <Icon size={18} className="shrink-0" aria-hidden="true" />
 }
 
-export function ForYouRail({ events }: { events: TMEvent[] }) {
+function EventCard({ event, expanded = false }: { event: TMEvent; expanded?: boolean }) {
   const open = useOpenEvent()
   const { locale } = useTranslation()
+  const date = event.dateTime ? monthDay(event.dateTime, locale) : null
+
   return (
-    <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1">
-      {events.map((event) => {
-        const date = event.dateTime ? monthDay(event.dateTime, locale) : null
-        return (
-          <article
-            key={event.id}
-            className="h-[180px] w-[230px] shrink-0 snap-start border border-white/10 bg-[#161616]"
-          >
-            <button type="button" onClick={() => open(event)} className="relative block h-[120px] w-full">
-              <EventImage event={event} className="h-full w-full" />
-              <span className="type-event-title absolute bottom-0 left-0 max-w-[88%] truncate bg-[#161616] px-2.5 py-1.5 text-[13px] font-bold leading-4 uppercase">
-                {event.name}
-              </span>
-            </button>
-            <div className="flex items-center gap-2 px-2.5 py-2">
-              {date && (
-                <div className="flex shrink-0 flex-col items-center">
-                  <span className="text-[13px] font-bold text-white/70">{date.month}</span>
-                  <span className="text-xl font-extrabold leading-none">{date.day}</span>
-                  <span className="mt-1 h-0.5 w-full bg-[#b5774f]" />
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                {event.dateTime && (
-                  <p className="flex items-center gap-1 text-[11px] leading-[14px] text-white/70">
-                    <span className="truncate">{weekdayTime(event.dateTime, locale)}</span>
-                    <span className="shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-[13px] font-bold text-white">
-                      {yearOf(event.dateTime)}
-                    </span>
-                  </p>
-                )}
-                <p className="mt-0.5 flex items-center gap-1 text-[11px] font-bold leading-[14px]">
-                  <MapPin size={16} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
-                  <span className="truncate">{locationLine(event)}</span>
-                </p>
-              </div>
-              <EventMenu event={event} />
-            </div>
-          </article>
-        )
-      })}
+    <article
+      className={`h-[220px] shrink-0 snap-start border border-white/10 bg-[#232323] ${
+        expanded ? 'w-full' : 'w-[280px]'
+      }`}
+    >
+      <button type="button" onClick={() => open(event)} className="relative block h-[142px] w-full text-left">
+        <EventImage event={event} className="h-full w-full" />
+        <span className="type-event-title absolute bottom-0 left-0 max-w-[88%] truncate bg-[#161616] px-3 py-2 text-sm font-bold leading-4 uppercase">
+          {event.name}
+        </span>
+      </button>
+      <div className="flex h-[78px] items-center gap-2.5 px-3 py-2">
+        {date && (
+          <div className="flex w-9 shrink-0 flex-col items-center leading-none">
+            <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/75">{date.month}</span>
+            <span className="mt-1 text-xl font-extrabold">{date.day}</span>
+            <span className="mt-1 h-[3px] w-6 bg-[#d5824b]" />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          {event.dateTime && (
+            <p className="truncate text-xs leading-4 text-white/70">
+              {weekdayTime(event.dateTime, locale)} · {yearOf(event.dateTime)}
+            </p>
+          )}
+          <p className="mt-1 flex items-center gap-1.5 text-xs font-bold leading-4 text-white">
+            <MapPin size={16} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
+            <span className="truncate">{locationLine(event)}</span>
+          </p>
+        </div>
+        <EventMenu event={event} />
+      </div>
+    </article>
+  )
+}
+
+export function ForYouRail({ events, expanded = false }: { events: TMEvent[]; expanded?: boolean }) {
+  return (
+    <div className={expanded ? 'flex flex-col gap-3 px-4' : 'no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1'}>
+      {events.map((event) => (
+        <EventCard key={event.id} event={event} expanded={expanded} />
+      ))}
     </div>
   )
 }
@@ -137,34 +140,28 @@ export function TrendingRail({ events, expanded }: { events: TMEvent[]; expanded
   const { t } = useTranslation()
   const open = useOpenEvent()
   return (
-    <ol
-      className={
-        expanded
-          ? 'flex flex-col gap-3 px-4'
-          : 'no-scrollbar grid snap-x snap-mandatory grid-flow-col grid-rows-3 auto-cols-[88%] gap-x-2 gap-y-3 overflow-x-auto px-4'
-      }
-    >
-      {events.map((event, i) => {
+    <ol className="flex flex-col gap-2.5 px-4">
+      {events.slice(0, expanded ? 12 : 3).map((event, i) => {
         const liked = favorites.some((e) => e.id === event.id)
         return (
-          <li key={event.id} className="flex min-w-0 snap-start items-center gap-2">
+          <li key={event.id} className="flex min-h-[68px] min-w-0 items-center gap-2">
             <span
               aria-label={t('rank', { rank: i + 1 })}
-              className="w-8 shrink-0 text-center text-xl font-extrabold leading-none text-transparent"
-              style={{ WebkitTextStroke: '2px #f2ea1c' }}
+              className="w-11 shrink-0 text-center text-[30px] font-extrabold leading-none text-[#f2ea1c]"
+              style={{ WebkitTextStroke: '1px #080808', textShadow: '0 1px 2px #080808' }}
             >
               {String(i + 1).padStart(2, '0')}
             </span>
-            <div className="flex min-w-0 flex-1 items-center border border-white/15 bg-[#111]">
+            <div className="flex min-w-0 flex-1 items-center border border-white/10 bg-[#151515] px-2 py-1.5">
               <button
                 type="button"
                 onClick={() => open(event)}
-                className="flex min-w-0 flex-1 items-center text-left"
+                className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
               >
-                <EventImage event={event} className="h-[42px] w-[42px] shrink-0 rounded" />
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5 px-2">
-                  <span className="type-event-title truncate text-[13px] font-bold leading-4">{event.name}</span>
-                  <span className="flex items-center gap-1 text-[11px] leading-[14px] text-white/60">
+                <EventImage event={event} className="size-[54px] shrink-0 object-cover" />
+                <span className="flex min-w-0 flex-1 flex-col gap-1">
+                  <span className="type-event-title truncate text-sm font-bold leading-4">{event.name}</span>
+                  <span className="flex items-center gap-1.5 text-xs leading-4 text-white/65">
                     <CategoryIcon event={event} />
                     <span className="truncate">{event.genre}</span>
                   </span>
@@ -175,10 +172,10 @@ export function TrendingRail({ events, expanded }: { events: TMEvent[]; expanded
                 aria-label={liked ? t('removeFromFavorites', { name: event.name }) : t('addToFavorites', { name: event.name })}
                 aria-pressed={liked}
                 onClick={() => toggleFavorite(event)}
-                className="flex size-8 shrink-0 items-center justify-center pr-1"
+                className="flex size-10 shrink-0 items-center justify-center"
               >
                 <Heart
-                  size={18}
+                  size={23}
                   strokeWidth={1.8}
                   className={liked ? 'fill-tm-pink text-tm-pink' : 'text-white'}
                 />
@@ -242,9 +239,9 @@ export function RailSection({
   const [expanded, setExpanded] = useState(false)
   const { t } = useTranslation()
   return (
-    <section className="mt-4" aria-label={title}>
-      <div className="mb-4 flex items-baseline justify-between gap-3 px-4">
-        <h2 className="min-w-0 flex-1 text-lg font-extrabold leading-tight">{title}</h2>
+    <section className="mt-8" aria-label={title}>
+      <div className="mb-5 flex items-baseline justify-between gap-3 px-4">
+        <h2 className="min-w-0 flex-1 text-xl font-extrabold leading-tight">{title}</h2>
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
