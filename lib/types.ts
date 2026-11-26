@@ -25,6 +25,19 @@ export interface Seat {
   row: string
   seat: string
   transferStatus: string
+  ticketType?: string
+  ticketPrice?: number
+}
+
+export interface ReceiptSettings {
+  orderDate?: string
+  currencyPrefix?: string
+  subtotalOverride?: number
+  deliveryMethod?: string
+  deliveryCostLabel?: string
+  totalOverride?: number
+  disclaimerTitle?: string
+  disclaimerBody?: string
 }
 
 export interface Ticket {
@@ -47,6 +60,7 @@ export interface Ticket {
   ticketPrice?: number
   serviceFee?: number
   currency?: string
+  receipt?: ReceiptSettings
   barcodeMode?: 'active' | 'countdown'
   barcodeCountdownHours?: number
   barcodeCountdownMinutes?: number
@@ -64,6 +78,8 @@ export interface City {
   flag: string
   /** Country code passed to the Ticketmaster Discovery API */
   tmCountry: string
+  /** Primary UI locale for this predefined city. */
+  locale?: string
   tmCity: string
   /** Text appended to "Trending In" */
   trendingLabel: string

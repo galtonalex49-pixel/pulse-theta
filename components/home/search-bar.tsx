@@ -2,31 +2,34 @@
 
 import { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
+import { useTranslation } from '@/lib/use-translation'
 
-const KEYWORDS = ['Festivals', 'Shows', 'Comedy', 'Venues', 'Artists', 'Teams', 'Performers']
+const KEYWORD_KEYS = ['teams', 'performers', 'festivals', 'shows'] as const
 
 export function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation()
+  const keywords = KEYWORD_KEYS.map((key) => t(key))
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => setIndex((i) => (i + 1) % KEYWORDS.length), 2400)
+    const t = setInterval(() => setIndex((i) => (i + 1) % KEYWORD_KEYS.length), 2400)
     return () => clearInterval(t)
   }, [])
 
   return (
-    <div className="relative mx-4 flex h-[42px] items-center rounded-full bg-[#222] pl-2 pr-3">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-tm-blue">
-        <Search size={18} strokeWidth={2.2} aria-hidden="true" />
+    <div className="relative mx-4 flex h-[56px] items-center rounded-full bg-[#1f1f24] px-2.5 pr-5">
+      <span className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
+        <Search size={20} strokeWidth={2.1} className="text-white" aria-hidden="true" />
       </span>
       <div className="relative ml-3 min-w-0 flex-1">
         {value === '' && (
           <p
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex items-center gap-1 text-[13px] text-white/45"
+            className="pointer-events-none absolute inset-0 flex items-center gap-1 text-[15px] text-[#b5b5c0]"
           >
-            <span>Search for</span>
-            <span key={KEYWORDS[index]} className="animate-placeholder font-extrabold text-white/90">
-              {KEYWORDS[index]}
+            <span>{t('searchFor')}</span>
+            <span key={keywords[index]} className="animate-placeholder font-extrabold text-white">
+              {keywords[index]}
             </span>
           </p>
         )}
@@ -34,8 +37,8 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
           type="search"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-label={`Search for ${KEYWORDS[index]}`}
-          className="h-8 w-full bg-transparent text-[13px] font-bold text-white outline-none [&::-webkit-search-cancel-button]:appearance-none"
+          aria-label={`${t('searchFor')} ${keywords[index]}`}
+          className="h-10 w-full bg-transparent text-[15px] font-normal text-white outline-none [&::-webkit-search-cancel-button]:appearance-none"
         />
       </div>
     </div>

@@ -5,7 +5,8 @@ import useSWR from 'swr'
 import { ArrowDown, ArrowLeft, ArrowUp, Plus, RefreshCw, Search, Trash2 } from 'lucide-react'
 import { resizeSeats, useApp } from '@/lib/store'
 import { dateBadge, generateOrderNumber } from '@/lib/format'
-import type { Seat, TMEvent, Ticket } from '@/lib/types'
+import type { ReceiptSettings, Seat, TMEvent, Ticket } from '@/lib/types'
+import { getPurchaseDate, getReceiptOrderDate, getReceiptSubtotal, getReceiptTotal } from '@/lib/receipt'
 import { DualTicketIcon } from '../icons'
 
 const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
@@ -129,6 +130,61 @@ function NumberField({
   )
 }
 
+function ReceiptAmountField({
+  label,
+  value,
+  calculated,
+  onCommit,
+}: {
+  label: string
+  value: number | undefined
+  calculated: number
+  onCommit: (value: number | undefined) => void
+}) {
+  const inputId = useId()
+  const [draft, setDraft] = useState(String(value ?? calculated))
+  useEffect(() => setDraft(String(value ?? calculated)), [value, calculated])
+
+  return (
+    <div className="min-w-0">
+      <label htmlFor={inputId} className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">{label}</label>
+      <div className="flex gap-2">
+        <input
+          id={inputId}
+          type="number"
+          inputMode="decimal"
+          min={0}
+          step={0.01}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={() => {
+            if (!draft.trim()) {
+              onCommit(undefined)
+              setDraft(String(calculated))
+              return
+            }
+            const parsed = Number(draft)
+            if (Number.isFinite(parsed) && parsed >= 0) onCommit(parsed)
+            else setDraft(String(value ?? calculated))
+          }}
+          className={inputCls}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            onCommit(undefined)
+            setDraft(String(calculated))
+          }}
+          className="shrink-0 rounded-md border border-white/15 px-3 text-xs font-bold text-white/75 hover:text-white"
+          aria-label={`Use calculated ${label.toLowerCase()}`}
+        >
+          Auto
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function TicketmasterSearch({ onPick }: { onPick: (e: TMEvent) => void }) {
   const [query, setQuery] = useState('')
   const [debounced, setDebounced] = useState('')
@@ -182,7 +238,7 @@ function TicketmasterSearch({ onPick }: { onPick: (e: TMEvent) => void }) {
                   <span className="h-14 w-20 shrink-0 rounded-l-md bg-[#2a2a2a]" />
                 )}
                 <span className="min-w-0 flex-1 py-1.5 pr-3">
-                  <span className="block truncate text-sm font-extrabold">{event.name}</span>
+                  <span className="type-event-title block truncate text-sm font-extrabold">{event.name}</span>
                   <span className="block truncate text-xs text-white/60">
                     {event.dateTime?.slice(0, 10)} • {event.venue}
                   </span>
@@ -198,10 +254,12 @@ function TicketmasterSearch({ onPick }: { onPick: (e: TMEvent) => void }) {
 
 function SeatEditor({
   index,
+  ticket,
   seat,
   onChange,
 }: {
   index: number
+  ticket: Ticket
   seat: Seat
   onChange: (patch: Partial<Seat>) => void
 }) {
@@ -221,6 +279,21 @@ function SeatEditor({
           onChange={(v) => onChange({ transferStatus: v })}
         />
       </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Field
+          label="Receipt ticket name"
+          value={seat.ticketType ?? `${ticket.ticketTypeOverride || ticket.purchaseType} Seating`}
+          onChange={(v) => onChange({ ticketType: v })}
+        />
+        <NumberField
+          label="Unit price"
+          value={seat.ticketPrice ?? ticket.ticketPrice ?? 0}
+          min={0}
+          max={100000}
+          step={0.01}
+          onCommit={(value) => onChange({ ticketPrice: value })}
+        />
+      </div>
     </fieldset>
   )
 }
@@ -229,6 +302,8 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
   const { updateTicket, deleteTicket, tickets } = useApp()
   const [open, setOpen] = useState(defaultOpen)
   const patch = (p: Partial<Ticket>) => updateTicket(ticket.id, p)
+  const patchReceipt = (receiptPatch: Partial<ReceiptSettings>) =>
+    patch({ receipt: { ...ticket.receipt, ...receiptPatch } })
   const newOrderNumber = () => generateOrderNumber(tickets.map((item) => item.orderNumber))
 
   const applyEvent = (event: TMEvent) => {
@@ -264,10 +339,10 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
       </div>
       <div className="flex items-center gap-3 px-4 py-4">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
+          <h3 className="type-event-title truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
           <p className="flex items-center gap-2 truncate text-sm text-white/60">
             <span className="truncate">{ticket.venue}</span>
-            <DualTicketIcon size={16} className="shrink-0" />
+            <DualTicketIcon size={16} className="shrink-0 text-white" />
             <span className="shrink-0">x{ticket.seats.length}</span>
           </p>
         </div>
@@ -325,7 +400,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           {ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) && <Field label="Custom entry info" value={ticket.entryInfo} onChange={(v) => patch({ entryInfo: v })} />}
           <Field label="Presenter override" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
           <select aria-label="Policy notice" value={ticket.policyNotice ?? 'NO BAGS PERMITTED'} onChange={(e) => patch({ policyNotice: e.target.value })} className={inputCls}><option>NO BAGS PERMITTED</option><option>CLEAR BAG POLICY ONLY (MAX 12&quot; x 6&quot; x 12&quot;)</option><option>MOBILE ENTRY ONLY - NO PAPER TICKETS</option></select>
-          <Field label="Venue location" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
+          <Field label="Venue address" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
           <fieldset className="space-y-3 rounded-lg border border-tm-blue/40 bg-[#141b33] p-3">
             <legend className="px-1 text-xs font-bold uppercase tracking-wider text-white/70">Barcode behavior</legend>
             <label className="block min-w-0">
@@ -344,7 +419,8 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             )}
             <p className="text-xs leading-5 text-white/55">The barcode becomes active when the event is within the configured countdown window.</p>
           </fieldset>
-          <Field label="Purchase date" type="datetime-local" value={ticket.purchaseDate ?? ''} onChange={(v) => patch({ purchaseDate: v })} />
+          <Field label="Purchase date" type="datetime-local" value={getPurchaseDate(ticket)} onChange={(v) => v && patch({ purchaseDate: v })} />
+          <Field label="Receipt order date" value={getReceiptOrderDate(ticket)} onChange={(v) => patchReceipt({ orderDate: v })} placeholder="MM/DD/YY" />
           <label className="block min-w-0">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/55">Ticket type</span>
             <select value={ticket.ticketTypeOverride ? '__custom__' : ticket.purchaseType} onChange={(e) => e.target.value === '__custom__' ? patch({ ticketTypeOverride: ticket.purchaseType }) : patch({ purchaseType: e.target.value, ticketTypeOverride: '' })} className={inputCls}>
@@ -353,11 +429,24 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
             </select>
           </label>
           <Field label="Custom ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
-          <div className="grid grid-cols-3 gap-3">
-            <Field label="Currency" value={ticket.currency ?? 'USD'} onChange={(v) => patch({ currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) })} />
-            <NumberField label="Ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
-            <NumberField label="Service fee" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Currency code" value={ticket.currency ?? 'USD'} onChange={(v) => patch({ currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) })} />
+            <Field label="Currency / price prefix" value={ticket.receipt?.currencyPrefix ?? (ticket.currency?.toUpperCase() === 'CAD' ? 'CA$' : ticket.currency?.toUpperCase() === 'GBP' ? '£' : ticket.currency?.toUpperCase() === 'EUR' ? '€' : '$')} onChange={(v) => patchReceipt({ currencyPrefix: v })} />
+            <NumberField label="Default ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
+            <NumberField label="Receipt fees" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />
           </div>
+          <fieldset className="flex flex-col gap-3 rounded-lg border border-white/10 p-3">
+            <legend className="px-1 text-xs font-bold uppercase tracking-wider text-white/55">Receipt totals & delivery</legend>
+            <ReceiptAmountField label="Subtotal" value={ticket.receipt?.subtotalOverride} calculated={getReceiptSubtotal(ticket)} onCommit={(value) => patchReceipt({ subtotalOverride: value })} />
+            <Field label="Delivery method" value={ticket.receipt?.deliveryMethod ?? 'Mobile App Only'} onChange={(v) => patchReceipt({ deliveryMethod: v })} />
+            <Field label="Delivery status / cost" value={ticket.receipt?.deliveryCostLabel ?? 'FREE'} onChange={(v) => patchReceipt({ deliveryCostLabel: v })} />
+            <ReceiptAmountField label="Total" value={ticket.receipt?.totalOverride} calculated={getReceiptTotal(ticket)} onCommit={(value) => patchReceipt({ totalOverride: value })} />
+          </fieldset>
+          <fieldset className="flex flex-col gap-3 rounded-lg border border-white/10 p-3">
+            <legend className="px-1 text-xs font-bold uppercase tracking-wider text-white/55">Receipt disclaimer</legend>
+            <Field label="Disclaimer heading" value={ticket.receipt?.disclaimerTitle ?? 'This is not a ticket'} onChange={(v) => patchReceipt({ disclaimerTitle: v })} />
+            <Field label="Disclaimer text" value={ticket.receipt?.disclaimerBody ?? 'Please be aware, this page cannot be used for entry to an event'} onChange={(v) => patchReceipt({ disclaimerBody: v })} />
+          </fieldset>
           <div className="grid grid-cols-[110px_1fr] gap-3">
             <NumberField
               label="Quantity"
@@ -375,7 +464,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
 
           <div className="space-y-3">
             {ticket.seats.map((seat, i) => (
-              <SeatEditor key={seat.id} index={i} seat={seat} onChange={(p) => editSeat(seat.id, p)} />
+              <SeatEditor key={seat.id} index={i} ticket={ticket} seat={seat} onChange={(p) => editSeat(seat.id, p)} />
             ))}
           </div>
         </div>
@@ -400,7 +489,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
   const [newestId, setNewestId] = useState<string | null>(null)
 
   return (
-    <div className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
+    <div lang="en" dir="ltr" className="h-full overflow-y-auto pb-28 pt-[max(env(safe-area-inset-top),16px)]">
       <header className="sticky top-0 z-10 flex items-center gap-4 bg-[#111] px-4 py-3">
         <button type="button" onClick={onBack} aria-label="Back to Account" className="shrink-0">
           <ArrowLeft size={30} strokeWidth={2.4} />

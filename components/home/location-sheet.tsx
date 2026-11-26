@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { MapPin, Navigation, Search } from 'lucide-react'
 import { useApp } from '@/lib/store'
+import { useTranslation } from '@/lib/use-translation'
 import { POPULAR_CITIES, nearestCity } from '@/lib/locations'
 import type { City, TMEvent } from '@/lib/types'
 
@@ -37,6 +38,7 @@ function CityRow({ city, onSelect }: { city: City; onSelect: (c: City) => void }
 
 export function LocationSheet() {
   const { locationSheetOpen, setLocationSheetOpen, selectLocation, recentLocations } = useApp()
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
 
@@ -95,7 +97,7 @@ export function LocationSheet() {
       <section
         role="dialog"
         aria-modal="true"
-        aria-label="Change Location"
+        aria-label={t('changeLocation')}
         aria-hidden={!locationSheetOpen}
         className={`absolute inset-x-0 bottom-0 z-50 flex h-[88%] flex-col rounded-t-[28px] bg-[#222] transition-transform duration-300 ease-out ${
           locationSheetOpen ? 'translate-y-0' : 'translate-y-full'
@@ -106,7 +108,7 @@ export function LocationSheet() {
         </div>
         <header className="flex shrink-0 items-center justify-center gap-3 border-b border-white/10 pb-6 pt-8">
           <MapPin size={22} className="fill-white" aria-hidden="true" />
-          <h2 className="text-xl font-extrabold">Change Location</h2>
+          <h2 className="text-xl font-extrabold">{t('changeLocation')}</h2>
         </header>
 
         <div className="mx-3 mt-6 flex h-[68px] shrink-0 items-center gap-3 rounded-full bg-[#111] pl-3 pr-3">
@@ -117,15 +119,15 @@ export function LocationSheet() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for Cities"
-            aria-label="Search for Cities"
+            placeholder={t('searchCities')}
+            aria-label={t('searchCities')}
             className="min-w-0 flex-1 bg-transparent text-xl font-extrabold text-white outline-none placeholder:text-white [&::-webkit-search-cancel-button]:appearance-none"
           />
           <button
             type="button"
             onClick={locate}
-            aria-label="Use my current location"
-            className="flex size-[56px] shrink-0 items-center justify-center rounded-full bg-tm-teal text-[#111]"
+            aria-label={t('useCurrentLocation')}
+            className="flex size-[56px] shrink-0 items-center justify-center rounded-full bg-tm-blue text-[#111]"
           >
             <Navigation size={24} className="fill-[#111]" aria-hidden="true" />
           </button>
@@ -133,24 +135,24 @@ export function LocationSheet() {
 
         <div className="mt-4 min-h-0 flex-1 overflow-y-auto pb-10">
           {q ? (
-            cityLoading ? <p className="px-5 py-8 text-center text-white/60">Searching Ticketmaster…</p> : results.length > 0 ? (
+            cityLoading ? <p className="px-5 py-8 text-center text-white/60">{t('searchingTicketmaster')}</p> : results.length > 0 ? (
               <ul>
                 {results.map((c) => (
                   <CityRow key={c.name} city={c} onSelect={select} />
                 ))}
               </ul>
             ) : (
-              <p className="px-5 py-8 text-center text-white/60">No results for “{query}”.</p>
+              <p className="px-5 py-8 text-center text-white/60">{t('noCityResults', { query })}</p>
             )
           ) : (
             <>
-              <h3 className="px-5 pb-1 pt-4 text-xl font-extrabold">Recent Locations</h3>
+              <h3 className="px-5 pb-1 pt-4 text-xl font-extrabold">{t('recentLocations')}</h3>
               <ul>
                 {recentLocations.map((c) => (
                   <CityRow key={`recent-${c.name}`} city={c} onSelect={select} />
                 ))}
               </ul>
-              <h3 className="px-5 pb-1 pt-6 text-xl font-extrabold">Popular Locations</h3>
+              <h3 className="px-5 pb-1 pt-6 text-xl font-extrabold">{t('popularLocations')}</h3>
               <ul>
                 {POPULAR_CITIES.map((c) => (
                   <CityRow key={`popular-${c.name}`} city={c} onSelect={select} />

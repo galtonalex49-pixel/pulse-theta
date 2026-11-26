@@ -1,21 +1,30 @@
-@import url('https://fonts.cdnfonts.com/css/averta');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+@font-face {
+  font-family: 'Averta';
+  src: url('/fonts/AvertaDemoPECuttedDemo-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-tm-black: #0a0a0a;
-  --color-tm-surface: #111111;
-  --color-tm-card: #1a1a1a;
-  --color-tm-row: #232323;
-  --color-tm-blue: #1f4fd8;
-  --color-tm-blue-light: #2d62ea;
-  --color-tm-purple: #b95cff;
-  --color-tm-pink: #e83fa8;
-  --color-tm-teal: #5fe6d9;
-  --color-tm-muted: #888888;
+  --font-sans: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-tm-black: #0a0a0c;
+  --color-tm-surface: #141418;
+  --color-tm-card: #141418;
+  --color-tm-row: #18181d;
+  --color-tm-blue: #0052e6;
+  --color-tm-blue-light: #004ad6;
+  --color-tm-purple: #b87aff;
+  --color-tm-pink: #ff3b9a;
+  --color-tm-teal: #38d6c4;
+  --color-tm-muted: #a8a8b3;
 }
 
 @theme inline {
@@ -171,21 +180,71 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    color-scheme: dark;
+    font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-style: normal;
+  }
+
   body {
     @apply bg-background text-foreground;
+    min-height: 100%;
+    font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-style: normal;
+    font-weight: 400;
   }
 }
 
 html,
 body {
-  background: #0a0a0a;
+  background: #0a0a0c;
   color: #ffffff;
   letter-spacing: -0.01em;
   -webkit-tap-highlight-color: transparent;
+  font-synthesis: weight;
 }
 
-* {
-  font-family: 'Averta', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif !important;
+*,
+*::before,
+*::after {
+  font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-style: normal !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 800;
+}
+
+.type-metadata,
+.type-event-meta {
+  font-weight: 400;
+}
+
+.type-event-title {
+  font-weight: 800;
+}
+
+.trending-rank {
+  color: transparent;
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  -webkit-text-stroke: 1.8px #d8c438;
+}
+
+[class~='uppercase'] {
+  letter-spacing: 0.04em;
+}
+
+.trending-carousel {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -221,7 +280,7 @@ body {
 }
 
 .leaflet-container {
-  background: #1a1a1a;
+  background: #1a1a1e;
   font-family: inherit;
 }
 
@@ -243,7 +302,7 @@ body {
 .compact-screen h1,
 .compact-screen h2,
 .compact-screen h3 {
-  line-height: 22px;
+  line-height: 1.25;
 }
 
 @keyframes transfer-spinner-forward {
@@ -268,9 +327,9 @@ body {
   width: 88px;
   height: 88px;
   border-width: 4px;
-  border-color: rgb(31 79 216 / 15%);
-  border-top-color: #1f4fd8;
-  border-right-color: #1f4fd8;
+  border-color: rgb(0 82 230 / 15%);
+  border-top-color: #0052e6;
+  border-right-color: #0052e6;
   animation: transfer-spinner-forward 1.5s linear infinite;
 }
 
@@ -278,9 +337,9 @@ body {
   width: 62px;
   height: 62px;
   border-width: 4px;
-  border-color: rgb(232 63 168 / 16%);
-  border-bottom-color: #e83fa8;
-  border-left-color: #e83fa8;
+  border-color: rgb(255 59 154 / 16%);
+  border-bottom-color: #ff3b9a;
+  border-left-color: #ff3b9a;
   animation: transfer-spinner-backward 1.05s linear infinite;
 }
 
@@ -288,9 +347,9 @@ body {
   width: 36px;
   height: 36px;
   border-width: 3px;
-  border-color: rgb(31 79 216 / 15%);
-  border-top-color: #5fe6d9;
-  border-right-color: #5fe6d9;
+  border-color: rgb(0 82 230 / 15%);
+  border-top-color: #0052e6;
+  border-right-color: #0052e6;
   animation: transfer-spinner-forward 0.72s linear infinite;
 }
 

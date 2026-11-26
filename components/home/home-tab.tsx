@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { ChevronRight, MapPin, ArrowRight } from 'lucide-react'
+import { ChevronRight, MapPin, ArrowRight, UserRound } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { cityLine } from '@/lib/locations'
+import { useTranslation } from '@/lib/use-translation'
 import { parseLocal, monthDay } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
 import { SearchBar } from './search-bar'
+import { HomeSkeleton } from './home-skeleton'
 import { ForYouRail, MiniRail, RailSection, TrendingRail } from './event-rails'
 
 export const fetchEvents = async (url: string): Promise<{ events: TMEvent[] }> => {
@@ -49,6 +51,7 @@ function useDebounced<T>(value: T, delay = 350) {
 }
 
 function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) => void }) {
+  const { locale, t } = useTranslation()
   const debounced = useDebounced(query)
   const { data, isLoading } = useSWR(
     debounced.length >= 2 ? `/api/ticketmaster?keyword=${encodeURIComponent(debounced)}&size=20` : null,
@@ -58,14 +61,14 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
   const events = data?.events ?? []
 
   return (
-    <section aria-label="Search results" className="mt-6 px-4">
-      {isLoading && <p className="py-6 text-center text-white/60">Searching…</p>}
+    <section aria-label={t('searchResults')} className="mt-6 px-4">
+      {isLoading && <p className="py-6 text-center text-white/60">{t('searching')}</p>}
       {!isLoading && debounced.length >= 2 && events.length === 0 && (
-        <p className="py-6 text-center text-white/60">No results for “{debounced}”.</p>
+        <p className="py-6 text-center text-white/60">{t('noSearchResults', { query: debounced })}</p>
       )}
       <ul className="flex flex-col gap-2">
         {events.map((event) => {
-          const date = event.dateTime ? monthDay(event.dateTime) : null
+          const date = event.dateTime ? monthDay(event.dateTime, locale) : null
           return (
             <li key={event.id}>
               <button
@@ -78,7 +81,7 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
                   <img src={event.image} alt="" className="h-[72px] w-[96px] shrink-0 object-cover" />
                 )}
                 <span className="flex min-w-0 flex-1 flex-col py-2 pr-3">
-                  <span className="truncate text-base font-extrabold">{event.name}</span>
+                  <span className="type-event-title truncate text-base font-extrabold">{event.name}</span>
                   <span className="truncate text-sm text-white/60">
                     {date ? `${date.month} ${date.day} • ` : ''}
                     {event.venue}
@@ -93,8 +96,9 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
   )
 }
 
-export function HomeTab() {
-  const { location, locationConfirmed, setLocationSheetOpen, browsed, browse } = useApp()
+export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
+  const { location, setLocationSheetOpen, setTab, browsed, browse } = useApp()
+  const { locale, t } = useTranslation()
   const [query, setQuery] = useState('')
 
   const { data, isLoading } = useSWR(
@@ -121,9 +125,11 @@ export function HomeTab() {
 
     const byDateAsc = [...unique].sort(byDate)
     const forYou = takeUnused(byDateAsc, 8)
-    const trending = takeUnused(unique, 12)
+    const selectedTrending = takeUnused(unique, 12)
+    const trending = selectedTrending.length > 0 ? selectedTrending : unique.slice(0, 12)
     const recentCandidates = browsed.length > 0 ? browsed : byDateAsc
-    const recent = takeUnused(recentCandidates, 6)
+    const selectedRecent = takeUnused(recentCandidates, 6)
+    const recent = selectedRecent.length > 0 ? selectedRecent : recentCandidates.slice(0, 6)
     const lastMinute = takeUnused(byDateAsc, 10)
 
     const weekend = byDateAsc.filter((event) => {
@@ -147,92 +153,92 @@ export function HomeTab() {
       justAnnounced,
       empty: unique.length === 0,
     }
-  }, [data])
+  }, [data, browsed])
+
+  const showSkeleton = isHomeLoading || isLoading
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto pb-24 pt-[max(env(safe-area-inset-top),12px)]">
+    <div className="relative mx-auto h-full w-full max-w-[430px] overflow-x-hidden overflow-y-auto pb-[190px] pt-[max(env(safe-area-inset-top),16px)]">
       <button
         type="button"
         onClick={() => setLocationSheetOpen(true)}
-        className="mb-4 flex w-full items-center gap-2 px-4 py-1.5 text-left"
-        aria-label={`Current location ${cityLine(location)}. Change location`}
+        className="mb-3 flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-left"
+        aria-label={t('currentLocationChange', { location: cityLine(location) })}
       >
-        <MapPin size={18} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
-        <span className="min-w-0 truncate text-[14px] font-bold leading-[18px] text-white/90">{cityLine(location)}</span>
-        <ChevronRight size={18} className="shrink-0 text-white/70" aria-hidden="true" />
+        <MapPin size={18} className="shrink-0 fill-tm-blue text-tm-blue" aria-hidden="true" />
+        <span className="min-w-0 truncate text-sm font-normal leading-5 text-white">{cityLine(location)}</span>
+        <ChevronRight size={18} className="shrink-0 text-white" aria-hidden="true" />
       </button>
 
-      <SearchBar value={query} onChange={setQuery} />
-
-      {query.trim().length >= 2 ? (
-        <SearchResults
-          query={query.trim()}
-          onPick={(event) => {
-            browse(event)
-            if (event.url) window.open(event.url, '_blank', 'noopener,noreferrer')
-          }}
-        />
+      {showSkeleton && query.trim().length < 2 ? (
+        <HomeSkeleton city={location.name} />
       ) : (
         <>
-          {isLoading && (
-            <p role="status" className="mt-12 text-center text-white/60">
-              Loading events in {location.name}…
-            </p>
-          )}
-
-          {!isLoading && sections.empty && (
-            <p className="mx-6 mt-12 text-center text-white/60">
-              No events found in {location.name} right now. Try another city.
-            </p>
-          )}
-
-          {!sections.empty && (
+          <SearchBar value={query} onChange={setQuery} />
+          {query.trim().length >= 2 ? (
+            <SearchResults
+              query={query.trim()}
+              onPick={(event) => {
+                browse(event)
+                if (event.url) window.open(event.url, '_blank', 'noopener,noreferrer')
+              }}
+            />
+          ) : (
             <>
-              <section className="mt-4" aria-label="For You">
-                <h2 className="mb-2.5 px-4 text-base font-bold tracking-[-0.01em]">For You</h2>
-                <ForYouRail events={sections.forYou} />
-              </section>
+              {sections.empty && !showSkeleton && (
+                <p className="mx-6 mt-12 text-center text-white/60">
+                  {t('noEventsHere', { city: location.name })} {t('tryAnotherCity')}
+                </p>
+              )}
 
-              <RailSection title={`Trending In ${location.trendingLabel}`}>
-                {(expanded) => <TrendingRail events={sections.trending} expanded={expanded} />}
-              </RailSection>
+              {!sections.empty && (
+                <>
+                  <section className="mt-8" aria-label={t('forYou')}>
+                    <h2 className="mb-3 px-4 text-lg font-extrabold tracking-[-0.02em]">{t('forYou')}</h2>
+                    <ForYouRail events={sections.forYou} />
+                  </section>
 
-              <RailSection title="Recently Browsed Events">
-                {(expanded) => <MiniRail events={sections.recent} expanded={expanded} />}
-              </RailSection>
+                  <RailSection title={t('trendingIn', { place: location.trendingLabel })}>
+                    {(expanded) => <TrendingRail events={sections.trending} expanded={expanded} />}
+                  </RailSection>
 
-              <RailSection title="Last Minute">
-                {(expanded) => <MiniRail events={sections.lastMinute} expanded={expanded} />}
-              </RailSection>
+                  <RailSection title={t('recentlyBrowsed')}>
+                    {(expanded) => <ForYouRail events={sections.recent} expanded={expanded} />}
+                  </RailSection>
 
-              <RailSection title="Popular This Weekend">
-                {(expanded) => <MiniRail events={sections.popularWeekend} expanded={expanded} />}
-              </RailSection>
+                  <RailSection title={t('lastMinute')}>
+                    {(expanded) => <ForYouRail events={sections.lastMinute} expanded={expanded} />}
+                  </RailSection>
 
-              <RailSection title="Just Announced">
-                {(expanded) => <MiniRail events={sections.justAnnounced} expanded={expanded} />}
-              </RailSection>
+                  <RailSection title={t('popularWeekend')}>
+                    {(expanded) => <MiniRail events={sections.popularWeekend} expanded={expanded} />}
+                  </RailSection>
+
+                  <RailSection title={t('justAnnounced')}>
+                    {(expanded) => <MiniRail events={sections.justAnnounced} expanded={expanded} />}
+                  </RailSection>
+                </>
+              )}
             </>
           )}
         </>
       )}
 
-      {!locationConfirmed && (
-        <button
-          type="button"
-          onClick={() => setLocationSheetOpen(true)}
-          className="fixed bottom-[68px] left-1/2 z-20 flex h-11 w-[88%] max-w-[379px] -translate-x-1/2 items-center gap-2 rounded-full bg-white px-2 pr-3 text-left text-black shadow-2xl"
-        >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-tm-teal">
-            <MapPin size={18} className="fill-[#111] text-[#111]" aria-hidden="true" />
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="text-xs font-bold leading-tight">Find Events Near You</span>
-            <span className="text-[10px] leading-tight text-black/70">Set your location</span>
-          </span>
-          <ArrowRight size={18} aria-hidden="true" />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setTab('account')}
+        aria-label="Sign in. Keep track of events and set favorites"
+        className="fixed bottom-[84px] left-1/2 z-20 flex h-[62px] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 items-center gap-3 rounded-full bg-white px-3 pr-4 text-left text-black shadow-2xl"
+      >
+        <span className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
+          <UserRound size={21} className="text-white" aria-hidden="true" />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-sm font-extrabold leading-tight">Sign in</span>
+          <span className="truncate text-xs font-normal leading-tight text-[#3A3A3A]">Keep track of events and set favorites</span>
+        </span>
+        <ArrowRight size={22} aria-hidden="true" />
+      </button>
     </div>
   )
 }
