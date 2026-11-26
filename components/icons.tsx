@@ -52,13 +52,13 @@ export function FlagBadge({ code, size = 22 }: { code: string; size?: number }) 
 
 export function HomeNavIcon({ active }: { active: boolean }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 30 30" fill="none" className="size-7" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 30 30" fill="none" className="size-6" aria-hidden="true">
       <circle
         cx="15"
         cy="15"
         r="12"
-        fill={active ? '#026cdf' : 'none'}
-        stroke={active ? '#026cdf' : 'currentColor'}
+        fill={active ? '#0052e6' : 'none'}
+        stroke={active ? '#0052e6' : 'currentColor'}
         strokeWidth="1.8"
       />
       <text
@@ -71,15 +71,16 @@ export function HomeNavIcon({ active }: { active: boolean }) {
       >
         t
       </text>
+      {active && <path d="m24 1.5 1.1 3.2 3.2 1.1-3.2 1.1L24 10l-1.1-3.1-3.2-1.1 3.2-1.1L24 1.5Z" fill="#ffffff" />}
     </svg>
   )
 }
 
 export function TicketsNavIcon({ active }: { active: boolean }) {
-  const stroke = active ? '#026cdf' : '#9e9ea8'
+  const stroke = active ? '#0052e6' : '#ffffff'
 
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="size-7" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="size-6" aria-hidden="true">
       <path d="m7.4 5.1 10.7-2.2a1.2 1.2 0 0 1 1.4.9l2.1 10.2a1.2 1.2 0 0 1-.4 1.1l-2.8 2.5-9.4 1.9a1.2 1.2 0 0 1-1.4-.9L5.5 6.6a1.2 1.2 0 0 1 1.9-1.5Z" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
       <path d="m4.8 7.5-2.1.4a1.2 1.2 0 0 0-.9 1.4l2.2 10.5a1.2 1.2 0 0 0 1.4.9l10.2-2.1" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
       <rect x="8.4" y="7.6" width="7.6" height="5.2" rx=".7" transform="rotate(-11.5 8.4 7.6)" stroke={stroke} strokeWidth="1.45" />

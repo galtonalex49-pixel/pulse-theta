@@ -84,7 +84,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               ) : (
                 <>
                   <Barcode seed={`${ticket.id}-${seat.id}-${refreshes}`} />
-                  <span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(45,98,234,0.8)]" />
+                  <span aria-hidden="true" className="animate-laser pointer-events-none absolute -top-2 bottom-[-8px] left-0 w-[10px] rounded-full bg-tm-blue-light shadow-[0_0_18px_6px_rgba(0,82,230,0.8)]" />
                 </>
               )}
             </div>

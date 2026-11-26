@@ -1,8 +1,8 @@
 import type { City } from './types'
 
 export const POPULAR_CITIES: City[] = [
-  { name: 'London', label: 'UK', flag: 'gb', tmCountry: 'GB', locale: 'en-GB', tmCity: 'London', trendingLabel: 'the UK', lat: 51.5072, lng: -0.1276 },
-  { name: 'New York City', label: 'New York, US', flag: 'us', tmCountry: 'US', locale: 'en-US', tmCity: 'New York', trendingLabel: 'the US', lat: 40.7128, lng: -74.006 },
+  { name: 'London', label: 'UK', flag: 'gb', tmCountry: 'GB', locale: 'en-GB', tmCity: 'London', trendingLabel: 'The UK', lat: 51.5072, lng: -0.1276 },
+  { name: 'New York City', label: 'New York, US', flag: 'us', tmCountry: 'US', locale: 'en-US', tmCity: 'New York', trendingLabel: 'The United States', lat: 40.7128, lng: -74.006 },
   { name: 'Toronto', label: 'Ontario, CA', flag: 'ca', tmCountry: 'CA', locale: 'en-CA', tmCity: 'Toronto', trendingLabel: 'Canada', lat: 43.6532, lng: -79.3832 },
   { name: 'Sydney', label: 'New South Wales, AU', flag: 'au', tmCountry: 'AU', locale: 'en-AU', tmCity: 'Sydney', trendingLabel: 'Australia', lat: -33.8688, lng: 151.2093 },
   { name: 'Auckland', label: 'NZ', flag: 'nz', tmCountry: 'NZ', locale: 'en-NZ', tmCity: 'Auckland', trendingLabel: 'New Zealand', lat: -36.8509, lng: 174.7645 },

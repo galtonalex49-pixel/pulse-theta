@@ -10,22 +10,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Averta';
-  src: url('/fonts/AvertaDemoPE-ExtraBold.otf') format('opentype');
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Averta';
-  src: url('/fonts/AvertaDemoPE-ExtraBold.otf') format('opentype');
-  font-style: italic;
-  font-weight: 800;
-  font-display: swap;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -34,8 +18,8 @@
   --color-tm-surface: #110d12;
   --color-tm-card: #1a1a1e;
   --color-tm-row: #1a1a1e;
-  --color-tm-blue: #026cdf;
-  --color-tm-blue-light: #026cdf;
+  --color-tm-blue: #0052e6;
+  --color-tm-blue-light: #004ad6;
   --color-tm-purple: #b87aff;
   --color-tm-pink: #ff3b9a;
   --color-tm-teal: #38d6c4;
@@ -247,20 +231,19 @@ h6 {
 
 .trending-rank {
   color: transparent;
+  font-style: normal;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
-  -webkit-text-stroke: 1.5px #d6c348;
+  -webkit-text-stroke: 1.8px #d8c438;
 }
 
 [class~='uppercase'] {
   letter-spacing: 0.04em;
 }
 
-.for-you-rail > :nth-child(odd) .event-date-accent {
-  background-color: #e84669;
-}
-
-.for-you-rail > :nth-child(even) .event-date-accent {
-  background-color: #d6c348;
+.trending-carousel {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -343,9 +326,9 @@ h6 {
   width: 88px;
   height: 88px;
   border-width: 4px;
-  border-color: rgb(2 108 223 / 15%);
-  border-top-color: #026cdf;
-  border-right-color: #026cdf;
+  border-color: rgb(0 82 230 / 15%);
+  border-top-color: #0052e6;
+  border-right-color: #0052e6;
   animation: transfer-spinner-forward 1.5s linear infinite;
 }
 
@@ -363,9 +346,9 @@ h6 {
   width: 36px;
   height: 36px;
   border-width: 3px;
-  border-color: rgb(2 108 223 / 15%);
-  border-top-color: #38d6c4;
-  border-right-color: #38d6c4;
+  border-color: rgb(0 82 230 / 15%);
+  border-top-color: #0052e6;
+  border-right-color: #0052e6;
   animation: transfer-spinner-forward 0.72s linear infinite;
 }
 

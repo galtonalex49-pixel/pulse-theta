@@ -127,7 +127,7 @@ export function LocationSheet() {
             type="button"
             onClick={locate}
             aria-label={t('useCurrentLocation')}
-            className="flex size-[56px] shrink-0 items-center justify-center rounded-full bg-tm-teal text-[#111]"
+            className="flex size-[56px] shrink-0 items-center justify-center rounded-full bg-tm-blue text-[#111]"
           >
             <Navigation size={24} className="fill-[#111]" aria-hidden="true" />
           </button>

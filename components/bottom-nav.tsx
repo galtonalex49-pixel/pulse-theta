@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, CircleUser, UserRound } from 'lucide-react'
+import { Bookmark, CircleUser } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import type { TabId } from '@/lib/types'
@@ -18,20 +18,21 @@ function TabIcon({ id, active }: { id: TabId; active: boolean }) {
   if (id === 'tickets') return <TicketsNavIcon active={active} />
   if (id === 'watchlist') {
     return (
-        <Bookmark
-        size={25}
+      <Bookmark
+        size={24}
         strokeWidth={1.8}
-        className={`size-[25px] ${active ? 'fill-tm-purple text-tm-purple' : ''}`}
+        className={`size-6 ${active ? 'fill-tm-purple text-tm-purple' : 'text-white'}`}
         aria-hidden="true"
       />
     )
   }
-  return active ? (
-      <span className="flex size-7 items-center justify-center rounded-full bg-tm-blue" aria-hidden="true">
-        <UserRound size={19} className="fill-white text-white" />
-      </span>
-  ) : (
-    <CircleUser size={27} strokeWidth={1.6} className="size-[27px]" aria-hidden="true" />
+  return (
+    <CircleUser
+      size={24}
+      strokeWidth={1.6}
+      className={`size-6 ${active ? 'text-tm-blue' : 'text-white'}`}
+      aria-hidden="true"
+    />
   )
 }
 
@@ -47,7 +48,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t('primaryNavigation')}
-      className="fixed bottom-0 left-1/2 z-30 flex h-[76px] w-full max-w-[430px] -translate-x-1/2 items-stretch justify-between border-t border-[#1c1c21] bg-[#09090b] px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
+      className="fixed bottom-0 left-1/2 z-30 flex h-[76px] w-full max-w-[430px] -translate-x-1/2 items-stretch justify-between border-t border-[#1c1c21] bg-[#08080a] px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
     >
       {TABS.map((t) => {
         const active = tab === t.id

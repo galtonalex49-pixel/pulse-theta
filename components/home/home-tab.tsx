@@ -165,7 +165,7 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
         className="mb-3 flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-left"
         aria-label={t('currentLocationChange', { location: cityLine(location) })}
       >
-        <MapPin size={18} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
+        <MapPin size={18} className="shrink-0 fill-tm-blue text-tm-blue" aria-hidden="true" />
         <span className="min-w-0 truncate text-sm font-normal leading-5 text-white">{cityLine(location)}</span>
         <ChevronRight size={18} className="shrink-0 text-white" aria-hidden="true" />
       </button>

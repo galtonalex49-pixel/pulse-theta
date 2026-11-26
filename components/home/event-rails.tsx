@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CircleDot, Drama, Ellipsis, Goal, Heart, Laugh, MapPin, MicVocal, Music2, Ticket, Volleyball } from 'lucide-react'
+import { Ellipsis, FerrisWheel, Goal, Grid2X2, Heart, Laugh, MapPin, MicVocal, Tag, TentTree, Trophy, Volleyball } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import { monthDay, weekdayTime } from '@/lib/format'
@@ -59,23 +59,38 @@ function EventMenu({ event }: { event: TMEvent }) {
 
 function CategoryIcon({ event }: { event: TMEvent }) {
   const category = `${event.genre} ${event.segment}`.toLowerCase()
-  const Icon = category.includes('basketball')
-    ? CircleDot
-    : category.includes('soccer')
-      ? Goal
-      : category.includes('volleyball')
-        ? Volleyball
-        : category.includes('football')
-          ? Ticket
+  const isFamily = ['family', 'ice show', 'ice skating', 'attraction', 'theme park'].some((term) =>
+    category.includes(term),
+  )
+  const isArts = ['arts', 'theater', 'theatre', 'magic', 'illusion', 'spectacular'].some((term) =>
+    category.includes(term),
+  )
+  const isMusic = ['music', 'concert', 'rock', 'pop', 'r&b', 'dance', 'electronic', 'jazz', 'country', 'hip-hop', 'soul', 'classical', 'orchestra'].some((term) =>
+    category.includes(term),
+  )
+  const isSports = ['sports', 'wrestling', 'football', 'basketball', 'baseball', 'soccer', 'volleyball', 'hockey', 'tennis'].some((term) =>
+    category.includes(term),
+  )
+
+  const Icon = isFamily
+    ? category.includes('family') && !category.includes('ice show') && !category.includes('attraction')
+      ? TentTree
+      : FerrisWheel
+    : isArts
+      ? Grid2X2
+      : isMusic
+        ? MicVocal
+        : isSports
+          ? category.includes('volleyball')
+            ? Volleyball
+            : category.includes('soccer')
+              ? Goal
+              : Trophy
           : category.includes('comedy') || category.includes('stand-up')
             ? Laugh
-            : category.includes('theatre') || category.includes('theater')
-              ? Drama
-              : category.includes('music') || category.includes('concert')
-                ? Music2
-                : MicVocal
+            : Tag
 
-  return <Icon size={14} className="shrink-0" aria-hidden="true" />
+  return <Icon size={12} className="shrink-0 text-[#b5b5c0]" aria-hidden="true" />
 }
 
 function EventCard({ event, expanded = false }: { event: TMEvent; expanded?: boolean }) {
@@ -100,7 +115,6 @@ function EventCard({ event, expanded = false }: { event: TMEvent; expanded?: boo
           <div className="flex w-11 shrink-0 flex-col items-start leading-none">
             <span className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#a8a8b3]">{date.month}</span>
             <span className="mt-0.5 text-[20px] font-extrabold leading-[21px]">{date.day}</span>
-            <span className="event-date-accent mt-1 h-[3px] w-[18px]" />
           </div>
         )}
         <div className="min-w-0 flex-1">
@@ -109,7 +123,7 @@ function EventCard({ event, expanded = false }: { event: TMEvent; expanded?: boo
               {weekdayTime(event.dateTime, locale)}
             </p>
           )}
-          <p className="mt-1 flex items-center gap-1 text-xs leading-4 text-white">
+          <p className="mt-0.5 flex items-center gap-1 text-xs leading-4 text-white">
             <MapPin size={13} className="shrink-0 fill-tm-blue-light text-tm-blue-light" aria-hidden="true" />
             <span className="truncate">{event.venue}</span>
           </p>
@@ -134,49 +148,67 @@ export function TrendingRail({ events, expanded }: { events: TMEvent[]; expanded
   const { favorites, toggleFavorite } = useApp()
   const { t } = useTranslation()
   const open = useOpenEvent()
+  const rankedEvents = events.slice(0, expanded ? 12 : 9)
+  const columns = Array.from({ length: Math.ceil(rankedEvents.length / 3) }, (_, index) =>
+    rankedEvents.slice(index * 3, index * 3 + 3),
+  )
+
   return (
-    <ol className="flex flex-col gap-2.5 px-4">
-      {events.slice(0, expanded ? 12 : 3).map((event, i) => {
-        const liked = favorites.some((e) => e.id === event.id)
-        return (
-          <li key={event.id} className="flex min-h-[68px] min-w-0 items-center gap-2 border border-[#26262c] bg-[#111215] px-2 py-1.5">
-            <span
-              aria-label={t('rank', { rank: i + 1 })}
-              className="trending-rank w-10 shrink-0 text-center text-[30px] font-extrabold leading-none"
-            >
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <button
-              type="button"
-              onClick={() => open(event)}
-              className="flex min-w-0 flex-1 items-center gap-2 text-left"
-            >
-              <EventImage event={event} className="h-[52px] w-[74px] shrink-0 rounded-sm object-cover" />
-              <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="type-event-title truncate text-sm font-extrabold leading-4">{event.name}</span>
-                <span className="flex items-center gap-1.5 text-xs leading-4 text-[#a8a8b3]">
-                  <CategoryIcon event={event} />
-                  <span className="truncate">{event.genre}</span>
+    <div
+      role="region"
+      aria-label="Trending events carousel"
+      className="trending-carousel no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1"
+    >
+      {columns.map((column, columnIndex) => (
+        <ol key={columnIndex} aria-label="Trending events" className="flex w-[88%] shrink-0 snap-start flex-col gap-2.5">
+          {column.map((event, rowIndex) => {
+            const rank = columnIndex * 3 + rowIndex + 1
+            const liked = favorites.some((favorite) => favorite.id === event.id)
+            return (
+              <li key={event.id} className="flex min-h-[68px] min-w-0 items-center gap-2">
+                <span
+                  aria-label={t('rank', { rank })}
+                  className="trending-rank w-12 shrink-0 text-center text-[32px] leading-none"
+                >
+                  {String(rank).padStart(2, '0')}
                 </span>
-              </span>
-            </button>
-            <button
-              type="button"
-              aria-label={liked ? t('removeFromFavorites', { name: event.name }) : t('addToFavorites', { name: event.name })}
-              aria-pressed={liked}
-              onClick={() => toggleFavorite(event)}
-              className="flex size-9 shrink-0 items-center justify-center"
-            >
-              <Heart
-                size={20}
-                strokeWidth={1.8}
-                className={liked ? 'fill-tm-pink text-tm-pink' : 'text-white'}
-              />
-            </button>
-          </li>
-        )
-      })}
-    </ol>
+                <div className="flex min-h-[64px] min-w-0 flex-1 items-center gap-2 border border-[#26262c] bg-[#111215] px-2 py-1.5">
+                  <button
+                    type="button"
+                    onClick={() => open(event)}
+                    className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                  >
+                    <EventImage event={event} className="h-12 w-[68px] shrink-0 rounded-[6px] object-cover" />
+                    <span className="flex min-w-0 flex-1 flex-col gap-1">
+                      <span className="type-event-title truncate text-[14px] font-extrabold leading-4 text-white">
+                        {event.name}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[12px] leading-4 text-[#b5b5c0]">
+                        <CategoryIcon event={event} />
+                        <span className="truncate">{event.genre || event.segment}</span>
+                      </span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={liked ? t('removeFromFavorites', { name: event.name }) : t('addToFavorites', { name: event.name })}
+                    aria-pressed={liked}
+                    onClick={() => toggleFavorite(event)}
+                    className="flex size-9 shrink-0 items-center justify-center"
+                  >
+                    <Heart
+                      size={18}
+                      strokeWidth={1.8}
+                      className={liked ? 'fill-tm-pink text-tm-pink' : 'text-white'}
+                    />
+                  </button>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+      ))}
+    </div>
   )
 }
 
@@ -236,6 +268,7 @@ export function RailSection({
         <h2 className="min-w-0 flex-1 text-lg font-extrabold leading-tight">{title}</h2>
         <button
           type="button"
+          aria-expanded={expanded}
           onClick={() => setExpanded((e) => !e)}
           className="shrink-0 whitespace-nowrap text-[13px] font-normal text-[#c4c4ce]"
         >

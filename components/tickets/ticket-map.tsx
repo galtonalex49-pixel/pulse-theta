@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css'
 
 const PIN_HTML = `
 <svg width="38" height="50" viewBox="0 0 36 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M18 1C8.6 1 1 8.6 1 18c0 12.5 17 27 17 27s17-14.5 17-27C35 8.6 27.4 1 18 1z" fill="#026cdf" stroke="#ffffff" stroke-width="2"/>
+  <path d="M18 1C8.6 1 1 8.6 1 18c0 12.5 17 27 17 27s17-14.5 17-27C35 8.6 27.4 1 18 1z" fill="#0052e6" stroke="#ffffff" stroke-width="2"/>
   <circle cx="18" cy="18" r="6.5" fill="#ffffff"/>
 </svg>`
 

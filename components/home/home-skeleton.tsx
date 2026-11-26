@@ -24,7 +24,6 @@ export function HomeSkeleton({ city }: { city: string }) {
                 <div className="flex w-11 shrink-0 flex-col items-start gap-1">
                   <Skeleton className="h-2 w-6 rounded" />
                   <Skeleton className="h-7 w-8 rounded" />
-                  <Skeleton className="h-[3px] w-5 rounded-none" />
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <Skeleton className="h-3 w-4/5 rounded" />
@@ -42,16 +41,22 @@ export function HomeSkeleton({ city }: { city: string }) {
           <Skeleton className="h-6 w-44 rounded" />
           <Skeleton className="h-4 w-12 rounded" />
         </div>
-        <div className="flex flex-col gap-2.5 px-4">
-          {[0, 1, 2].map((row) => (
-            <div key={row} className="flex min-h-[82px] items-center gap-2 bg-[#1C1C1C] px-2 py-2">
-              <span className="trending-rank w-8 shrink-0 text-center text-[26px] font-black leading-none">{String(row + 1).padStart(2, '0')}</span>
-              <Skeleton className="h-[60px] w-[108px] shrink-0 rounded-none" />
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <Skeleton className="h-3.5 w-4/5 rounded" />
-                <Skeleton className="h-3 w-2/5 rounded" />
-              </div>
-              <Skeleton className="size-7 shrink-0 rounded-full" />
+        <div className="trending-carousel no-scrollbar flex snap-x snap-mandatory gap-3 overflow-hidden px-4 pb-1">
+          {[0, 1].map((column) => (
+            <div key={column} className="flex w-[88%] shrink-0 snap-start flex-col gap-2.5">
+              {[0, 1, 2].map((row) => (
+                <div key={row} className="flex min-h-[68px] items-center gap-2">
+                  <span className="trending-rank w-12 shrink-0 text-center text-[32px] leading-none">{String(column * 3 + row + 1).padStart(2, '0')}</span>
+                  <div className="flex min-h-[64px] min-w-0 flex-1 items-center gap-2 border border-[#26262c] bg-[#111215] px-2 py-1.5">
+                    <Skeleton className="h-12 w-[68px] shrink-0 rounded-[6px]" />
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <Skeleton className="h-3.5 w-4/5 rounded" />
+                      <Skeleton className="h-3 w-2/5 rounded" />
+                    </div>
+                    <Skeleton className="size-9 shrink-0 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
         </div>

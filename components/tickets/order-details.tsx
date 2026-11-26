@@ -60,7 +60,7 @@ function StickyHeader({ ticket, scrolled }: { ticket: Ticket; scrolled: boolean 
               type="button"
               onClick={() => openSafetix(ticket.id)}
               aria-label={t('viewBarcodeTickets')}
-              className="flex h-[52px] w-[72px] shrink-0 items-center justify-center rounded-full bg-tm-blue shadow-[0_0_20px_rgba(31,79,216,0.6)]"
+              className="flex h-[52px] w-[72px] shrink-0 items-center justify-center rounded-full bg-tm-blue shadow-[0_0_20px_rgba(0,82,230,0.6)]"
             >
               <ScanBarcode size={28} />
             </button>
