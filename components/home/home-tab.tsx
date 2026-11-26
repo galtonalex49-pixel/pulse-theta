@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { ChevronRight, MapPin, ArrowRight } from 'lucide-react'
+import { ChevronRight, MapPin, ArrowRight, UserRound } from 'lucide-react'
 import { useApp } from '@/lib/store'
 import { cityCountryLabel, cityLine } from '@/lib/locations'
 import { useTranslation } from '@/lib/use-translation'
@@ -97,7 +97,7 @@ function SearchResults({ query, onPick }: { query: string; onPick: (e: TMEvent) 
 }
 
 export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
-  const { location, setLocationSheetOpen, browsed, browse } = useApp()
+  const { location, setLocationSheetOpen, setTab, browsed, browse } = useApp()
   const { locale, t } = useTranslation()
   const [query, setQuery] = useState('')
 
@@ -163,7 +163,7 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
         className="mb-4 flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-left"
         aria-label={t('currentLocationChange', { location: cityLine(location) })}
       >
-        <MapPin size={22} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
+        <MapPin size={22} className="shrink-0 fill-tm-blue-light text-tm-blue-light" aria-hidden="true" />
         <span className="min-w-0 truncate text-base font-bold leading-5 text-white/90">{cityLine(location)}</span>
         <ChevronRight size={21} className="shrink-0 text-white/80" aria-hidden="true" />
       </button>
@@ -224,16 +224,16 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
 
       <button
         type="button"
-        onClick={() => setLocationSheetOpen(true)}
-        aria-label={`${t('findEvents')}. ${t('setLocation')}`}
+        onClick={() => setTab('account')}
+        aria-label="Sign in. Keep track of events and set favorites"
         className="fixed bottom-[84px] left-1/2 z-20 flex h-[70px] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 items-center gap-3 rounded-full bg-white px-3 pr-5 text-left text-black shadow-2xl"
       >
-        <span className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-tm-teal">
-          <MapPin size={24} className="fill-[#111] text-[#111]" aria-hidden="true" />
+        <span className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
+          <UserRound size={24} className="text-white" aria-hidden="true" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-base font-bold leading-tight">{t('findEvents')}</span>
-          <span className="text-sm leading-tight text-black/70">{t('setLocation')}</span>
+          <span className="text-base font-bold leading-tight">Sign in</span>
+          <span className="text-sm font-normal leading-tight text-black/70">Keep track of events and set favorites</span>
         </span>
         <ArrowRight size={26} aria-hidden="true" />
       </button>

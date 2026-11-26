@@ -54,28 +54,23 @@ export function HomeNavIcon({ active }: { active: boolean }) {
   return (
     <svg width="28" height="28" viewBox="0 0 30 30" fill="none" className="size-7" aria-hidden="true">
       <circle
-        cx="14"
-        cy="16"
+        cx="15"
+        cy="15"
         r="12"
         fill={active ? '#1f4fd8' : 'none'}
         stroke={active ? '#1f4fd8' : 'currentColor'}
         strokeWidth="1.8"
       />
       <text
-        x="14"
-        y="21.5"
+        x="15"
+        y="20.5"
         textAnchor="middle"
         fontSize="16"
-        fontStyle="italic"
         fontWeight="800"
-        fill="currentColor"
-        style={{ fontFamily: 'Georgia, serif' }}
+        fill={active ? '#ffffff' : 'currentColor'}
       >
         t
       </text>
-      {active && (
-        <path d="M24 1.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z" fill="currentColor" />
-      )}
     </svg>
   )
 }

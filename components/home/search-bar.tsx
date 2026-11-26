@@ -17,9 +17,9 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
   }, [])
 
   return (
-    <div className="relative mx-4 flex h-[62px] items-center rounded-full bg-[#242424] pl-2.5 pr-5">
+    <div className="relative mx-4 flex h-[62px] items-center rounded-[999px] bg-[#2A2A2A] pl-2.5 pr-5">
       <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
-        <Search size={26} strokeWidth={2.1} aria-hidden="true" />
+        <Search size={26} strokeWidth={2.1} className="text-white" aria-hidden="true" />
       </span>
       <div className="relative ml-3.5 min-w-0 flex-1">
         {value === '' && (
