@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChevronRight, MapPin, ArrowRight, UserRound } from 'lucide-react'
 import { useApp } from '@/lib/store'
-import { cityCountryLabel, cityLine } from '@/lib/locations'
+import { cityLine } from '@/lib/locations'
 import { useTranslation } from '@/lib/use-translation'
 import { parseLocal, monthDay } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
@@ -125,9 +125,11 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
 
     const byDateAsc = [...unique].sort(byDate)
     const forYou = takeUnused(byDateAsc, 8)
-    const trending = takeUnused(unique, 12)
+    const selectedTrending = takeUnused(unique, 12)
+    const trending = selectedTrending.length > 0 ? selectedTrending : unique.slice(0, 12)
     const recentCandidates = browsed.length > 0 ? browsed : byDateAsc
-    const recent = takeUnused(recentCandidates, 6)
+    const selectedRecent = takeUnused(recentCandidates, 6)
+    const recent = selectedRecent.length > 0 ? selectedRecent : recentCandidates.slice(0, 6)
     const lastMinute = takeUnused(byDateAsc, 10)
 
     const weekend = byDateAsc.filter((event) => {
@@ -160,12 +162,12 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
       <button
         type="button"
         onClick={() => setLocationSheetOpen(true)}
-        className="mb-4 flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-left"
+        className="mb-3 flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-left"
         aria-label={t('currentLocationChange', { location: cityLine(location) })}
       >
-        <MapPin size={22} className="shrink-0 fill-tm-blue-light text-tm-blue-light" aria-hidden="true" />
-        <span className="min-w-0 truncate text-base font-bold leading-5 text-white/90">{cityLine(location)}</span>
-        <ChevronRight size={21} className="shrink-0 text-white/80" aria-hidden="true" />
+        <MapPin size={18} className="shrink-0 fill-tm-teal text-tm-teal" aria-hidden="true" />
+        <span className="min-w-0 truncate text-sm font-normal leading-5 text-white">{cityLine(location)}</span>
+        <ChevronRight size={18} className="shrink-0 text-white" aria-hidden="true" />
       </button>
 
       {showSkeleton && query.trim().length < 2 ? (
@@ -192,11 +194,11 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
               {!sections.empty && (
                 <>
                   <section className="mt-8" aria-label={t('forYou')}>
-                    <h2 className="mb-4 px-4 text-xl font-extrabold tracking-[-0.01em]">{t('forYou')}</h2>
+                    <h2 className="mb-3 px-4 text-lg font-extrabold tracking-[-0.02em]">{t('forYou')}</h2>
                     <ForYouRail events={sections.forYou} />
                   </section>
 
-                  <RailSection title={t('trendingIn', { place: cityCountryLabel(location, locale) })}>
+                  <RailSection title={t('trendingIn', { place: location.trendingLabel })}>
                     {(expanded) => <TrendingRail events={sections.trending} expanded={expanded} />}
                   </RailSection>
 
@@ -226,16 +228,16 @@ export function HomeTab({ isHomeLoading }: { isHomeLoading: boolean }) {
         type="button"
         onClick={() => setTab('account')}
         aria-label="Sign in. Keep track of events and set favorites"
-        className="fixed bottom-[84px] left-1/2 z-20 flex h-[70px] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 items-center gap-3 rounded-full bg-white px-3 pr-5 text-left text-black shadow-2xl"
+        className="fixed bottom-[84px] left-1/2 z-20 flex h-[62px] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 items-center gap-3 rounded-full bg-white px-3 pr-4 text-left text-black shadow-2xl"
       >
-        <span className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
-          <UserRound size={24} className="text-white" aria-hidden="true" />
+        <span className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-tm-blue">
+          <UserRound size={21} className="text-white" aria-hidden="true" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-base font-bold leading-tight">Sign in</span>
-          <span className="text-sm font-normal leading-tight text-black/70">Keep track of events and set favorites</span>
+          <span className="text-sm font-extrabold leading-tight">Sign in</span>
+          <span className="truncate text-xs font-normal leading-tight text-[#3A3A3A]">Keep track of events and set favorites</span>
         </span>
-        <ArrowRight size={26} aria-hidden="true" />
+        <ArrowRight size={22} aria-hidden="true" />
       </button>
     </div>
   )

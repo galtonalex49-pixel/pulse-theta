@@ -12,24 +12,8 @@
 
 @font-face {
   font-family: 'Averta';
-  src: url('/fonts/AvertaDemoPECuttedDemo-Regular.otf') format('opentype');
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Averta';
-  src: url('/fonts/AvertaDemoPECuttedDemo-Regular.otf') format('opentype');
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Averta';
   src: url('/fonts/AvertaDemoPE-ExtraBold.otf') format('opentype');
-  font-style: normal;
+  font-style: italic;
   font-weight: 700;
   font-display: swap;
 }
@@ -37,25 +21,25 @@
 @font-face {
   font-family: 'Averta';
   src: url('/fonts/AvertaDemoPE-ExtraBold.otf') format('opentype');
-  font-style: normal;
-  font-weight: 900;
+  font-style: italic;
+  font-weight: 800;
   font-display: swap;
 }
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: 'Averta', sans-serif;
-  --color-tm-black: #0a0a0a;
-  --color-tm-surface: #111111;
-  --color-tm-card: #1a1a1a;
-  --color-tm-row: #232323;
-  --color-tm-blue: #1f4fd8;
-  --color-tm-blue-light: #2d62ea;
-  --color-tm-purple: #b95cff;
-  --color-tm-pink: #e83fa8;
-  --color-tm-teal: #5fe6d9;
-  --color-tm-muted: #888888;
+  --font-sans: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-tm-black: #0b0b0d;
+  --color-tm-surface: #110d12;
+  --color-tm-card: #1a1a1e;
+  --color-tm-row: #1a1a1e;
+  --color-tm-blue: #026cdf;
+  --color-tm-blue-light: #026cdf;
+  --color-tm-purple: #b87aff;
+  --color-tm-pink: #ff3b9a;
+  --color-tm-teal: #38d6c4;
+  --color-tm-muted: #a8a8b3;
 }
 
 @theme inline {
@@ -211,24 +195,36 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    color-scheme: dark;
+    font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-style: normal;
+  }
+
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
+    min-height: 100%;
+    font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-style: normal;
     font-weight: 400;
   }
 }
 
 html,
 body {
-  background: #0a0a0a;
+  background: #0b0b0d;
   color: #ffffff;
   letter-spacing: -0.01em;
   -webkit-tap-highlight-color: transparent;
-  font-synthesis: none;
+  font-synthesis: weight;
 }
 
-* {
-  font-family: 'Averta', sans-serif !important;
+*,
+*::before,
+*::after {
+  font-family: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-style: normal !important;
 }
 
 h1,
@@ -237,42 +233,22 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 900;
+  font-weight: 800;
 }
 
-button,
-[role='button'],
-nav a {
-  font-weight: 700;
-}
-
-label > span {
-  font-weight: 400;
-}
-
-input,
-textarea,
-select,
-p,
-li,
-dd,
-dt,
-small {
-  font-weight: 400;
-}
-
-time,
-.type-metadata {
+.type-metadata,
+.type-event-meta {
   font-weight: 400;
 }
 
 .type-event-title {
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .trending-rank {
-  color: #FFD700;
-  -webkit-text-stroke: 1px black;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+  -webkit-text-stroke: 1.5px #d6c348;
 }
 
 [class~='uppercase'] {
@@ -280,11 +256,11 @@ time,
 }
 
 .for-you-rail > :nth-child(odd) .event-date-accent {
-  background-color: #f97316;
+  background-color: #e84669;
 }
 
 .for-you-rail > :nth-child(even) .event-date-accent {
-  background-color: #ef4444;
+  background-color: #d6c348;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -320,7 +296,7 @@ time,
 }
 
 .leaflet-container {
-  background: #1a1a1a;
+  background: #1a1a1e;
   font-family: inherit;
 }
 
@@ -342,7 +318,7 @@ time,
 .compact-screen h1,
 .compact-screen h2,
 .compact-screen h3 {
-  line-height: 22px;
+  line-height: 1.25;
 }
 
 @keyframes transfer-spinner-forward {
@@ -367,9 +343,9 @@ time,
   width: 88px;
   height: 88px;
   border-width: 4px;
-  border-color: rgb(31 79 216 / 15%);
-  border-top-color: #1f4fd8;
-  border-right-color: #1f4fd8;
+  border-color: rgb(2 108 223 / 15%);
+  border-top-color: #026cdf;
+  border-right-color: #026cdf;
   animation: transfer-spinner-forward 1.5s linear infinite;
 }
 
@@ -377,9 +353,9 @@ time,
   width: 62px;
   height: 62px;
   border-width: 4px;
-  border-color: rgb(232 63 168 / 16%);
-  border-bottom-color: #e83fa8;
-  border-left-color: #e83fa8;
+  border-color: rgb(255 59 154 / 16%);
+  border-bottom-color: #ff3b9a;
+  border-left-color: #ff3b9a;
   animation: transfer-spinner-backward 1.05s linear infinite;
 }
 
@@ -387,9 +363,9 @@ time,
   width: 36px;
   height: 36px;
   border-width: 3px;
-  border-color: rgb(31 79 216 / 15%);
-  border-top-color: #5fe6d9;
-  border-right-color: #5fe6d9;
+  border-color: rgb(2 108 223 / 15%);
+  border-top-color: #38d6c4;
+  border-right-color: #38d6c4;
   animation: transfer-spinner-forward 0.72s linear infinite;
 }
 

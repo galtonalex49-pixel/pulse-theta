@@ -37,7 +37,7 @@ function AppContent() {
   }, [locationKey])
 
   return (
-    <div lang={locale} dir={locale.startsWith('ar') ? 'rtl' : 'ltr'} className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-surface">
+    <div lang={locale} dir={locale.startsWith('ar') ? 'rtl' : 'ltr'} className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-black">
       <main className="relative min-h-0 flex-1 pb-[76px]">
         <ActiveTab isHomeLoading={isHomeLoading} />
       </main>

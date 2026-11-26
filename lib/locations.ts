@@ -26,7 +26,7 @@ export const POPULAR_CITIES: City[] = [
 
 const byName = (n: string) => POPULAR_CITIES.find((c) => c.name === n)!
 
-export const DEFAULT_CITY = byName('Toronto')
+export const DEFAULT_CITY = byName('London')
 export const DEFAULT_RECENT: City[] = [byName('London'), byName('New York City'), byName('Toronto')]
 
 export function cityLine(city: City) {

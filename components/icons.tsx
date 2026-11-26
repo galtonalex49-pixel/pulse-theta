@@ -7,7 +7,7 @@ export function DualTicketIcon({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
       <rect x="7" y="3" width="11" height="15" rx="1.5" transform="rotate(8 12.5 10.5)" />
-      <rect x="4" y="5" width="11" height="15" rx="1.5" fill="#0A0A0A" />
+      <rect x="4" y="5" width="11" height="15" rx="1.5" fill="#0B0B0D" />
       <rect x="6.5" y="8" width="6" height="4" rx="0.5" strokeWidth="1.2" />
       <line x1="8" y1="10" x2="11" y2="10" strokeWidth="1" />
     </svg>
@@ -57,8 +57,8 @@ export function HomeNavIcon({ active }: { active: boolean }) {
         cx="15"
         cy="15"
         r="12"
-        fill={active ? '#1f4fd8' : 'none'}
-        stroke={active ? '#1f4fd8' : 'currentColor'}
+        fill={active ? '#026cdf' : 'none'}
+        stroke={active ? '#026cdf' : 'currentColor'}
         strokeWidth="1.8"
       />
       <text
@@ -76,7 +76,7 @@ export function HomeNavIcon({ active }: { active: boolean }) {
 }
 
 export function TicketsNavIcon({ active }: { active: boolean }) {
-  const stroke = active ? '#2f66f6' : '#a4a4a4'
+  const stroke = active ? '#026cdf' : '#9e9ea8'
 
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="size-7" aria-hidden="true">

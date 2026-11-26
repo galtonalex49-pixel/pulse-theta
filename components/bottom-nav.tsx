@@ -18,19 +18,18 @@ function TabIcon({ id, active }: { id: TabId; active: boolean }) {
   if (id === 'tickets') return <TicketsNavIcon active={active} />
   if (id === 'watchlist') {
     return (
-      <Bookmark
-        size={27}
+        <Bookmark
+        size={25}
         strokeWidth={1.8}
-        className={`size-[27px] ${active ? 'fill-tm-purple text-tm-purple' : ''}`}
+        className={`size-[25px] ${active ? 'fill-tm-purple text-tm-purple' : ''}`}
         aria-hidden="true"
       />
     )
   }
   return active ? (
-      <span className="flex size-7 items-center justify-center rounded-full bg-tm-blue-light" aria-hidden="true">
-        <UserRound size-6 className="fill-white text-white" />
-
-    </span>
+      <span className="flex size-7 items-center justify-center rounded-full bg-tm-blue" aria-hidden="true">
+        <UserRound size={19} className="fill-white text-white" />
+      </span>
   ) : (
     <CircleUser size={27} strokeWidth={1.6} className="size-[27px]" aria-hidden="true" />
   )
@@ -48,7 +47,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t('primaryNavigation')}
-      className="fixed bottom-0 left-1/2 z-30 flex h-[76px] w-full max-w-[430px] -translate-x-1/2 items-stretch justify-between border-t border-[#202020] bg-black px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
+      className="fixed bottom-0 left-1/2 z-30 flex h-[76px] w-full max-w-[430px] -translate-x-1/2 items-stretch justify-between border-t border-[#1c1c21] bg-[#09090b] px-4 pb-[max(env(safe-area-inset-bottom),4px)] pt-1"
     >
       {TABS.map((t) => {
         const active = tab === t.id
@@ -58,9 +57,9 @@ export function BottomNav() {
             type="button"
             onClick={() => setTab(t.id)}
             aria-current={active ? 'page' : undefined}
-            className={`flex min-w-0 flex-1 basis-0 flex-col items-center justify-center overflow-hidden px-1 py-1 text-[13px] font-semibold leading-[18px] ${
-              active ? 'text-white' : 'text-[#8a8a8a]'
-            }}`}
+            className={`flex min-w-0 flex-1 basis-0 flex-col items-center justify-center overflow-hidden px-1 py-1 text-[11px] leading-[15px] ${
+              active ? 'font-extrabold text-white' : 'font-normal text-[#9e9ea8]'
+            }`}
           >
             <span className="flex size-7 shrink-0 items-center justify-center" aria-hidden="true">
               <TabIcon id={t.id} active={active} />

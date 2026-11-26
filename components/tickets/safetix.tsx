@@ -26,9 +26,9 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
       <div className="divide-y divide-black/10 text-[16px]">
         <section className="px-6 py-6"><h3 className="type-event-title text-2xl font-extrabold uppercase">{ticket.artist}</h3><p className="mt-2 text-black/60">{dateLong(ticket.dateTime, locale)} · {ticket.venue}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('entryInfo')}</h3><p className="mt-2">{ticket.entryInfo || t('generalAdmission')}</p></section>
-        <section className="px-6 py-6"><h3 className="font-bold">{t('ticketInfo')}</h3><pre className="mt-3 whitespace-pre-wrap font-mono text-[14px] leading-6">{lines.join('\n')}</pre></section>
+        <section className="px-6 py-6"><h3 className="font-bold">{t('ticketInfo')}</h3><pre className="mt-3 whitespace-pre-wrap font-normal text-[14px] leading-6">{lines.join('\n')}</pre></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('venue')}</h3><p className="mt-2">{ticket.venueLocation || ticket.venue}</p></section>
-        <section className="px-6 py-6"><h3 className="font-bold">{t('orderNumber')}</h3><p className="mt-2 font-mono">{ticket.orderNumber ? `${ticket.orderNumber.slice(0, 3)}******/${ticket.orderNumber.split('/')[1] ?? 'XX'}` : 'XXXXXXXXXX'}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">{t('orderNumber')}</h3><p className="mt-2 font-normal">{ticket.orderNumber ? `${ticket.orderNumber.slice(0, 3)}******/${ticket.orderNumber.split('/')[1] ?? 'XX'}` : 'XXXXXXXXXX'}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('ticketType')}</h3><p className="mt-2">{ticketType}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('purchaseDate')}</h3><p className="mt-2">{purchaseDate}</p></section>
         <section className="px-6 py-6"><div className="flex justify-between"><span>{t('ticketPrice')}</span><span>{formatMoney(ticket.ticketPrice ?? 0)}</span></div><div className="mt-2 flex justify-between"><span>{t('serviceFee')}</span><span>{formatMoney(ticket.serviceFee ?? 0)}</span></div><div className="mt-3 flex justify-between font-extrabold"><span>{t('grandTotal')}</span><span>{formatMoney(total)}</span></div></section>
@@ -59,7 +59,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
     <li className="flex w-full min-w-0 shrink-0 snap-center justify-center px-4">
       <div className="w-full max-w-[320px] overflow-hidden rounded-xl bg-[#111] shadow-2xl">
         <div className="bg-tm-blue py-3 text-center">
-          <span className="text-[22px] font-extrabold italic leading-7 tracking-tight">ticketmaster</span>
+          <span className="text-[22px] font-extrabold leading-7 tracking-tight">ticketmaster</span>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="relative">
@@ -75,7 +75,7 @@ function SeatSlide({ ticket, seat }: { ticket: Ticket; seat: Ticket['seats'][num
               {locked ? (
                 <div className="flex min-h-[86px] flex-col items-center justify-center text-center text-white">
                   <span className="text-[10px] uppercase tracking-[0.12em] text-white/75">{t('barcodeReady')}</span>
-                  <div className="mt-2 grid grid-cols-4 gap-2 font-mono text-xl font-bold">
+                  <div className="mt-2 grid grid-cols-4 gap-2 font-normal text-xl font-bold">
                     {([[t('day'), days], [t('hour'), hours], [t('minute'), minutes], [t('sec'), seconds]] as const).map(([label, value]) => (
                       <span key={label}><strong className="block">{String(value).padStart(2, '0')}</strong><small className="block text-[8px] font-sans tracking-[0.12em] text-white/60">{label}</small></span>
                     ))}
