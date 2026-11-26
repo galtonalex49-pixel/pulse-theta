@@ -238,21 +238,22 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
       >
         <StickyHeader ticket={ticket} scrolled={scrolled} />
 
-        <div className="relative h-[230px]">
+        <div className="relative aspect-[16/9] w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black" />
-        </div>
-
-        <section className="bg-black px-4 pt-3" aria-label={t('myEvents')}>
-          <p className="truncate text-[11px] font-extrabold uppercase tracking-[0.03em] text-[#D4D4DC]" style={{ letterSpacing: '0.03em' }}>
+          <p className="absolute bottom-0 left-0 max-w-[94%] truncate rounded-tr-md bg-black px-3 py-2 text-xs font-extrabold uppercase tracking-wide text-white">
             {dateBadge(ticket.dateTime)}
           </p>
-          <h1 className="type-event-title mt-[6px] line-clamp-2 break-words text-[17px] font-extrabold uppercase leading-[1.2] text-white" style={{ lineHeight: 1.2 }}>
+        </div>
+
+        <section className="bg-black px-4 pt-3" aria-label={t('myTickets')}>
+          <h1 className="type-event-title line-clamp-2 break-words text-[17px] font-extrabold uppercase leading-[1.2] text-white" style={{ lineHeight: 1.2 }}>
             {ticket.artist}
           </h1>
-          <div className="mt-[10px] flex items-center justify-between gap-3">
-            <p className="min-w-0 max-w-[82%] text-[13px] leading-[1.35] text-[#C8C8D2]">{ticket.venueLocation || ticket.venue}</p>
+          <div className="my-3 h-px w-full bg-[#2d2d2d]" aria-hidden="true" />
+          <div className="flex items-center justify-between gap-3">
+            <p className="min-w-0 max-w-[82%] text-sm leading-[1.35] text-[#C8C8D2]">{ticket.venueLocation || ticket.venue}</p>
             <span className="flex shrink-0 items-center gap-1.5 text-[13px] font-extrabold text-white">
               <DualTicketIcon size={16} />
               x{count}
