@@ -5,6 +5,8 @@ import useSWR from 'swr'
 import { ArrowDown, ArrowLeft, ArrowUp, Plus, RefreshCw, Search, Trash2 } from 'lucide-react'
 import { resizeSeats, useApp } from '@/lib/store'
 import { dateBadge, generateOrderNumber } from '@/lib/format'
+import { getCurrencyForCountry, getCurrencyPrefix } from '@/lib/currency'
+import { getTicketVenueLabel } from '@/lib/event-display'
 import type { ReceiptSettings, Seat, TMEvent, Ticket } from '@/lib/types'
 import { getPurchaseDate, getReceiptOrderDate, getReceiptSubtotal, getReceiptTotal } from '@/lib/receipt'
 import { DualTicketIcon } from '../icons'
@@ -307,13 +309,21 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
   const newOrderNumber = () => generateOrderNumber(tickets.map((item) => item.orderNumber))
 
   const applyEvent = (event: TMEvent) => {
+    const currency = getCurrencyForCountry(event.countryCode)
     patch({
       artist: event.name,
       venue: event.venue || ticket.venue,
+      venueCity: event.city || ticket.venueCity,
+      venueState: event.state || ticket.venueState,
+      countryCode: event.countryCode || ticket.countryCode,
       posterUrl: event.image ?? ticket.posterUrl,
       dateTime: event.dateTime ?? ticket.dateTime,
       purchaseDate: event.dateTime ? new Date(new Date(event.dateTime).getTime() - 7 * 86400000).toISOString().slice(0, 16) : ticket.purchaseDate,
-      venueLocation: [event.city, event.countryCode].filter(Boolean).join(', '),
+      venueLocation: event.venueLocation || ticket.venueLocation,
+      ...(currency ? {
+        currency,
+        receipt: { ...ticket.receipt, currencyPrefix: getCurrencyPrefix(currency) },
+      } : {}),
       presenter: event.promoter ? `${event.promoter.toUpperCase()} PRESENTS` : ticket.presenter,
       orderNumber: newOrderNumber(),
       lat: event.lat ?? ticket.lat,
@@ -341,7 +351,7 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
         <div className="min-w-0 flex-1">
           <h3 className="type-event-title truncate text-xl font-extrabold uppercase">{ticket.artist || 'Untitled'}</h3>
           <p className="flex items-center gap-2 truncate text-sm text-white/60">
-            <span className="truncate">{ticket.venue}</span>
+            <span className="truncate">{getTicketVenueLabel(ticket)}</span>
             <DualTicketIcon size={16} className="shrink-0 text-white" />
             <span className="shrink-0">x{ticket.seats.length}</span>
           </p>
@@ -400,6 +410,25 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           {ticket.entryInfo && !['Upper Level', 'Lower Level', 'Floor General Admission Pit'].includes(ticket.entryInfo) && <Field label="Custom entry info" value={ticket.entryInfo} onChange={(v) => patch({ entryInfo: v })} />}
           <Field label="Presenter override" value={ticket.presenter ?? ''} onChange={(v) => patch({ presenter: v })} />
           <select aria-label="Policy notice" value={ticket.policyNotice ?? 'NO BAGS PERMITTED'} onChange={(e) => patch({ policyNotice: e.target.value })} className={inputCls}><option>NO BAGS PERMITTED</option><option>CLEAR BAG POLICY ONLY (MAX 12&quot; x 6&quot; x 12&quot;)</option><option>MOBILE ENTRY ONLY - NO PAPER TICKETS</option></select>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Event city" value={ticket.venueCity ?? ''} onChange={(v) => patch({ venueCity: v })} />
+            <Field label="State / province" value={ticket.venueState ?? ''} onChange={(v) => patch({ venueState: v.toUpperCase() })} />
+          </div>
+          <Field
+            label="Event country code"
+            value={ticket.countryCode ?? ''}
+            onChange={(value) => {
+              const countryCode = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2)
+              const currency = getCurrencyForCountry(countryCode)
+              patch({
+                countryCode,
+                ...(currency ? {
+                  currency,
+                  receipt: { ...ticket.receipt, currencyPrefix: getCurrencyPrefix(currency) },
+                } : {}),
+              })
+            }}
+          />
           <Field label="Venue address" value={ticket.venueLocation ?? ''} onChange={(v) => patch({ venueLocation: v })} />
           <fieldset className="space-y-3 rounded-lg border border-tm-blue/40 bg-[#141b33] p-3">
             <legend className="px-1 text-xs font-bold uppercase tracking-wider text-white/70">Barcode behavior</legend>
@@ -430,8 +459,19 @@ function TicketEditor({ ticket, defaultOpen }: { ticket: Ticket; defaultOpen: bo
           </label>
           <Field label="Custom ticket type override" value={ticket.ticketTypeOverride ?? ''} onChange={(v) => patch({ ticketTypeOverride: v })} />
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Currency code" value={ticket.currency ?? 'USD'} onChange={(v) => patch({ currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) })} />
-            <Field label="Currency / price prefix" value={ticket.receipt?.currencyPrefix ?? (ticket.currency?.toUpperCase() === 'CAD' ? 'CA$' : ticket.currency?.toUpperCase() === 'GBP' ? '£' : ticket.currency?.toUpperCase() === 'EUR' ? '€' : '$')} onChange={(v) => patchReceipt({ currencyPrefix: v })} />
+            <Field
+              label="Currency code"
+              value={ticket.currency ?? 'USD'}
+              onChange={(value) => {
+                const currency = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3)
+                patch({ currency, receipt: { ...ticket.receipt, currencyPrefix: getCurrencyPrefix(currency) } })
+              }}
+            />
+            <Field
+              label="Currency / price prefix"
+              value={ticket.receipt?.currencyPrefix ?? getCurrencyPrefix(ticket.currency)}
+              onChange={(value) => patchReceipt({ currencyPrefix: value })}
+            />
             <NumberField label="Default ticket price" value={ticket.ticketPrice ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ ticketPrice: v })} />
             <NumberField label="Receipt fees" value={ticket.serviceFee ?? 0} min={0} max={100000} step={0.01} onCommit={(v) => patch({ serviceFee: v })} />
           </div>

@@ -45,6 +45,9 @@ export interface Ticket {
   visible: boolean
   artist: string
   venue: string
+  venueCity?: string
+  venueState?: string
+  countryCode?: string
   posterUrl: string
   /** Local date-time, format YYYY-MM-DDTHH:mm */
   dateTime: string

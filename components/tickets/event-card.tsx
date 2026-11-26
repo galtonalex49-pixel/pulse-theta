@@ -1,5 +1,6 @@
 import { dateBadge } from '@/lib/format'
 import type { Ticket } from '@/lib/types'
+import { getTicketVenueLabel } from '@/lib/event-display'
 import { DualTicketIcon } from '../icons'
 import { useTranslation } from '@/lib/use-translation'
 
@@ -36,7 +37,7 @@ export function EventCard({ ticket, onView, compact = false, past = false }: Eve
           <p className="mb-3 rounded-md bg-[#172d58] px-3 py-2 text-sm font-bold text-blue-100">{t('digitalPassProcessing')}</p>
         )}
         <div className="flex items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-sm font-normal text-[#C8C8D2]">{ticket.venueLocation || ticket.venue}</p>
+          <p className="min-w-0 truncate text-sm font-normal text-[#C8C8D2]">{getTicketVenueLabel(ticket)}</p>
           <span className="flex shrink-0 items-center gap-2 text-sm font-bold text-white/90">
             <DualTicketIcon size={16} className="text-white" />
             <span>x{count}</span>

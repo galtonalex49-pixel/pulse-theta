@@ -14,6 +14,7 @@ import {
 import { useApp } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import { dateBadge } from '@/lib/format'
+import { getTicketVenueLabel } from '@/lib/event-display'
 import type { Ticket } from '@/lib/types'
 import { DualTicketIcon } from '../icons'
 import { TransferModal } from './transfer-modal'
@@ -54,7 +55,7 @@ function StickyHeader({ ticket, scrolled }: { ticket: Ticket; scrolled: boolean 
         {scrolled && (
           <div className="min-w-0 flex-1 text-center">
             <p className="type-event-title truncate text-sm font-extrabold">{ticket.artist}</p>
-            <p className="truncate text-xs text-white/80">{ticket.venue}</p>
+            <p className="truncate text-xs text-white/80">{getTicketVenueLabel(ticket)}</p>
           </div>
         )}
         <button
@@ -178,7 +179,7 @@ function EventShareCard({ ticket, shape }: { ticket: Ticket; shape: 'square' | '
           {ticket.artist}
         </h2>
         <p className={`mt-2 truncate text-white/75 ${isSquare ? 'text-xs' : 'text-sm'}`}>
-          {ticket.venueLocation || ticket.venue}
+          {getTicketVenueLabel(ticket)}
         </p>
       </div>
     </div>
@@ -251,9 +252,8 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
           <h1 className="type-event-title line-clamp-2 break-words text-[17px] font-extrabold uppercase leading-[1.2] text-white" style={{ lineHeight: 1.2 }}>
             {ticket.artist}
           </h1>
-          <div className="my-3 h-px w-full bg-[#2d2d2d]" aria-hidden="true" />
           <div className="flex items-center justify-between gap-3">
-            <p className="min-w-0 max-w-[82%] text-sm leading-[1.35] text-[#C8C8D2]">{ticket.venueLocation || ticket.venue}</p>
+            <p className="min-w-0 max-w-[82%] text-sm leading-[1.35] text-[#C8C8D2]">{getTicketVenueLabel(ticket)}</p>
             <span className="flex shrink-0 items-center gap-1.5 text-[13px] font-extrabold text-white">
               <DualTicketIcon size={16} />
               x{count}
@@ -319,7 +319,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
             </ul>
 
             <h2 className="mb-[10px] mt-[22px] text-[13px] font-extrabold uppercase tracking-[0.03em] text-white" style={{ letterSpacing: '0.03em' }}>{t('moreOptions')}</h2>
-            <div className="isolate relative h-[220px] w-full overflow-hidden rounded-t-md bg-[#1C1C21]">
+            <div className="isolate relative h-[180px] w-full overflow-hidden rounded-t-md bg-[#1C1C21]">
               <TicketMap lat={ticket.lat} lng={ticket.lng} name={ticket.venue} />
               <p className="pointer-events-none absolute left-3 top-3 z-[500] max-w-[85%] truncate text-[15px] font-extrabold leading-snug text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">
                 {ticket.venue}
@@ -343,7 +343,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
                   <div className="absolute inset-x-2 bottom-2 text-white">
                     <p className="text-[8px] font-extrabold uppercase tracking-wide text-white/80">{dateBadge(ticket.dateTime)}</p>
                     <p className="mt-1 line-clamp-2 text-[10px] font-extrabold uppercase leading-tight">{ticket.artist}</p>
-                    <p className="mt-1 line-clamp-1 text-[8px] text-white/80">{ticket.venueLocation || ticket.venue}</p>
+                    <p className="mt-1 line-clamp-1 text-[8px] text-white/80">{getTicketVenueLabel(ticket)}</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-center px-1 text-center">
@@ -373,7 +373,7 @@ export function OrderDetails({ ticket }: { ticket: Ticket }) {
         )}
       </div>
 
-      <div className="fixed bottom-[14px] left-1/2 z-30 flex w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 items-center rounded-full bg-white px-2 py-2 text-black shadow-[0_6px_24px_rgba(0,0,0,0.6)]">
+      <div className="fixed bottom-[14px] left-1/2 z-30 flex w-[calc(100%-64px)] max-w-[270px] -translate-x-1/2 items-center rounded-full bg-white px-2 py-1 text-black shadow-[0_6px_24px_rgba(0,0,0,0.6)]">
         <button
           type="button"
           onClick={() => setOrderDetailsOpen(true)}

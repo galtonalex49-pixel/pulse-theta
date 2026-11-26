@@ -2,6 +2,7 @@
 
 import { ArrowLeft } from 'lucide-react'
 import type { Ticket } from '@/lib/types'
+import { getTicketVenueLabel } from '@/lib/event-display'
 import {
   formatPurchaseDate,
   formatReceiptAmount,
@@ -128,7 +129,7 @@ export function TicketReceipt({ ticket, onBack }: { ticket: Ticket; onBack: () =
 
           <section aria-label="Event details">
             <h2 className="text-[15px] font-extrabold uppercase leading-[1.25]">{ticket.artist}</h2>
-            <p className="mt-1.5 text-[13px] leading-[1.35] text-[#2A2A32]">{ticket.venueLocation || ticket.venue}</p>
+            <p className="mt-1.5 text-[13px] leading-[1.35] text-[#2A2A32]">{getTicketVenueLabel(ticket)}</p>
             <p className="mt-1.5 text-xs uppercase text-[#2A2A32]">{formatEventDateTime(ticket.dateTime)}</p>
           </section>
 

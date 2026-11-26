@@ -1,4 +1,5 @@
 import type { Seat, Ticket } from './types'
+import { getCurrencyPrefix } from './currency'
 
 export interface ReceiptLineItem {
   seat: Seat
@@ -49,18 +50,7 @@ export function getReceiptLineItems(ticket: Ticket): ReceiptLineItem[] {
 
 export function getReceiptCurrencyPrefix(ticket: Ticket) {
   if (ticket.receipt?.currencyPrefix !== undefined) return ticket.receipt.currencyPrefix
-  switch ((ticket.currency || 'USD').toUpperCase()) {
-    case 'CAD':
-      return 'CA$'
-    case 'GBP':
-      return '£'
-    case 'EUR':
-      return '€'
-    case 'JPY':
-      return '¥'
-    default:
-      return '$'
-  }
+  return getCurrencyPrefix(ticket.currency)
 }
 
 export function formatReceiptAmount(ticket: Ticket, value: number) {
