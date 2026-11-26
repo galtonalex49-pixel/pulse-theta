@@ -3,33 +3,29 @@ interface IconProps {
   className?: string
 }
 
-export function DualTicketIcon({ size = 18, className }: IconProps) {
+export function TicketArtworkIcon({ size = 18, className }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <rect x="7" y="3" width="11" height="15" rx="1.5" transform="rotate(8 12.5 10.5)" />
-      <rect x="4" y="5" width="11" height="15" rx="1.5" fill="#0B0B0D" />
-      <rect x="6.5" y="8" width="6" height="4" rx="0.5" strokeWidth="1.2" />
-      <line x1="8" y1="10" x2="11" y2="10" strokeWidth="1" />
-    </svg>
+    <span
+      className={`inline-block shrink-0 bg-current ${className ?? ''}`}
+      style={{
+        width: size,
+        height: size,
+        maskImage: "url('/images/ticket-icon.png')",
+        maskPosition: 'center',
+        maskRepeat: 'no-repeat',
+        maskSize: 'contain',
+        WebkitMaskImage: "url('/images/ticket-icon.png')",
+        WebkitMaskPosition: 'center',
+        WebkitMaskRepeat: 'no-repeat',
+        WebkitMaskSize: 'contain',
+      }}
+      aria-hidden="true"
+    />
   )
 }
 
-export function TicketCountIcon({ size = 20, className }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
-      <path d="M13 5v14" />
-    </svg>
-  )
+export function DualTicketIcon({ size = 18, className }: IconProps) {
+  return <TicketArtworkIcon size={size} className={className} />
 }
 
 export function FlagBadge({ code, size = 22 }: { code: string; size?: number }) {
@@ -77,16 +73,7 @@ export function HomeNavIcon({ active }: { active: boolean }) {
 }
 
 export function TicketsNavIcon({ active }: { active: boolean }) {
-  const stroke = active ? '#0052e6' : '#ffffff'
-
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="size-6" aria-hidden="true">
-      <path d="m7.4 5.1 10.7-2.2a1.2 1.2 0 0 1 1.4.9l2.1 10.2a1.2 1.2 0 0 1-.4 1.1l-2.8 2.5-9.4 1.9a1.2 1.2 0 0 1-1.4-.9L5.5 6.6a1.2 1.2 0 0 1 1.9-1.5Z" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
-      <path d="m4.8 7.5-2.1.4a1.2 1.2 0 0 0-.9 1.4l2.2 10.5a1.2 1.2 0 0 0 1.4.9l10.2-2.1" stroke={stroke} strokeWidth="1.55" strokeLinejoin="round" />
-      <rect x="8.4" y="7.6" width="7.6" height="5.2" rx=".7" transform="rotate(-11.5 8.4 7.6)" stroke={stroke} strokeWidth="1.45" />
-      <path d="m9.6 15.7 6.2-1.3M10.1 17.7l3.8-.8" stroke={stroke} strokeWidth="1.45" strokeLinecap="round" />
-    </svg>
-  )
+  return <TicketArtworkIcon size={22} className={active ? 'text-white' : 'text-[#9E9EA8]'} />
 }
 
 export function AppleWalletBadge({ className }: { className?: string }) {

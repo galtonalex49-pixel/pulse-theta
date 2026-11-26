@@ -10,14 +10,15 @@
   font-display: swap;
 }
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: 'Averta', -apple-system, BlinkMacSystemFont, sans-serif;
-  --color-tm-black: #0b0b0d;
-  --color-tm-surface: #110d12;
-  --color-tm-card: #1a1a1e;
-  --color-tm-row: #1a1a1e;
+  --color-tm-black: #0a0a0c;
+  --color-tm-surface: #141418;
+  --color-tm-card: #141418;
+  --color-tm-row: #18181d;
   --color-tm-blue: #0052e6;
   --color-tm-blue-light: #004ad6;
   --color-tm-purple: #b87aff;
@@ -197,7 +198,7 @@
 
 html,
 body {
-  background: #0b0b0d;
+  background: #0a0a0c;
   color: #ffffff;
   letter-spacing: -0.01em;
   -webkit-tap-highlight-color: transparent;

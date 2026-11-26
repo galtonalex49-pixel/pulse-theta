@@ -26,8 +26,9 @@ function ActiveTab({ isHomeLoading }: { isHomeLoading: boolean }) {
 
 function AppContent() {
   const { locale } = useTranslation()
-  const { location } = useApp()
+  const { location, tab, ticketView } = useApp()
   const [isHomeLoading, setIsHomeLoading] = useState(true)
+  const immersiveTicketView = tab === 'tickets' && ticketView.view !== 'landing'
   const locationKey = `${location.tmCountry}:${location.tmCity}`
 
   useEffect(() => {
@@ -38,10 +39,10 @@ function AppContent() {
 
   return (
     <div lang={locale} dir={locale.startsWith('ar') ? 'rtl' : 'ltr'} className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-tm-black">
-      <main className="relative min-h-0 flex-1 pb-[76px]">
+      <main className={`relative min-h-0 flex-1 ${immersiveTicketView ? '' : 'pb-[76px]'}`}>
         <ActiveTab isHomeLoading={isHomeLoading} />
       </main>
-      <BottomNav />
+      {!immersiveTicketView && <BottomNav />}
       <LocationSheet />
     </div>
   )

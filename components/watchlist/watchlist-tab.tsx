@@ -7,7 +7,6 @@ import {
   Bookmark,
   Heart,
   Info,
-  Ticket,
   MapPin,
   Smartphone,
   X,
@@ -16,6 +15,7 @@ import { useApp } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import { monthDay } from '@/lib/format'
 import type { TMEvent } from '@/lib/types'
+import { TicketArtworkIcon } from '../icons'
 
 type Mode = 'events' | 'favorites'
 
@@ -147,7 +147,7 @@ export function WatchlistTab() {
 color="#b87aff"
               rows={[
                 {
-                  icon: <Ticket size={25} strokeWidth={1.7} aria-hidden="true" />,
+                  icon: <TicketArtworkIcon size={25} className="text-white" />,
                   title: t('saveEvents'),
                   body: t('saveEventsBody'),
                 },
