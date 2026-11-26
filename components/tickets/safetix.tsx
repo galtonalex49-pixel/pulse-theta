@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { useApp, useNow } from '@/lib/store'
 import { useTranslation } from '@/lib/use-translation'
 import { dateLong } from '@/lib/format'
+import { getTicketVenueLabel } from '@/lib/event-display'
 import type { Ticket } from '@/lib/types'
 import { AppleWalletBadge } from '../icons'
 import { Barcode } from './barcode'
@@ -14,7 +15,7 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
   const currency = (ticket.currency || 'USD').toUpperCase()
   const formatMoney = (value: number) => new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value)
   const total = (ticket.ticketPrice ?? 0) + (ticket.serviceFee ?? 0)
-  const lines = [ticket.presenter ? `${ticket.presenter.replace(/\s+PRESENTS$/i, '')} PRESENTS` : '', ticket.artist, ticket.venue, ticket.policyNotice, dateLong(ticket.dateTime, locale)].filter(Boolean)
+  const lines = [ticket.presenter ? `${ticket.presenter.replace(/\s+PRESENTS$/i, '')} PRESENTS` : '', ticket.artist, getTicketVenueLabel(ticket), ticket.policyNotice, dateLong(ticket.dateTime, locale)].filter(Boolean)
   const ticketType = ticket.ticketTypeOverride || ticket.purchaseType
   const purchaseDate = ticket.purchaseDate ? new Date(ticket.purchaseDate).toLocaleString(locale, { dateStyle: 'long', timeStyle: 'short' }) : t('notProvided')
   return (
@@ -24,10 +25,10 @@ function TicketDetailsSheet({ ticket, onClose }: { ticket: Ticket; onClose: () =
         <h2 id="ticket-details-title" className="text-xl font-bold">{t('ticketDetails')}</h2>
       </header>
       <div className="divide-y divide-black/10 text-[16px]">
-        <section className="px-6 py-6"><h3 className="type-event-title text-2xl font-extrabold uppercase">{ticket.artist}</h3><p className="mt-2 text-black/60">{dateLong(ticket.dateTime, locale)} · {ticket.venue}</p></section>
+        <section className="px-6 py-6"><h3 className="type-event-title text-2xl font-extrabold uppercase">{ticket.artist}</h3><p className="mt-2 text-black/60">{dateLong(ticket.dateTime, locale)} · {getTicketVenueLabel(ticket)}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('entryInfo')}</h3><p className="mt-2">{ticket.entryInfo || t('generalAdmission')}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('ticketInfo')}</h3><pre className="mt-3 whitespace-pre-wrap font-normal text-[14px] leading-6">{lines.join('\n')}</pre></section>
-        <section className="px-6 py-6"><h3 className="font-bold">{t('venue')}</h3><p className="mt-2">{ticket.venueLocation || ticket.venue}</p></section>
+        <section className="px-6 py-6"><h3 className="font-bold">{t('venue')}</h3><p className="mt-2">{getTicketVenueLabel(ticket)}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('orderNumber')}</h3><p className="mt-2 font-normal">{ticket.orderNumber ? `${ticket.orderNumber.slice(0, 3)}******/${ticket.orderNumber.split('/')[1] ?? 'XX'}` : 'XXXXXXXXXX'}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('ticketType')}</h3><p className="mt-2">{ticketType}</p></section>
         <section className="px-6 py-6"><h3 className="font-bold">{t('purchaseDate')}</h3><p className="mt-2">{purchaseDate}</p></section>
@@ -152,7 +153,7 @@ export function Safetix({ ticket }: { ticket: Ticket }) {
           </div>
           <div className="overflow-hidden whitespace-nowrap">
             <div className="inline-flex animate-marquee-slow gap-8 whitespace-nowrap text-[13px] leading-5 text-white/80">
-              <span>{dateLong(ticket.dateTime, locale)} - {ticket.venue}</span><span aria-hidden="true">{dateLong(ticket.dateTime, locale)} - {ticket.venue}</span>
+              <span>{dateLong(ticket.dateTime, locale)} - {getTicketVenueLabel(ticket)}</span><span aria-hidden="true">{dateLong(ticket.dateTime, locale)} - {getTicketVenueLabel(ticket)}</span>
             </div>
           </div>
         </div>

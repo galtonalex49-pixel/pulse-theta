@@ -16,13 +16,15 @@ export function TicketsLanding() {
   const now = useNow()
   const [sub, setSub] = useState<Sub>('upcoming')
 
-  const { upcoming, past } = useMemo(() => {
+  const { upcoming, past, pastCount } = useMemo(() => {
     const reference = now ?? new Date(0)
     // Preserve the order set in Admin Dashboard so the My Events tab mirrors the configured arrangement.
     const visible = tickets.filter((t) => t.visible)
+    const pastEvents = visible.filter((t) => isPast(t.dateTime, reference))
     return {
       upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
-      past: visible.filter((t) => isPast(t.dateTime, reference)).slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
+      past: pastEvents.slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
+      pastCount: pastEvents.length,
     }
   }, [tickets, now, profile.pastEventsToShow])
 
@@ -78,24 +80,24 @@ export function TicketsLanding() {
 
   return (
     <div className="relative h-full overflow-y-auto pb-6">
-      <header className="sticky top-0 z-20 bg-[#111] pt-[max(env(safe-area-inset-top),16px)]">
+      <header className="sticky top-0 z-20 bg-[#1b1b1b] pt-[max(env(safe-area-inset-top),8px)]">
         <div className="relative flex h-12 items-center justify-center gap-2 px-16">
-          <h1 className="min-w-0 truncate text-[22px] font-extrabold leading-none">{t('myEvents')}</h1>
-          <FlagBadge code={location.flag} size={22} />
+          <h1 className="min-w-0 truncate text-lg font-extrabold leading-none">{t('myTickets')}</h1>
+          <FlagBadge code={location.flag} size={24} />
           <a
             href="https://help.ticketmaster.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute right-4 text-[22px] font-extrabold leading-none"
+            className="absolute right-4 text-base font-extrabold leading-none"
           >
             {t('help')}
           </a>
         </div>
-        <div role="tablist" aria-label={t('eventTimeframe')} className="mt-3 grid grid-cols-2">
+        <div role="tablist" aria-label={t('eventTimeframe')} className="grid grid-cols-2">
           {(
             [
-              ['upcoming', `${t('upcoming').toLocaleUpperCase(locale)}(${upcoming.length})`],
-              ['past', `${t('past').toLocaleUpperCase(locale)}(${Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))})`],
+              ['upcoming', `${t('upcoming').toLocaleUpperCase(locale)} (${upcoming.length})`],
+              ['past', `${t('past').toLocaleUpperCase(locale)} (${pastCount})`],
             ] as const
           ).map(([id, label]) => {
             const active = sub === id
@@ -106,7 +108,7 @@ export function TicketsLanding() {
                 role="tab"
                 aria-selected={active}
                 onClick={() => setSub(id)}
-                className={`relative h-14 text-xl font-extrabold ${active ? 'text-white' : 'text-white/45'}`}
+                className={`relative h-11 text-sm font-extrabold ${active ? 'text-white' : 'text-white/45'}`}
               >
                 {label}
                 <span
@@ -127,7 +129,7 @@ export function TicketsLanding() {
           </p>
         ) : (
           <>
-            <section className="relative overflow-hidden pb-10">
+            <section className="relative overflow-hidden pb-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={next.posterUrl}
@@ -136,11 +138,12 @@ export function TicketsLanding() {
                 className="absolute inset-0 h-full w-full scale-125 object-cover opacity-70 blur-3xl"
               />
               <div className="relative">
-                <div className="flex items-center justify-between px-6 py-5">
-                  <p className="text-[28px] font-extrabold drop-shadow">
-                    {t('nextEvent', { countdown: now ? countdownText(next.dateTime, now, locale) : '' })}
+                <div className="flex items-center justify-between px-5 py-3">
+                  <p className="text-base font-normal drop-shadow">
+                    {t('nextEvent', { countdown: '' }).trim()}{' '}
+                    <strong className="font-extrabold">{now ? countdownText(next.dateTime, now, locale) : ''}</strong>
                   </p>
-                  <CalendarPlus size={40} strokeWidth={1.6} className="shrink-0" aria-hidden="true" />
+                  <CalendarPlus size={22} strokeWidth={1.6} className="shrink-0" aria-hidden="true" />
                 </div>
                 <div className="px-4">
                   <EventCard ticket={next} onView={() => openDetails(next.id)} />
@@ -148,16 +151,17 @@ export function TicketsLanding() {
               </div>
             </section>
 
-            <section aria-label={t('allUpcomingEvents')} className="mt-8 px-4">
-              <h2 className="mb-5 text-[26px] font-extrabold">{t('allUpcomingEvents')}</h2>
-              <ul className="flex flex-col gap-6">
-                {upcoming.map((t) => (
-                  <li key={t.id}>
-                    <EventCard ticket={t} compact onView={() => openDetails(t.id)} />
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {upcoming.length > 1 && (
+              <section aria-label={t('allUpcomingEvents')} className="mt-4 px-4">
+                <ul className="flex flex-col gap-4">
+                  {upcoming.slice(1).map((t) => (
+                    <li key={t.id}>
+                      <EventCard ticket={t} compact onView={() => openDetails(t.id)} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </>
         )
       ) : past.length === 0 ? (

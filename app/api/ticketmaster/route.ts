@@ -46,7 +46,7 @@ function normalize(e: any): TMEvent {
     onSaleStart: e.sales?.public?.startDateTime ?? null,
     url: e.url ?? '',
     promoter: e.promoter?.name ?? e.promoters?.[0]?.name ?? '',
-    venueLocation: [venue?.name, venue?.city?.name, venue?.state?.stateCode ?? venue?.state?.name, venue?.country?.countryCode].filter(Boolean).join(', '),
+    venueLocation: [venue?.address?.line1, venue?.city?.name, venue?.state?.stateCode ?? venue?.state?.name, venue?.country?.countryCode].filter(Boolean).join(', '),
   }
 }
 
