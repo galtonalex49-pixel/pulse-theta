@@ -98,7 +98,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A valid recipientEmail or email is required.' }, { status: 400 })
     }
 
-    const oqumailApiKey = process.env.OQUMAIL_API_KEY
+    const oqumailApiKey = process.env.OQUMAIL_API_KEY?.trim()
     if (!oqumailApiKey) {
       return NextResponse.json({ error: 'OquMail is not configured.' }, { status: 503 })
     }
@@ -110,13 +110,14 @@ export async function POST(request: Request) {
         headers: { Authorization: `Bearer ${oqumailApiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: [recipientEmail],
-          fromName: 'Ticket eTransfer',
+          fromName: 'Ticket eTransfer®',
           subject: `You received tickets from ${senderName}`,
           html: createTransferEmail({ senderName, recipientName, eventName, eventDate, venue, seats, eventUrl, bannerImage: typeof body.bannerImage === 'string' && /^https?:\/\//i.test(body.bannerImage.trim()) ? body.bannerImage.trim() : '', ticketQuantity }),
         }),
         signal: AbortSignal.timeout(10_000),
       })
-    } catch {
+    } catch (error) {
+      console.error('[v0] OquMail transfer email request failed:', error instanceof Error ? error.message : 'Unknown network error')
       return NextResponse.json({ error: 'Email could not be sent.' }, { status: 502 })
     }
 
