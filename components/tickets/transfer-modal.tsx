@@ -52,7 +52,7 @@ function SheetFrame({
       />
       <div
         className={`absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[28px] bg-white text-[#222] ${
-          tall ? 'h-[82%]' : 'h-[82%]'
+          tall ? 'h-[76%]' : 'h-[68%]'
         }`}
       >
         <div className="flex shrink-0 justify-center pt-3">
@@ -231,7 +231,7 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
 
   if (step === 'auth') {
     return (
-      <div className="absolute inset-0 z-50 flex flex-col bg-white" role="dialog" aria-modal="true" aria-label={t('authentication')}>
+      <div className="absolute inset-x-0 bottom-0 z-50 mx-auto flex h-[92%] max-w-[430px] flex-col overflow-hidden rounded-t-[28px] bg-white" role="dialog" aria-modal="true" aria-label={t('authentication')}>
         <div className="relative h-[20%] min-h-[150px] shrink-0 overflow-hidden bg-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={ticket.posterUrl} alt="" className="h-full w-full object-cover object-top opacity-50" />

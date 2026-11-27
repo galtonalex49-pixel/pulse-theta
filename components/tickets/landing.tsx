@@ -21,10 +21,13 @@ export function TicketsLanding() {
     // Preserve the order set in Admin Dashboard so the My Events tab mirrors the configured arrangement.
     const visible = tickets.filter((t) => t.visible)
     const pastEvents = visible.filter((t) => isPast(t.dateTime, reference))
+    const otherEvents = visible.filter((t) => !isPast(t.dateTime, reference))
+    const pastLimit = Math.max(0, profile.pastEventsToShow ?? 10)
+    const past = [...pastEvents, ...otherEvents].slice(0, pastLimit)
     return {
-      upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
-      past: pastEvents.slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
-      pastCount: pastEvents.length,
+      upcoming: otherEvents,
+      past,
+      pastCount: pastLimit,
     }
   }, [tickets, now, profile.pastEventsToShow])
 
