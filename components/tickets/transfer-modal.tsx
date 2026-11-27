@@ -182,7 +182,12 @@ export function TransferModal({ ticket, onClose }: { ticket: Ticket; onClose: ()
           ticketDetails: { seats: selectedSeats, orderNumber: ticket.orderNumber },
         }),
       })
-      if (!response.ok) { setSendError(t('unableSendTransfer')); setSending(false); return }
+      if (!response.ok) {
+        const result = await response.json().catch(() => null) as { error?: unknown } | null
+        setSendError(typeof result?.error === 'string' ? result.error : t('unableSendTransfer'))
+        setSending(false)
+        return
+      }
     } catch {
       setSendError(t('unableReachTransfer'))
       setSending(false)
