@@ -23,7 +23,7 @@ export function TicketsLanding() {
     const pastEvents = visible.filter((t) => isPast(t.dateTime, reference))
     return {
       upcoming: visible.filter((t) => !isPast(t.dateTime, reference)),
-      past: pastEvents.slice(0, Math.max(0, Math.min(50, profile.pastEventsToShow ?? 10))),
+      past: pastEvents.slice(0, Math.max(0, profile.pastEventsToShow ?? 10)),
       pastCount: pastEvents.length,
     }
   }, [tickets, now, profile.pastEventsToShow])

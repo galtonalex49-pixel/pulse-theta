@@ -104,7 +104,7 @@ function NumberField({
   value: number
   onCommit: (v: number) => void
   min: number
-  max: number
+  max?: number
   step?: number
 }) {
   const [draft, setDraft] = useState(String(value))
@@ -123,7 +123,7 @@ function NumberField({
         onChange={(e) => {
           setDraft(e.target.value)
           const n = Number(e.target.value)
-          if (e.target.value !== '' && Number.isFinite(n) && n >= min && n <= max) onCommit(n)
+          if (e.target.value !== '' && Number.isSafeInteger(n) && n >= min && (max === undefined || n <= max)) onCommit(n)
         }}
         onBlur={() => setDraft(String(value))}
         className={inputCls}
@@ -542,7 +542,7 @@ export function AdminDashboard({ onBack }: { onBack: () => void }) {
         <Field label="Full name" value={profile.name} onChange={(v) => setProfile({ name: v })} />
         <Field label="Email" type="email" value={profile.email} onChange={(v) => setProfile({ email: v })} />
         <Field label="Avatar initials" value={profile.initials} onChange={(v) => setProfile({ initials: v.toUpperCase().slice(0, 3) })} />
-        <NumberField label="Past events to show in My Tickets" value={profile.pastEventsToShow} min={0} max={50} onCommit={(v) => setProfile({ pastEventsToShow: Math.max(0, Math.min(50, Math.round(v))) })} />
+        <NumberField label="Past events to show in My Tickets" value={profile.pastEventsToShow} min={0} onCommit={(v) => setProfile({ pastEventsToShow: Math.max(0, Math.floor(v)) })} />
       </section>
 
       <section className="mt-10 px-4" aria-label="Master admin dashboard">
