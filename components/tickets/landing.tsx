@@ -27,7 +27,7 @@ export function TicketsLanding() {
     return {
       upcoming: otherEvents,
       past,
-      pastCount: past.length,
+      pastCount: pastLimit,
     }
   }, [tickets, now, profile.pastEventsToShow])
 
